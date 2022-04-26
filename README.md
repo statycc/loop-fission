@@ -7,7 +7,7 @@ The original benchmark program files are flattened under `prog/`
 - some utility scripts may not work because of this change
 - modify `utilities/benchmark_list` to fix
 
-The parallel programs are in `parallel`
+The parallel programs are in `parallel/`
 
 - The transformation needs to be applied manually here
 - any filename that start with `_` has not yet been modified
