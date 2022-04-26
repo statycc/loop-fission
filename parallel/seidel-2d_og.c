@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "seidel-2d.h"
+#include <seidel-2d.h>
 
 
 /* Array initialization. */

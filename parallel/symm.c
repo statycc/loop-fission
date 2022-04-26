@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "symm.h"
+#include <symm.h>
 
 
 /* Array initialization. */
@@ -34,8 +34,8 @@ void init_array(int m, int n,
 
   *alpha = 1.5;
   *beta = 1.2;
-   #pragma omp parallel private(i, j)
-   {
+  #pragma omp parallel private(i, j)
+  {
       #pragma omp for nowait 
       for (i = 0; i < m; i++)
         for (j = 0; j < n; j++) {

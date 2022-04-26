@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "adi.h"
+#include <adi.h>
 
 
 /* Array initialization. */

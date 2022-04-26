@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "atax.h"
+#include <atax.h>
 
 
 /* Array initialization. */

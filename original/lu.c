@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "lu.h"
+#include <lu.h>
 
 
 /* Array initialization. */

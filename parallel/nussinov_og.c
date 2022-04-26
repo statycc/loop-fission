@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "nussinov.h"
+#include <nussinov.h>
 
 /* RNA bases represented as chars, range is [0,3] */
 typedef char base;

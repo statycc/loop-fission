@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "durbin.h"
+#include <durbin.h>
 
 
 /* Array initialization. */

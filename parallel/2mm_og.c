@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "2mm.h"
+#include <2mm.h>
 
 
 /* Array initialization. */

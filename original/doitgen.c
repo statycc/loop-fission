@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "doitgen.h"
+#include <doitgen.h>
 
 
 /* Array initialization. */

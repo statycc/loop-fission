@@ -78,8 +78,8 @@ do
 
     [[ "$filename" == _* ]] && continue  # ignore non-transformed
 
-    # compile options add -lm -fopenmp
-    "$CC" -"$OPT" -I utilities -I prog utilities/polybench.c "$file" -DPOLYBENCH_TIME -o "$out"
+    # compile options
+    "$CC" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c "$file" -DPOLYBENCH_TIME -o "$out"
 
     # run benchmark
     /bin/sh ./utilities/time_benchmark.sh "$out" >> "$OUTFILE"

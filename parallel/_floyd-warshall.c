@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "floyd-warshall.h"
+#include <floyd-warshall.h>
 
 
 /* Array initialization. */

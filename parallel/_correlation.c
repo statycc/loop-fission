@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "correlation.h"
+#include <correlation.h>
 
 
 /* Array initialization. */

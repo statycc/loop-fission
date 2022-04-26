@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "trmm.h"
+#include <trmm.h>
 
 
 /* Array initialization. */

@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "trisolv.h"
+#include <trisolv.h>
 
 
 /* Array initialization. */

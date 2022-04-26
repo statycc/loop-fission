@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "gesummv.h"
+#include <gesummv.h>
 
 
 /* Array initialization. */

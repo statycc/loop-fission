@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "syrk.h"
+#include <syrk.h>
 
 
 /* Array initialization. */

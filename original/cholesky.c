@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "cholesky.h"
+#include <cholesky.h>
 
 
 /* Array initialization. */

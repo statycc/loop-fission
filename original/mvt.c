@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "mvt.h"
+#include <mvt.h>
 
 
 /* Array initialization. */

@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "covariance.h"
+#include <covariance.h>
 
 
 /* Array initialization. */

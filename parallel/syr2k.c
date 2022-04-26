@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "syr2k.h"
+#include <syr2k.h>
 
 
 /* Array initialization. */
@@ -34,23 +34,23 @@ void init_array(int n, int m,
 
   *alpha = 1.5;
   *beta = 1.2;
-   #pragma omp parallel private(i, j)
-   {
-       #pragma omp for nowait 
-       for (i = 0; i < n; i++)
-          for (j = 0; j < m; j++) {
-            A[i][j] = (DATA_TYPE) ((i*j+1)%n) / n;
-          }
-       #pragma omp for nowait 
-       for (i = 0; i < n; i++)
-          for (j = 0; j < m; j++) {
-            B[i][j] = (DATA_TYPE) ((i*j+2)%m) / m;
-          }          
+  #pragma omp parallel private(i, j)
+  {
+      #pragma omp for nowait
+      for (i = 0; i < n; i++)
+         for (j = 0; j < m; j++) {
+           A[i][j] = (DATA_TYPE) ((i*j+1)%n) / n;
+         }
+      #pragma omp for nowait
+      for (i = 0; i < n; i++)
+         for (j = 0; j < m; j++) {
+           B[i][j] = (DATA_TYPE) ((i*j+2)%m) / m;
+         }
+  }
+  for (i = 0; i < n; i++)
+   for (j = 0; j < n; j++) {
+     C[i][j] = (DATA_TYPE) ((i*j+3)%n) / m;
    }
-   for (i = 0; i < n; i++)
-    for (j = 0; j < n; j++) {
-      C[i][j] = (DATA_TYPE) ((i*j+3)%n) / m;
-    }
 }
 
 

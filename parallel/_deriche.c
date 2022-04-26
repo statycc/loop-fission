@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "deriche.h"
+#include <deriche.h>
 
 
 /* Array initialization. */

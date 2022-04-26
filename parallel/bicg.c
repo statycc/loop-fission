@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "bicg.h"
+#include <bicg.h>
 
 
 /* Array initialization. */

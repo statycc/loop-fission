@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "gemver.h"
+#include <gemver.h>
 
 
 /* Array initialization. */

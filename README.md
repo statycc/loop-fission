@@ -4,11 +4,16 @@
 
 The parallel programs are in `parallel/`
 
-- The transformation needs to be applied manually here
-- any filename that start with `_` has not yet been modified
+- The transformation needs to be applied manually to files in this directory
+
 - **Only the code block with comment `Main computational kernel....` should be transformed**
     - look for `#pragma scop .... #pragma endscop`
     - The rest is templating code
+    
+- I will use following schema:
+    - Filename starts with `_` => has not yet been modified
+    - Filename ends with `_og.c` =>  non-parallelizable/same as original version
+    - Otherwise: file has been transformed and is parallelizable
 
 The original benchmark program files are under `original/`
 
@@ -19,12 +24,12 @@ I wrote `run.sh` to run timing on all examples with single command
 
 - timing options are default: 5 runs, take avg 3 runs (not min, max)
 - dataset size defaults to `STANDARD_DATASET`
-- `utilities/time_benchmark.sh` is modified to output results in tabular format
-- output: `program, variance, time (s)`
-- if variance is >= 5% should probably repeat
+- `utilities/time_benchmark.sh` has been modified to output results in tabular format
+- output attributes: `program, variance, time (s)`
+- if variance is >= 5% should probably repeat the timing
 - it takes about 30-40 min to time all examples with default options (YMMV)
 - there are a few command line flags, see script for usage
-- parallel examples that are not yet transformed are not timed
+- parallel examples that are not yet transformed will not be timed
 
 There are also bunch of modifiable options, as explained in the readme below
 

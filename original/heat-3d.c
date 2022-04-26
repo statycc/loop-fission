@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "heat-3d.h"
+#include <heat-3d.h>
 
 
 /* Array initialization. */

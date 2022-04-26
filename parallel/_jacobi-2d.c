@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "jacobi-2d.h"
+#include <jacobi-2d.h>
 
 
 /* Array initialization. */

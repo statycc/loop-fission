@@ -18,7 +18,7 @@
 #include <polybench.h>
 
 /* Include benchmark-specific header. */
-#include "fdtd-2d.h"
+#include <fdtd-2d.h>
 
 
 /* Array initialization. */
