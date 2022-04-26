@@ -8,6 +8,10 @@
 # basic usage:
 # /bin/sh run.sh
 #
+# specify source directory:
+# /bin/sh run.sh -d parallel
+# /bin/sh run.sh -d original
+#
 # specify compiler:
 # /bin/sh run.sh -c gcc-10
 #
@@ -16,24 +20,26 @@
 
 
 # parse command line args
-while getopts c:o: flag
+while getopts c:o:d: flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
         o) opt_level=${OPTARG};;
+        d) directory=${OPTARG};;
     esac
 done
 
-CC="${compiler:-gcc}"               # compiler, default: gcc
-OPT="${opt_level:-O0}"              # optimization level, default: O0
-DT=$(date '+%Y%m%d%H%M');           # current timestamp for unique filenames
-OUTFILE=./result/"$DT".txt          # where to save timing results
-MODEL=./result/"$DT"_model.txt      # where to save machine details
-START=$(date '+%H:%M:%S');          # start time
+CC="${compiler:-gcc}"                   # compiler, default: gcc
+OPT="${opt_level:-O0}"                  # optimization level, default: O0
+SRC="${directory:-original}"            # source directory
+DT=$(date '+%y%m%d%H%M');               # current timestamp for unique filenames
+OUTFILE=./result/"$SRC"_"$DT".txt       # where to save timing results
+MODEL=./result/"$SRC"_"$DT"_model.txt   # where to save machine details
+START=$(date '+%H:%M:%S');              # start time
 
 # capture runtime details
 echo "# RUNTIME" >>  "$MODEL"
-echo "compiler: "$CC"\nopt level: "$OPT"" >>  "$MODEL"
+echo "compiler: "$CC"\nopt level: "$OPT"\nsource: "$SRC"" >>  "$MODEL"
 echo "\n# MACHINE" >>  "$MODEL"
 echo "OS: "$OSTYPE"" >> "$MODEL"
 
@@ -55,7 +61,7 @@ do
 done
 
 # compile and time each example
-for file in ./prog/*.c
+for file in ./"$SRC"/*.c
 do
     filename=$(basename -- "$file")
     extension="${filename##*.}"

@@ -2,16 +2,15 @@
 
 **Changes**
 
-The original benchmark program files are flattened under `prog/`
-
-- some utility scripts may not work because of this change
-- modify `utilities/benchmark_list` to fix
-
 The parallel programs are in `parallel/`
 
 - The transformation needs to be applied manually here
 - any filename that start with `_` has not yet been modified
-- the idea is to then be able to compare these results
+
+The original benchmark program files are under `original/`
+
+- these are in a flat directory now, unlike original source
+- the idea is to then be able to compare programs in these 2 directories
 
 I wrote `run.sh` to run timing on all examples with single command
 
@@ -20,7 +19,7 @@ I wrote `run.sh` to run timing on all examples with single command
 - `utilities/time_benchmark.sh` is modified to output results in tabular format
 - output: `program, variance, time (s)`
 - if variance is >= 5% should probably repeat
-- it takes about 30 min to time all examples this way
+- it takes about 30-40 min to time all examples this way
 - there are a few command line flags, see script for usage
 - TODO: option to specify which programs to time (right now it is always the original programs)
 
