@@ -34,11 +34,19 @@ void init_array(int m, int n,
 
   *alpha = 1.5;
   *beta = 1.2;
-  for (i = 0; i < m; i++)
-    for (j = 0; j < n; j++) {
-      C[i][j] = (DATA_TYPE) ((i+j) % 100) / m;
-      B[i][j] = (DATA_TYPE) ((n+i-j) % 100) / m;
-    }
+   #pragma omp parallel private(i, j)
+   {
+      #pragma omp for nowait 
+      for (i = 0; i < m; i++)
+        for (j = 0; j < n; j++) {
+          C[i][j] = (DATA_TYPE) ((i+j) % 100) / m;
+        }
+      #pragma omp for nowait 
+      for (i = 0; i < m; i++)
+        for (j = 0; j < n; j++) {        
+          B[i][j] = (DATA_TYPE) ((n+i-j) % 100) / m;
+        }
+  }
   for (i = 0; i < m; i++) {
     for (j = 0; j <=i; j++)
       A[i][j] = (DATA_TYPE) ((i+j) % 100) / m;
