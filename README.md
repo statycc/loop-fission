@@ -6,7 +6,7 @@ The parallel programs are in `parallel/`
 
 - The transformation needs to be applied manually here
 - any filename that start with `_` has not yet been modified
-- _Only the code block with comment `* Main computational kernel....` should be transformed_
+- **Only the code block with comment `Main computational kernel....` should be transformed**
     - look for `#pragma scop .... #pragma endscop`
     - The rest is templating code
 
