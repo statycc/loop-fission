@@ -34,14 +34,14 @@ void init_array(int n, int m,
 
   *alpha = 1.5;
   *beta = 1.2;
-   #pragma omp parallel
+   #pragma omp parallel private(i, j)
    {
-       #pragma omp for nowait private(i, j)
+       #pragma omp for nowait 
        for (i = 0; i < n; i++)
           for (j = 0; j < m; j++) {
             A[i][j] = (DATA_TYPE) ((i*j+1)%n) / n;
           }
-       #pragma omp for nowait private(i, j)
+       #pragma omp for nowait 
        for (i = 0; i < n; i++)
           for (j = 0; j < m; j++) {
             B[i][j] = (DATA_TYPE) ((i*j+2)%m) / m;
