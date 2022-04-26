@@ -19,9 +19,9 @@ I wrote `run.sh` to run timing on all examples with single command
 - `utilities/time_benchmark.sh` is modified to output results in tabular format
 - output: `program, variance, time (s)`
 - if variance is >= 5% should probably repeat
-- it takes about 30-40 min to time all examples this way
+- it takes about 30-40 min to time all examples with default options (YMMV)
 - there are a few command line flags, see script for usage
-- TODO: option to specify which programs to time (right now it is always the original programs)
+- parallel examples that are not yet transformed are not timed
 
 There are also bunch of modifiable options, as explained in the readme below
 

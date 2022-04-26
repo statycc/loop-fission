@@ -29,13 +29,19 @@ do
     esac
 done
 
-CC="${compiler:-gcc}"                   # compiler, default: gcc
-OPT="${opt_level:-O0}"                  # optimization level, default: O0
-SRC="${directory:-original}"            # source directory
-DT=$(date '+%y%m%d%H%M');               # current timestamp for unique filenames
-OUTFILE=./result/"$SRC"_"$DT".txt       # where to save timing results
-MODEL=./result/"$SRC"_"$DT"_model.txt   # where to save machine details
-START=$(date '+%H:%M:%S');              # start time
+RES_DIR="result"
+CC="${compiler:-gcc}"                       # compiler, default: gcc
+OPT="${opt_level:-O0}"                      # optimization level, default: O0
+SRC="${directory:-original}"                # source directory, default: original
+DT=$(date '+%y%m%d%H%M');                   # current timestamp for unique filenames
+OUTFILE=./"$RES_DIR"/"$SRC"_"$DT".txt       # where to save timing results
+MODEL=./"$RES_DIR"/"$SRC"_"$DT"_model.txt   # where to save machine details
+START=$(date '+%H:%M:%S');                  # start time
+CDIR="compiled_"$SRC""
+
+# ensure dirs exist
+[ -d "$CDIR" ] || mkdir "$CDIR"
+[ -d "$RES_DIR" ] || mkdir "$RES_DIR"
 
 # capture runtime details
 echo "# RUNTIME" >>  "$MODEL"
@@ -55,7 +61,7 @@ case "$OSTYPE" in
 esac
 
 # clear compiled files if exist
-for file in ./compiled/*
+for file in ./"$CDIR"/*
 do
     rm -rf "$file"
 done
@@ -63,13 +69,21 @@ done
 # compile and time each example
 for file in ./"$SRC"/*.c
 do
+
+    # get filename without extension
     filename=$(basename -- "$file")
     extension="${filename##*.}"
     filename="${filename%.*}"
-    out=./compiled/"$filename"_time
+    out=./"$CDIR"/"$filename"_time
 
+    [[ "$filename" == _* ]] && continue  # ignore non-transformed
+
+    # compile options
     "$CC" -"$OPT" -I utilities -I prog utilities/polybench.c "$file" -DPOLYBENCH_TIME -o "$out"
+
+    # run benchmark
     /bin/sh ./utilities/time_benchmark.sh "$out" >> "$OUTFILE"
+
     echo "done with $file"
 done
 
