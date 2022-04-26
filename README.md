@@ -2,15 +2,16 @@
 
 **Changes**
 
-- The programs files are flattened under `prog/`
+- The program files are flattened under `prog/`
     - some utility scripts may not work because of this change
     - modify `utilities/benchmark_list` to fix
 
-- I wrote run.sh to run timing on all examples with single command
+- I wrote `run.sh` to run timing on all examples with single command
     - timing options are default: average of 5 runs / each example
     - dataset size defaults to `STANDARD_DATASET`
-    - it takes maybe 45 min - 1h to time all examples this way
+    - it takes about 30 min to time all examples this way
     - there are a few command line flags, see script for usage
+    - `utilities/time_benchmark.sh` is modified to output results in tabular format
 
 There are also bunch of modifiable options, as explained in the readme below
 
@@ -19,7 +20,7 @@ There are also bunch of modifiable options, as explained in the readme below
 ↓↓ Original readme ↓↓
 
 * * * * * * * * * *
-* PolyBench/C 4.2 *
+\* PolyBench/C 4.2 \*
 * * * * * * * * * *
 
 Copyright (c) 2011-2016 the Ohio State University.

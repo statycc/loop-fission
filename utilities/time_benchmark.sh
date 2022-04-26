@@ -19,7 +19,6 @@ if [ $# -ne 1 ]; then
     exit 1;
 fi;
 
-
 compute_mean_exec_time()
 {
     file="$1";
@@ -54,18 +53,18 @@ compute_mean_exec_time()
     fi;
     compvar=`echo "$variance $VARIANCE_ACCEPTED" | awk '{ if ($1 < $2) print "ok"; else print "error"; }'`;
     if [ "$compvar" = "error" ]; then
-	echo "[WARNING] Variance is above thresold, unsafe performance measurement";
-	echo "        => max deviation=$variance%, tolerance=$VARIANCE_ACCEPTED%";
+#	echo "[WARNING] Variance is above thresold, unsafe performance measurement";
+#	echo "        => max deviation=$variance%, tolerance=$VARIANCE_ACCEPTED%";
 	WARNING_VARIANCE="$WARNING_VARIANCE\n$benchcomputed: max deviation=$variance%, tolerance=$VARIANCE_ACCEPTED%";
-    else
-	echo "[INFO] Maximal deviation from arithmetic mean of 3 average runs: $variance%";
+#   else
+#	echo "[INFO] Maximal deviation from arithmetic mean of 3 average runs: $variance%";
     fi;
     PROCESSED_TIME="$time";
     rm -f avg.out;
 }
 
-echo "[INFO] Running 5 times $1..."
-echo "[INFO] Maximal variance authorized on 3 average runs: $VARIANCE_ACCEPTED%...";
+#echo "[INFO] Running 5 times $1..."
+#echo "[INFO] Maximal variance authorized on 3 average runs: $VARIANCE_ACCEPTED%...";
 
 $1 > ____tempfile.data.polybench;
 $1 >> ____tempfile.data.polybench;
@@ -74,5 +73,6 @@ $1 >> ____tempfile.data.polybench;
 $1 >> ____tempfile.data.polybench;
 
 compute_mean_exec_time "____tempfile.data.polybench" "$1";
-echo "[INFO] Normalized time: $PROCESSED_TIME";
+#echo "[INFO] Normalized time: $PROCESSED_TIME";
+echo "$(basename -- "$1")\t\t$variance\t\t$PROCESSED_TIME"
 rm -f ____tempfile.data.polybench;

@@ -16,6 +16,7 @@
 # /bin/sh run.sh -o O1
 #
 
+# parse command line args
 while getopts c:o: flag
 do
     case "${flag}" in
@@ -24,17 +25,36 @@ do
     esac
 done
 
-CC="${compiler:-gcc}"           # compiler, default: gcc
-OPT="${opt_level:-O0}"          # optimization level, default: O0
-DT=$(date '+%Y%m%d_%H%M%S');
+CC="${compiler:-gcc}"               # compiler, default: gcc
+OPT="${opt_level:-O0}"              # optimization level, default: O0
+DT=$(date '+%Y%m%d%H%M%S');
+OUTFILE=./result/"$DT".txt      # where to save timing results
+MODEL=./result/"$DT"_model.txt  # where to save machine details
 
+# capture runtime details
+echo "# RUNTIME" >>  "$MODEL"
+echo "compiler: "$CC"\nopt level: "$OPT"" >>  "$MODEL"
+echo "\n# MACHINE" >>  "$MODEL"
+echo "OS: "$OSTYPE"" >> "$MODEL"
+
+# capture details of running machine
+case "$OSTYPE" in
+  linux*)   cat /proc/cpuinfo >> "$MODEL" ;;
+  darwin*)  sysctl -a | grep machdep.cpu >> "$MODEL" ;;
+  solaris*) echo "no details on SOLARIS"  >> "$MODEL" ;;
+  bsd*)     echo "no details on BSD" >> "$MODEL" ;;
+  msys*)    echo "no details on WINDOWS" >> "$MODEL" ;;
+  cygwin*)  echo "no details on ALSO WINDOWS" >> "$MODEL"  ;;
+  *)        echo "no details on unknown: $OSTYPE" >> "$MODEL"  ;;
+esac
+
+# clear compiled files if exist
 for file in ./compiled/*
 do
     rm -rf "$file"
 done
 
-echo "CC=$CC OPT_LEVEL=$OPT\n" >> ./result/run_"$DT"
-
+# compile and time each example
 for file in ./prog/*.c
 do
     filename=$(basename -- "$file")
@@ -43,7 +63,8 @@ do
     out=./compiled/"$filename"_time
 
     "$CC" -"$OPT" -I utilities -I prog utilities/polybench.c "$file" -DPOLYBENCH_TIME -o "$out"
-    /bin/sh ./utilities/time_benchmark.sh "$out" >> ./result/run_"$DT"
+    /bin/sh ./utilities/time_benchmark.sh "$out" >> "$OUTFILE"
     echo "done with $file"
 done
+
 
