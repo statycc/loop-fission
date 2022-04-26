@@ -2,17 +2,27 @@
 
 **Changes**
 
-- The program files are flattened under `prog/`
-    - some utility scripts may not work because of this change
-    - modify `utilities/benchmark_list` to fix
+The original benchmark program files are flattened under `prog/`
 
-- I wrote `run.sh` to run timing on all examples with single command
-    - timing options are default (5 runs, take avg 3 runs (-min,-max), max variance 5%)
-    - dataset size defaults to `STANDARD_DATASET`
-    - it takes about 30 min to time all examples this way
-    - there are a few command line flags, see script for usage
-    - `utilities/time_benchmark.sh` is modified to output results in tabular format
-    - output: `program, variance, time (s)`
+- some utility scripts may not work because of this change
+- modify `utilities/benchmark_list` to fix
+
+The parallel programs are in `parallel`
+
+- The transformation needs to be applied manually here
+- any filename that start with `_` has not yet been modified
+- the idea is to then be able to compare these results
+
+I wrote `run.sh` to run timing on all examples with single command
+
+- timing options are default: 5 runs, take avg 3 runs (not min, max)
+- dataset size defaults to `STANDARD_DATASET`
+- `utilities/time_benchmark.sh` is modified to output results in tabular format
+- output: `program, variance, time (s)`
+- if variance is >= 5% should probably repeat
+- it takes about 30 min to time all examples this way
+- there are a few command line flags, see script for usage
+- TODO: option to specify which programs to time (right now it is always the original programs)
 
 There are also bunch of modifiable options, as explained in the readme below
 

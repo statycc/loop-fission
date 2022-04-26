@@ -74,5 +74,5 @@ $1 >> ____tempfile.data.polybench;
 
 compute_mean_exec_time "____tempfile.data.polybench" "$1";
 #echo "[INFO] Normalized time: $PROCESSED_TIME";
-echo "$(basename -- "$1")\t\t$variance\t\t$PROCESSED_TIME"
+printf "%-25s\t$variance\t$PROCESSED_TIME\n" $(basename -- "$1")
 rm -f ____tempfile.data.polybench;

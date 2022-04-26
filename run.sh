@@ -2,9 +2,8 @@
 
 # Batch timing script.
 #
-# This script compiles all examples in prog/
-# then runs the built-in timing benchmark script.
-# Output is stored in a file under `result/`
+# This script compiles all examples in prog/ then runs the built-in
+# timing benchmark script. Output is stored in a file under `result/`.
 #
 # basic usage:
 # /bin/sh run.sh
@@ -12,9 +11,9 @@
 # specify compiler:
 # /bin/sh run.sh -c gcc-10
 #
-# specify opt level:
+# specify optimization level:
 # /bin/sh run.sh -o O1
-#
+
 
 # parse command line args
 while getopts c:o: flag
@@ -27,9 +26,10 @@ done
 
 CC="${compiler:-gcc}"               # compiler, default: gcc
 OPT="${opt_level:-O0}"              # optimization level, default: O0
-DT=$(date '+%Y%m%d%H%M%S');
-OUTFILE=./result/"$DT".txt      # where to save timing results
-MODEL=./result/"$DT"_model.txt  # where to save machine details
+DT=$(date '+%Y%m%d%H%M');           # current timestamp for unique filenames
+OUTFILE=./result/"$DT".txt          # where to save timing results
+MODEL=./result/"$DT"_model.txt      # where to save machine details
+START=$(date '+%H:%M:%S');          # start time
 
 # capture runtime details
 echo "# RUNTIME" >>  "$MODEL"
@@ -67,4 +67,5 @@ do
     echo "done with $file"
 done
 
-
+echo "\n# TIME" >>  "$MODEL"
+echo "start: "$START"\nend:   "$(date '+%H:%M:%S')"" >>  "$MODEL"
