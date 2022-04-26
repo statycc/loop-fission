@@ -7,11 +7,12 @@
     - modify `utilities/benchmark_list` to fix
 
 - I wrote `run.sh` to run timing on all examples with single command
-    - timing options are default: average of 5 runs / each example
+    - timing options are default (5 runs, take avg 3 runs (-min,-max), max variance 5%)
     - dataset size defaults to `STANDARD_DATASET`
     - it takes about 30 min to time all examples this way
     - there are a few command line flags, see script for usage
     - `utilities/time_benchmark.sh` is modified to output results in tabular format
+    - output: `program, variance, time (s)`
 
 There are also bunch of modifiable options, as explained in the readme below
 
