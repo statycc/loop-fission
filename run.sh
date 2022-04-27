@@ -17,17 +17,24 @@
 #
 # specify optimization level:
 # /bin/sh run.sh -o O1
+#
+# skip parallel programs that could not be transformed
+# /bin/sh run.sh -s
+#
+#
 
 
 # parse command line args
-while getopts c:o:d: flag
+while getopts c:o:d:s flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
         o) opt_level=${OPTARG};;
         d) directory=${OPTARG};;
+        s) skip=${OPTARG:-S};;
     esac
 done
+
 
 RES_DIR="result"
 CC="${compiler:-gcc}"                       # compiler, default: gcc
@@ -77,6 +84,11 @@ do
     out=./"$CDIR"/"$filename"_time
 
     [[ "$filename" == _* ]] && continue  # ignore non-transformed
+
+    if [ "$skip" == "S" ]
+    then
+        [[ "$filename" == *_og ]] && continue  # ignore non-transformable
+    fi
 
     # compile options
     "$CC" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c "$file" -DPOLYBENCH_TIME -o "$out"
