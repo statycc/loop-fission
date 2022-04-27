@@ -2,26 +2,11 @@
 
 # Batch timing script.
 #
-# This script compiles all examples in prog/ then runs the built-in
-# timing benchmark script. Output is stored in a file under `result/`.
+# This script compiles all examples in source directory then runs the built-in
+# timing benchmark script. Output is stored in a timestamped file.
 #
 # basic usage:
 # /bin/sh run.sh
-#
-# specify source directory:
-# /bin/sh run.sh -d parallel
-# /bin/sh run.sh -d original
-#
-# specify compiler:
-# /bin/sh run.sh -c gcc-10
-#
-# specify optimization level:
-# /bin/sh run.sh -o O1
-#
-# skip parallel programs that could not be transformed
-# /bin/sh run.sh -s
-#
-#
 
 
 # parse command line args
@@ -36,7 +21,7 @@ do
 done
 
 
-RES_DIR="result"
+RES_DIR="results"
 CC="${compiler:-gcc}"                       # compiler, default: gcc
 OPT="${opt_level:-O0}"                      # optimization level, default: O0
 SRC="${directory:-original}"                # source directory, default: original

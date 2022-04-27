@@ -1,7 +1,8 @@
-# Polybench++
+# Polybench + pyalp
 
-This is a reorganized version of [Polybench/C benchmark suite][PB], with minimal changes and 
-extensions, for purpose of timing pyalp transformations on these programs.
+This is a reorganized version of [Polybench/C benchmark suite][PB], [version 4.2][4.2], 
+with minimal changes and extensions, for purpose of timing pyalp transformations 
+on these programs.
 
 **Changes to original suite:**
 
@@ -52,27 +53,35 @@ This command executes using the default options listed below.
 
 ### Results
 
-The results can be found in `result/` directory. There are two files per run: 
+The results can be found in `results/` directory. There are two files per run: 
 
-`[dir]_[timestamp]_model.txt`: machine+processor snapshot
+1. `[dir]_[timestamp]_model.txt`: machine + processor snapshot, other meta data
 
-`[dir]_[timestamp].txt`: actual results of timing
+2. `[dir]_[timestamp].txt`: actual results of timing
 
 Data labels are: `program, variance (%), time (s)`.
-Labels are always the same and not include in results file.
+Labels are always the same and not include in timing file.
 
-Timing options are default: 5 runs, take avg 3 runs (not min, max),
-and dataset size defaults to `STANDARD_DATASET`. If variance is >= 5% 
-should repeat the timing.
+Timing options are same as default
 
-Timing all examples without parallelization takes ~ 30-40 minutes.
-Timing parallelizable examples only take ~ 3 minutes.
+- 5 runs, take avg 3 runs (not min, max),
+- dataset size `STANDARD_DATASET`
+
+Duration
+
+- all examples: ~ 30-40 min
+- parallelized only (use `-s` flag): ~ 3 min
 
 * * *
 
 ### Original source
 
-* [Polybench/C benchmark @ Ohio State][PB]
-* [Benchmark readme](./README)
+* [Polybench/C @ Ohio State][PB]
+* [Ohio State University Software Distribution License](./LICENSE.txt)
+* [Descriptions of programs](./polybench.pdf)
+* [Original readme](./README)
+* [Authors](./AUTHORS) and [Thanks](./THANKS)
+* [Download v4.2 @ SourceForge][4.2]
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
+[4.2]: https://sourceforge.net/projects/polybench/files/
