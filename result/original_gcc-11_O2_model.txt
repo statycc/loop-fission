@@ -1,6 +1,6 @@
 # RUNTIME
 compiler: gcc-11
-opt level: O3
+opt level: O2
 source: original
 
 # MACHINE
@@ -65,5 +65,5 @@ machdep.cpu.thread_count: 4
 machdep.cpu.vendor: GenuineIntel
 
 # TIME
-start: 23:27:23
-end:   23:29:04
+start: 23:23:41
+end:   23:25:24

@@ -85,9 +85,12 @@ do
 
     [[ "$filename" == _* ]] && continue  # ignore non-transformed
 
-    if [ "$skip" == "S" ]
-    then
-        [[ "$filename" == *_og ]] && continue  # ignore non-transformable
+    if [ "$skip" == "S" ];  then # ignore non-transformable
+       if [ "$SRC" == "parallel" ]; then
+            [[ "$filename" == *_og ]] && continue  
+       elif [ ! -f ./parallel/"$filename".c ]; then
+          continue
+       fi
     fi
 
     # compile options
