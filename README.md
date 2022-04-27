@@ -11,7 +11,7 @@ The parallel programs are in `parallel/`
     - The rest is templating code
     
 - I will use following schema:
-    - Filename starts with `_` => has not yet been modified
+    - [x] done ~~Filename starts with `_` => has not yet been modified~~
     - Filename ends with `_og.c` =>  non-parallelizable/same as original version
     - Otherwise: file has been transformed and is parallelizable
 

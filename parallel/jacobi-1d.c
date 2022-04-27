@@ -79,7 +79,7 @@ void kernel_jacobi_1d(int tsteps,
             B[i] = 0.33333 * (A[i-1] + A[i] + A[i + 1]);
         }
 
-        #pragma omp for nowait
+        #pragma omp for
         for (t = 0; t < _PB_TSTEPS; t++)
         {
           for (i = 1; i < _PB_N - 1; i++)

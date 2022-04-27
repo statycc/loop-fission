@@ -41,7 +41,7 @@ void init_array(int n, int m,
          for (j = 0; j < m; j++) {
            A[i][j] = (DATA_TYPE) ((i*j+1)%n) / n;
          }
-      #pragma omp for nowait
+      #pragma omp for
       for (i = 0; i < n; i++)
          for (j = 0; j < m; j++) {
            B[i][j] = (DATA_TYPE) ((i*j+2)%m) / m;

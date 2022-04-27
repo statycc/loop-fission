@@ -93,7 +93,7 @@ void kernel_bicg(int m, int n,
           s[j] = s[j] + r[i] * A[i][j];
         }
      }     
-     #pragma omp for nowait 
+     #pragma omp for
      for (i = 0; i < _PB_N; i++)
      {
         q[i] = SCALAR_VAL(0.0);
