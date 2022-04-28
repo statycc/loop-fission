@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+cp ../utilities/polybench.h ../original_annotated/
+
 for file in bicg fdtd-2d gesummv jacobi-1d jacobi-2d mvt; do
     echo "$file"
+    cp ../headers/${file}.h ../original_annotated/
     
     tee CMakeLists.txt <<EOF >/dev/null
 ################ standard cmake script ################
@@ -14,7 +17,7 @@ set(CMAKE_C_STANDARD 11)
 find_package(OpenMP REQUIRED)
 set(CMAKE_C_FLAGS "\${CMAKE_C_FLAGS} \${OpenMP_C_FLAGS}")
     
-add_executable(${file} src/${file}.c)
+add_executable(${file} ../original_annotated/${file}.c)
 
 ################ clava-specific instructions ################
 # Required if CMake plugin is not installed
@@ -45,4 +48,12 @@ aspectdef OmpParallelization
 end
 EOF
 
+    mkdir -p build
+    cd build
+    cmake ..
+    cd ../
+    cp build/bicg_clava_weave/woven/${file} .
+    rm ../original_annotated/${file}.h
 done
+
+rm ../original_annotated/polybench.h 
