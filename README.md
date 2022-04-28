@@ -45,16 +45,20 @@ run.sh
 **Available arguments**
 
 ```
--c  compiler                                    [default: gcc]
--d  directory to benchmark (parallel|original)  [default: original]
--o  optimization level e.g O3                   [default: O0] 
--s  skip programs that are not parallelizable   [default: false] 
--v  max. variance between timing results (%)    [default: 5.0] 
+| FLAG  | DESCRIPTION                                 | DEFAULT  |
+|-------|---------------------------------------------|----------|
+|  -c   | system compiler to use                      | gcc      |
+|  -d   | directory [parallel|original]               | original | 
+|  -o   | optimization level [O0|O1|O2|O3]            | O0       |
+|  -v   | variance max when timing results (%)        | 5.0      |
+|  -a   | all programs should be timed                | not set  |
 ```
 
-**Duration**
+| Duration                 |           |
+|:-------------------------|:----------|
+| Parallelized only        | 3 min     |
+| All programs (`-a` flag) | 30-40 min |
 
-All programs: 30-40 min &nbsp; • &nbsp; parallelized only (`-s` flag): 3 min
 
 ### Results
 
@@ -66,7 +70,8 @@ Two files will be generated for each run:
 
 2. `[dir]_[timestamp].txt` - actual results of timing
 
-Data labels are: `program, variance (%), time (s)`.
+Data labels: `program, variance (%), time (s)`
+
 Labels are always the same and not included in timing results file.
 
 Timing options are same as default:

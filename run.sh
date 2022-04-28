@@ -8,24 +8,20 @@
 # basic usage:
 # ./run.sh
 
-
 # parse command line args
-while getopts c:o:d:v:s flag
+while getopts c:o:d:v:sa flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
         o) opt_level=${OPTARG};;
         d) directory=${OPTARG};;
         v) max_var=${OPTARG};;
-        s) skip=${OPTARG:-S};;
+        s) unused=${OPTARG};;
+        a) ALL=${OPTARG:-S};;
     esac
 done
 
-# Output directories
-RES_DIR="results"                           # where to save results
-CDIR="compiled"                             # for holding compiled programs
-
-# Unpack the args; set defaults
+# Unpack the args and set defaults
 CC="${compiler:-gcc}"                       # compiler, default: gcc
 OPT="${opt_level:-O0}"                      # optimization level, default: O0
 SRC="${directory:-original}"                # source directory, default: original
@@ -35,6 +31,10 @@ MAX_VARIANCE="${max_var:-5.0}"              # max allowed variance b/w timing re
 MAX_RETRIES=10                              # stop repeating after 10 retries
 START=$(date '+%H:%M:%S');                  # start time
 DT=$(date '+%y%m%d%H%M');                   # current timestamp
+
+# output directories
+CDIR="compiled_"$SRC""                      # for holding compiled programs
+RES_DIR="results"                           # where to save results
 
 # output filenames
 OUTFILE=./"$RES_DIR"/"$SRC"_"$DT".txt       # where to save timing results
@@ -80,7 +80,7 @@ do
 
     [[ "$filename" == _* ]] && continue  # ignore non-transformed
 
-    if [ "$skip" == "S" ];  then # ignore non-transformable
+    if [ ! "$ALL" == "S" ];  then # ignore non-transformable
        if [ "$SRC" == "parallel" ]; then
             [[ "$filename" == *_og ]] && continue  
        elif [ ! -f ./parallel/"$filename".c ]; then
@@ -106,7 +106,7 @@ do
             echo "✓ done with ${filename}"
             break
         else
-            echo "⚠ $filename -  repeating $i of $MAX_RETRIES - variance too high: ${variance} %"
+            echo "⚠ $filename - repeating $i of $MAX_RETRIES - variance too high: ${variance} %"
         fi
 
     done
