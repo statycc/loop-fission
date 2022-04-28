@@ -62,9 +62,9 @@ Parallelizable programs only takes < 5 min.  All programs (`-a` flag): 30-40 min
 
 The results can be found in `results/` directory. Two files will be generated for each run:
 
-1. `[dir]_[timestamp]_model.txt` - machine + processor snapshot, meta data
+1. `[args]_[timestamp]_model.txt` - machine + processor snapshot, meta data
 
-2. `[dir]_[timestamp].txt` - actual results of timing
+2. `[args]_[timestamp].txt` - actual results of timing
 
 Data labels, in order:
 

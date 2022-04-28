@@ -34,15 +34,16 @@ DS_SIZE=${size:-STANDARD}                   # dataset size: MINI, SMALL, MEDIUM,
 # configure other runtime options
 MAX_RETRIES=10                              # stop repeating after 10 retries
 START=$(date '+%H:%M:%S');                  # start time
-DT=$(date '+%y%m%d%H%M');                   # current timestamp
+DT=$(date '+%m%d%H%M%S');                   # current timestamp
 
 # output directories
 CDIR="compiled_"$SRC""                      # for holding compiled programs
 RES_DIR="results"                           # where to save results
 
 # output filenames
-OUTFILE=./"$RES_DIR"/"$SRC"_"$DT".txt       # where to save timing results
-MODEL=./"$RES_DIR"/"$SRC"_"$DT"_model.txt   # where to save machine details
+PATTERN="$SRC"_"$OPT"_"$DS_SIZE"_"$DT"
+OUTFILE=./"$RES_DIR"/"$PATTERN".txt       # where to save timing results
+MODEL=./"$RES_DIR"/"$PATTERN"_model.txt   # where to save machine details
 
 # check that data size is valid
 inarray=$(echo ${VALID_SIZES[@]} | grep -o "$DS_SIZE" | wc -w  | xargs)
