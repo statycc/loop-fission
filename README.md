@@ -29,8 +29,7 @@ on these programs.
     - enables timing entire directory at once
     - adds some useful argument flags
 
-### How to time
-
+### How to run benchmarks
 
 **Basic usage**
 
@@ -45,32 +44,34 @@ run.sh
 **Available arguments**
 
 
-| FLAG | DESCRIPTION  | OPTIONS  | DEFAULT  |
-|:----:|:-------------|:---------|:--------:|
-|  -c  | system compiler to use  | | `gcc` |
-|  -d  | directory  | `parallel`, `original` | `original` | 
-|  -o  | optimization level | `O0`, `O1`, `O2`, `O3`, ... | `O0` |
-|  -v  | max. variance when timing results (%) | > `0.0` | `5.0` |
-|  -s  | dataset size | `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE` | `STANDARD` |
-|  -a  | all programs should be timed | | (not set) |
+| FLAG | DESCRIPTION: options                                            | DEFAULT    |
+|:----:|:----------------------------------------------------------------|:-----------|
+|  -c  | system compiler to use                                          | `gcc`      |
+|  -d  | directory:  `parallel`, `original`                              | `original` | 
+|  -o  | optimization level: `O0`, `O1`, `O2`, `O3`, ...                 | `O0`       |
+|  -v  | max. variance when timing results (%) : > `0.0`                 | `5.0`      |
+|  -s  | dataset size : `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE` | `STANDARD` |
+|  -a  | all programs should be timed                                    | (not set)  |
 
-| Duration ||
-| :--- |:--- |
-| Parallelizable programs only | 3 min |
-| All programs (`-a` flag) | 30-40 min |
+| Duration                     |           |
+|:-----------------------------|:----------|
+| Parallelizable programs only | 3 min     |
+| All programs (`-a` flag)     | 30-40 min |
 
 
 ### Results
 
-The results can be found in `results/` directory. 
-
-Two files will be generated for each run:
+The results can be found in `results/` directory. Two files will be generated for each run:
 
 1. `[dir]_[timestamp]_model.txt` - machine + processor snapshot, meta data
 
 2. `[dir]_[timestamp].txt` - actual results of timing
 
-Data labels: `program, variance (%), time (s)`
+Data labels, in order:
+
+- `program`: name of evaluated program
+- `variance (%)`: variance of recorded execution times
+- `time (s)`: average runtime (clock time), in seconds
 
 Labels are always the same and not included in timing results file.
 
