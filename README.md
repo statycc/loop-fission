@@ -1,6 +1,6 @@
 # Polybench + pyalp
 
-This is a reorganized version of [Polybench/C benchmark suite][PB], [version 4.2][4.2], 
+This is a reorganized version of [Polybench/C benchmark suite][PB] [version 4.2][4.2] 
 with minimal changes and extensions, for purpose of timing pyalp transformations 
 on these programs.
 
@@ -34,43 +34,46 @@ on these programs.
 
 **Basic usage**
 
+This command executes using the default options listed below.
+       
 ```text
 run.sh 
 ```
 
-Note: use bash shell if on MacOS: `/bin/sh run.sh`
+<small>Note: use bash shell if on MacOS: `/bin/sh run.sh`</small>
 
-This command executes using the default options listed below.
-       
 **Available arguments**
 
 ```
--c  compiler to use                             [default: gcc]
+-c  compiler                                    [default: gcc]
 -d  directory to benchmark (parallel|original)  [default: original]
 -o  optimization level e.g O3                   [default: O0] 
--s  skip programs that are not parallelizable   [default: false]
+-s  skip programs that are not parallelizable   [default: false] 
+-v  max. variance between timing results (%)    [default: 5.0] 
 ```
+
+**Duration**
+
+All programs: 30-40 min &nbsp; • &nbsp; parallelized only (`-s` flag): 3 min
 
 ### Results
 
-The results can be found in `results/` directory. There are two files per run: 
+The results can be found in `results/` directory. 
 
-1. `[dir]_[timestamp]_model.txt`: machine + processor snapshot, other meta data
+Two files will be generated for each run:
 
-2. `[dir]_[timestamp].txt`: actual results of timing
+1. `[dir]_[timestamp]_model.txt` - machine + processor snapshot, meta data
+
+2. `[dir]_[timestamp].txt` - actual results of timing
 
 Data labels are: `program, variance (%), time (s)`.
-Labels are always the same and not include in timing file.
+Labels are always the same and not included in timing results file.
 
-Timing options are same as default
+Timing options are same as default:
 
-- 5 runs, take avg 3 runs (not min, max),
-- dataset size `STANDARD_DATASET`
-
-Duration
-
-- all examples: ~ 30-40 min
-- parallelized only (use `-s` flag): ~ 3 min
+- perform 5 executions/program
+- take average of 3 runs (exclude min, max time)
+- dataset size is `STANDARD_DATASET`
 
 * * *
 
@@ -81,7 +84,7 @@ Duration
 * [Descriptions of programs](./polybench.pdf)
 * [Original readme](./README)
 * [Authors](./AUTHORS) and [Thanks](./THANKS)
-* [Download v4.2 @ SourceForge][4.2]
+* [Download Polybench/C v4.2 @ SourceForge][4.2]
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/

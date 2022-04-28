@@ -6,30 +6,39 @@
 # timing benchmark script. Output is stored in a timestamped file.
 #
 # basic usage:
-# /bin/sh run.sh
+# ./run.sh
 
 
 # parse command line args
-while getopts c:o:d:s flag
+while getopts c:o:d:v:s flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
         o) opt_level=${OPTARG};;
         d) directory=${OPTARG};;
+        v) max_var=${OPTARG};;
         s) skip=${OPTARG:-S};;
     esac
 done
 
+# Output directories
+RES_DIR="results"                           # where to save results
+CDIR="compiled"                             # for holding compiled programs
 
-RES_DIR="results"
+# Unpack the args; set defaults
 CC="${compiler:-gcc}"                       # compiler, default: gcc
 OPT="${opt_level:-O0}"                      # optimization level, default: O0
 SRC="${directory:-original}"                # source directory, default: original
-DT=$(date '+%y%m%d%H%M');                   # current timestamp for unique filenames
+MAX_VARIANCE="${max_var:-5.0}"              # max allowed variance b/w timing results
+
+# configure other runtime options
+MAX_RETRIES=10                              # stop repeating after 10 retries
+START=$(date '+%H:%M:%S');                  # start time
+DT=$(date '+%y%m%d%H%M');                   # current timestamp
+
+# output filenames
 OUTFILE=./"$RES_DIR"/"$SRC"_"$DT".txt       # where to save timing results
 MODEL=./"$RES_DIR"/"$SRC"_"$DT"_model.txt   # where to save machine details
-START=$(date '+%H:%M:%S');                  # start time
-CDIR="compiled_"$SRC""
 
 # ensure dirs exist
 [ -d "$CDIR" ] || mkdir "$CDIR"
@@ -61,6 +70,7 @@ done
 # compile and time each example
 for file in ./"$SRC"/*.c
 do
+    i=0 # counter for timing retries
 
     # get filename without extension
     filename=$(basename -- "$file")
@@ -81,10 +91,25 @@ do
     # compile options
     "$CC" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c "$file" -DPOLYBENCH_TIME -o "$out"
 
-    # run benchmark
-    /bin/sh ./utilities/time_benchmark.sh "$out" >> "$OUTFILE"
+    while : ; do
 
-    echo "done with $file"
+        # run benchmark
+        result=$(/bin/sh ./utilities/time_benchmark.sh "$out")
+
+        result_arr=($result)            # split by whitespace
+        variance=${result_arr[1]}       # get recorded variance
+        i=$((i+1))                      # iteration counter
+
+        # if variance is withing allowed range, or max retries exhausted
+        if(( $(bc <<< "$variance < $MAX_VARIANCE") )) || [ $i -gt $MAX_RETRIES ]; then
+            echo "$result" >> "$OUTFILE"
+            echo "✓ done with ${filename}"
+            break
+        else
+            echo "⚠ $filename -  repeating $i of $MAX_RETRIES - variance too high: ${variance} %"
+        fi
+
+    done
 done
 
 echo "\n# TIME" >>  "$MODEL"
