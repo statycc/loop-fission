@@ -55,7 +55,7 @@ run.sh
 
 **Duration**
 
-Parallelizable programs only takes < 5 min.  All programs (`-a` flag): 30-40 min.
+For standard data size, parallelizable programs only takes < 5 min.  All programs (`-a` flag): 30-40 min.
 
 
 ### Results
