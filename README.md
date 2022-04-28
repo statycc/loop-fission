@@ -39,7 +39,7 @@ This command executes using the default options listed below.
 run.sh 
 ```
 
-<small>Note: use bash shell if on MacOS: `/bin/sh run.sh`</small>
+If necessary change permissions: `chmod u+r+x ./run.sh`
 
 **Available arguments**
 
