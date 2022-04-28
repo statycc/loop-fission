@@ -36,7 +36,7 @@ on these programs.
 This command executes using the default options listed below.
        
 ```text
-run.sh 
+./run.sh 
 ```
 
 If necessary change permissions: `chmod u+r+x ./run.sh`
@@ -78,7 +78,6 @@ Timing options are same as default:
 
 - perform 5 executions/program
 - take average of 3 runs (exclude min, max time)
-- dataset size is `STANDARD_DATASET`
 
 * * *
 
