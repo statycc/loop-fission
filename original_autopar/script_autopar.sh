@@ -52,7 +52,7 @@ EOF
     cd build
     cmake ..
     cd ../
-    cp build/bicg_clava_weave/woven/${file} .
+    cp build/bicg_clava_weave/woven/${file}.c .
     rm ../original_annotated/${file}.h
 done
 
