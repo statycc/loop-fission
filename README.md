@@ -44,19 +44,19 @@ run.sh
 
 **Available arguments**
 
-```
-| FLAG  | DESCRIPTION                                 | DEFAULT  |
-|-------|---------------------------------------------|----------|
-|  -c   | system compiler to use                      | gcc      |
-|  -d   | directory [parallel|original]               | original | 
-|  -o   | optimization level [O0|O1|O2|O3]            | O0       |
-|  -v   | variance max when timing results (%)        | 5.0      |
-|  -a   | all programs should be timed                | not set  |
-```
 
-| Duration                 |           |
-|:-------------------------|:----------|
-| Parallelized only        | 3 min     |
+| FLAG | DESCRIPTION  | OPTIONS  | DEFAULT  |
+|:----:|:-------------|:---------|:--------:|
+|  -c  | system compiler to use  | | `gcc` |
+|  -d  | directory  | `parallel`, `original` | `original` | 
+|  -o  | optimization level | `O0`, `O1`, `O2`, `O3`, ... | `O0` |
+|  -v  | max. variance when timing results (%) | > `0.0` | `5.0` |
+|  -s  | dataset size | `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE` | `STANDARD` |
+|  -a  | all programs should be timed | | (not set) |
+
+| Duration ||
+| :--- |:--- |
+| Parallelizable programs only | 3 min |
 | All programs (`-a` flag) | 30-40 min |
 
 
