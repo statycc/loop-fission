@@ -68,8 +68,8 @@ void kernel_jacobi_2d(int tsteps,
 			    DATA_TYPE POLYBENCH_2D(B,N,N,n,n))
 {
   int t, i, j;
-
-#pragma scop
+  
+  #pragma loop1
   for (t = 0; t < _PB_TSTEPS; t++)
     {
       for (i = 1; i < _PB_N - 1; i++)
@@ -79,7 +79,6 @@ void kernel_jacobi_2d(int tsteps,
 	for (j = 1; j < _PB_N - 1; j++)
 	  A[i][j] = SCALAR_VAL(0.2) * (B[i][j] + B[i][j-1] + B[i][1+j] + B[1+i][j] + B[i-1][j]);
     }
-#pragma endscop
 
 }
 

@@ -97,8 +97,7 @@ void kernel_fdtd_2d(int tmax,
 {
   int t, i, j;
 
-#pragma scop
-
+  #pragma loop1
   for(t = 0; t < _PB_TMAX; t++)
     {
       for (j = 0; j < _PB_NY; j++)
@@ -115,7 +114,6 @@ void kernel_fdtd_2d(int tmax,
 				       ey[i+1][j] - ey[i][j]);
     }
 
-#pragma endscop
 }
 
 

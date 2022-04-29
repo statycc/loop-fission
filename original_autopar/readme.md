@@ -7,4 +7,7 @@ Those files were obtained by running the source-to-source compiler [AutoPar-Clav
 - jacobi-2d.c 
 - mvt.c
 
+after they have been annotated, as shared in [original_annotated](../original_annotated/).
+
+
 The results were checked an found equivalent to the files produced by the authors at <https://zenodo.org/record/1889368>.

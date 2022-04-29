@@ -52,8 +52,9 @@ EOF
     cd build
     cmake ..
     cd ../
-    cp build/bicg_clava_weave/woven/${file}.c .
+    cp build/${file}_clava_weave/woven/${file}.c .
     rm ../original_annotated/${file}.h
+    rm -rf build/
 done
 
 rm ../original_annotated/polybench.h 
