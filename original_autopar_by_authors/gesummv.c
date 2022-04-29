@@ -3,7 +3,8 @@
 #include <string.h>
 #include <math.h>
 #include <polybench.h>
-#include <gesummv.h>
+#include "gesummv.h"
+#include <omp.h>
 /**
 * This version is stamped on May 10, 2016
 *
@@ -17,13 +18,16 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int n, double *alpha, double *beta, double A[1300][1300], double B[1300][1300], double x[1300]) {
+static void init_array(int n, double * alpha, double * beta, double A[1300][1300], double B[1300][1300], double x[1300])
+{
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
-   for(i = 0; i < n; i++) {
+   for (i = 0; i < n; i++)
+   {
       x[i] = (double) (i % n) / n;
-      for(j = 0; j < n; j++) {
+      for (j = 0; j < n; j++)
+      {
          A[i][j] = (double) ((i * j + 1) % n) / n;
          B[i][j] = (double) ((i * j + 2) % n) / n;
       }
@@ -32,12 +36,14 @@ static void init_array(int n, double *alpha, double *beta, double A[1300][1300],
 
 /*DCE code. Must scan the entire live-out data.
 Can be used also to check the correctness of the output.*/
-static void print_array(int n, double y[1300]) {
+static void print_array(int n, double y[1300])
+{
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "y");
-   for(i = 0; i < n; i++) {
-      if(i % 20 == 0) fprintf(stderr, "\n");
+   for (i = 0; i < n; i++)
+   {
+      if (i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", y[i]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "y");
@@ -46,14 +52,17 @@ static void print_array(int n, double y[1300]) {
 
 /*Main computational kernel. The whole function will be timed,
 including the call and return.*/
-static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300], double B[1300][1300], double tmp[1300], double x[1300], double y[1300]) {
+static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300], double B[1300][1300], double tmp[1300], double x[1300], double y[1300])
+{
    int i, j;
-   #pragma loop1
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta, A, x, B)
-   for(i = 0; i < n; i++) {
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta)
+   for (i = 0; i < n; i++)
+   {
       tmp[i] = 0.0;
       y[i] = 0.0;
-      for(j = 0; j < n; j++) {
+      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i) reduction(+ : tmp[i]) reduction(+ : y[i])
+      for (j = 0; j < n; j++)
+      {
          tmp[i] = A[i][j] * x[j] + tmp[i];
          y[i] = B[i][j] * x[j] + y[i];
       }
@@ -61,7 +70,8 @@ static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300
    }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char ** argv)
+{
    /*Retrieve problem size.*/
    int n = 1300;
    /*Variable declaration/allocation.*/
@@ -93,9 +103,9 @@ int main(int argc, char **argv) {
    ;
    /*Prevent dead-code elimination. All live-out data must be printed
    by the function call in argument.*/
-   if(argc > 42 && !strcmp(argv[0], "")) print_array(n, *y);
-   /*Be clean.*/
+   print_array(n, *y);
    free((void *) A);
+   /*Be clean.*/
    ;
    free((void *) B);
    ;
@@ -105,6 +115,6 @@ int main(int argc, char **argv) {
    ;
    free((void *) y);
    ;
-   
+
    return 0;
 }
