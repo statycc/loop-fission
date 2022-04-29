@@ -55,6 +55,8 @@ EOF
     cp build/${file}_clava_weave/woven/${file}.c .
     rm ../original_annotated/${file}.h
     rm -rf build/
+    rm CMakeLists.txt
+    rm AutoPar.lara
 done
 
-rm ../original_annotated/polybench.h 
+rm ../original_annotated/polybench.h
