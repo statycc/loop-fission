@@ -79,21 +79,19 @@ void kernel_bicg(int m, int n,
 {
   int i, j;
 
-#pragma scop
+  #pragma loop1
   for (i = 0; i < _PB_M; i++)
     s[i] = 0;
 
-   #pragma omp parallel private(i, j)
-   {
-     #pragma omp for nowait 
+     #pragma loop2
      for (i = 0; i < _PB_N; i++)
      {
         for (j = 0; j < _PB_M; j++)
         {
           s[j] = s[j] + r[i] * A[i][j];
         }
-     }     
-     #pragma omp for
+     }
+     #pragma loop3
      for (i = 0; i < _PB_N; i++)
      {
         q[i] = SCALAR_VAL(0.0);
@@ -102,8 +100,7 @@ void kernel_bicg(int m, int n,
           q[i] = q[i] + A[i][j] * p[j];
         }
      }
-   }
-#pragma endscop
+
 
 }
 

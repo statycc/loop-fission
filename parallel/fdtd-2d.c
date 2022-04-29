@@ -97,11 +97,7 @@ void kernel_fdtd_2d(int tmax,
 {
   int t, i, j;
 
-#pragma scop
-
-#pragma omp parallel private(t, i, j)
-{
-    #pragma omp for nowait
+    #pragma loop1
     for(t = 0; t < _PB_TMAX; t++)
     {
       for (j = 0; j < _PB_NY; j++)
@@ -112,16 +108,16 @@ void kernel_fdtd_2d(int tmax,
 	        ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
     }
 
-    #pragma omp for
+    #pragma loop2
     for(t = 0; t < _PB_TMAX; t++)
     {
       for (i = 0; i < _PB_NX; i++)
         for (j = 1; j < _PB_NY; j++)
 	        ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
     }
-}
 
 
+    #pragma loop3
 	for(t = 0; t < _PB_TMAX; t++)
     {
       for (i = 0; i < _PB_NX - 1; i++)
@@ -130,7 +126,6 @@ void kernel_fdtd_2d(int tmax,
 				       ey[i+1][j] - ey[i][j]);
     }
 
-#pragma endscop
 }
 
 

@@ -79,11 +79,7 @@ void kernel_gesummv(int n,
 {
   int i, j;
 
-#pragma scop
-
-#pragma omp parallel private(i, j)
-{
-      #pragma omp for nowait
+      #pragma loop1
       for (i = 0; i < _PB_N; i++)
       {
         tmp[i] = SCALAR_VAL(0.0);
@@ -93,7 +89,7 @@ void kernel_gesummv(int n,
           }
       }
 
-      #pragma omp for
+      #pragma loop2
       for (i = 0; i < _PB_N; i++)
       {
         y[i] = SCALAR_VAL(0.0);
@@ -102,16 +98,13 @@ void kernel_gesummv(int n,
             y[i] = B[i][j] * x[j] + y[i];
           }
       }
-}
 
 // this has to come after because it reads both arrays, this transform maybe wrong
-#pragma omp parallel for
+#pragma loop3
 for (i = 0; i < _PB_N; i++)
 {
     y[i] = alpha * tmp[i] + beta * y[i];
 }
-
-#pragma endscop
 
 }
 
