@@ -1,6 +1,7 @@
-from os import walk, path, getcwd
-from itertools import chain
+from argparse import ArgumentParser
 from functools import cmp_to_key
+from itertools import chain
+from os import walk, path, getcwd
 from pathlib import Path
 from typing import List
 
@@ -16,6 +17,39 @@ def read_file(file_path):
 def write_file(file_path, lines):
     with open(file_path, 'w') as fp:
         fp.write(lines)
+
+
+def parse_results(result_dir):
+    def rf(file_in, parser):
+        return parser(read_file(path.join(result_dir, file_in))) \
+            if file_in else None
+
+    def find_model(fn, models_):
+        stem = Path(fn).stem
+        return next(filter(lambda x: x.startswith(stem), models_), None)
+
+    def format_time(fn, variance, time):
+        return fn.replace('_time', ''), float(variance), float(time)
+
+    def parse_times(raw_times):
+        return [format_time(*rt.split(None, 2)) for rt in raw_times]
+
+    def parse_model(raw_model):
+        return {tup[0]: tup[1:] for tup in [
+            (k.strip(), v.strip()) for (k, v) in
+            [l.split(':', 1) for l in raw_model
+             if ':' in l]]} if raw_model is not None else None
+
+    def parse_(timing, model):
+        return Timing(rf(timing, parse_times), **rf(model, parse_model))
+
+    filenames = next(walk(result_dir), (None, None, []))[2]
+    models = [f for f in filenames if 'model' in f]
+
+    return ResultPresenter(
+        [parse_(*pair) for pair in
+         [(fn, find_model(fn, models)) for fn in  # time, model pairs
+          [f for f in filenames if f not in models]]])  # times
 
 
 class Timing:
@@ -69,7 +103,7 @@ class ResultPresenter:
         lp, ld = len(self.programs), len(self.data_sizes)
         lo, ls = len(self.opt_levels), len(self.sources)
         opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
-        srcs = [self.sources[ci % ls] for ci in range(0, lo * ls)]
+        srcs = [self.sources[ci % ls] for ci in range(lo * ls)]
         table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
 
         for ri in range(lp * ld):
@@ -90,8 +124,34 @@ class ResultPresenter:
         pad = len(max(self.programs + self.data_sizes, key=len))
         return table, pad
 
-    def to_markdown(self):
-        (table, pad), text = self.__make_table(), []
+    def __speedup_table(self):
+        lp, ld = len(self.programs), len(self.data_sizes)
+        lo, ls = len(self.opt_levels), 1
+        opts = [self.opt_levels[c % lo] for c in range(lo)]
+        table = [['Program', 'Data size'] + opts]
+
+        for ri in range(lp * ld):
+            row = []
+            p = self.programs[ri // ld]  # which program
+            d = self.data_sizes[ri % ld]  # which data size
+            for ci in range(-2, lo * ls):
+                if ci == -2:
+                    row.append(p if ri % ld == 0 else '')
+                elif ci == -1:
+                    row.append(d)
+                else:
+                    o = self.opt_levels[(ci // ls) % lo]
+                    [s1, s2] = self.sources[0:2]
+                    t1 = self.query(o, d, s1).get_time(p)
+                    t2 = self.query(o, d, s2).get_time(p)
+                    row.append(round(t1 / t2, 3))
+            table.append(row)
+
+        pad = len(max(self.programs + self.data_sizes, key=len))
+        return table, pad
+
+    def __to_markdown(self, table, pad):
+        text = []
         table.insert(1, ['-' * pad] * len(table[0]))
         for r in table:
             row = f' | '.join([
@@ -102,6 +162,14 @@ class ResultPresenter:
         text = "\n".join(text)
         self.save(text, 'md')
 
+    def times_to_markdown(self):
+        self.__to_markdown(*self.__make_table())
+
+    def speedup_to_markdown(self):
+        if len(self.sources) != 2:
+            return print('speedup assumes two source directories')
+        self.__to_markdown(*self.__speedup_table())
+
     @staticmethod
     def save(content, extension='txt'):
         file_name = path.join(getcwd(), f'result.{extension}')
@@ -109,39 +177,17 @@ class ResultPresenter:
         print(f'Wrote result to: {file_name}')
 
 
-def parse_results(result_dir):
-    def rf(file_in, parser):
-        return parser(read_file(path.join(result_dir, file_in))) \
-            if file_in else None
-
-    def find_model(fn, models_):
-        stem = Path(fn).stem
-        return next(filter(lambda x: x.startswith(stem), models_), None)
-
-    def format_time(fn, variance, time):
-        return fn.replace('_time', ''), float(variance), float(time)
-
-    def parse_times(raw_times):
-        return [format_time(*rt.split(None, 2)) for rt in raw_times]
-
-    def parse_model(raw_model):
-        return {tup[0]: tup[1:] for tup in [
-            (k.strip(), v.strip()) for (k, v) in
-            [l.split(':', 1) for l in raw_model
-             if ':' in l]]} if raw_model is not None else None
-
-    def parse_(timing, model):
-        return Timing(rf(timing, parse_times), **rf(model, parse_model))
-
-    filenames = next(walk(result_dir), (None, None, []))[2]
-    models = [f for f in filenames if 'model' in f]
-
-    return ResultPresenter(
-        [parse_(*pair) for pair in
-         [(fn, find_model(fn, models)) for fn in  # time, model pairs
-          [f for f in filenames if f not in models]]])  # times
-
-
 if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--speedup",
+        action='store_true',
+        help="skip writing result to file"
+    )
+    args = parser.parse_args()
     rp = parse_results(RESULTS_DIR)
-    rp.to_markdown()
+
+    if args.speedup:
+        rp.speedup_to_markdown()
+    else:
+        rp.times_to_markdown()
