@@ -144,7 +144,7 @@ class ResultPresenter:
                     [s1, s2] = self.sources[0:2]
                     t1 = self.query(o, d, s1).get_time(p)
                     t2 = self.query(o, d, s2).get_time(p)
-                    row.append(round(t1 / t2, 3))
+                    row.append(round(t1 / t2, 2))
             table.append(row)
 
         pad = len(max(self.programs + self.data_sizes, key=len))
@@ -162,13 +162,33 @@ class ResultPresenter:
         text = "\n".join(text)
         self.save(text, 'md')
 
+    def __to_tex(self, table, pad):
+        text = []
+        for r in table:
+            row = f' & '.join([
+                str(round(c, pad - 3)).ljust(pad, ' ')
+                if isinstance(c, float)
+                else str(c).ljust(pad, ' ') for c in r])
+            text.append(row + "\\\\")
+        text.insert(1, '\\hline')
+        text = "\n".join(text)
+        self.save(text, 'txt')
+
     def times_to_markdown(self):
         self.__to_markdown(*self.__make_table())
+
+    def times_to_tex(self):
+        self.__to_tex(*self.__make_table())
 
     def speedup_to_markdown(self):
         if len(self.sources) != 2:
             return print('speedup assumes two source directories')
         self.__to_markdown(*self.__speedup_table())
+
+    def speedup_to_tex(self):
+        if len(self.sources) != 2:
+            return print('speedup assumes two source directories')
+        self.__to_tex(*self.__speedup_table())
 
     @staticmethod
     def save(content, extension='txt'):
@@ -184,10 +204,21 @@ if __name__ == '__main__':
         action='store_true',
         help="skip writing result to file"
     )
+    parser.add_argument(
+        "--tex",
+        action='store_true',
+        help="skip writing result to file"
+    )
     args = parser.parse_args()
     rp = parse_results(RESULTS_DIR)
 
     if args.speedup:
-        rp.speedup_to_markdown()
+        if args.tex:
+            rp.speedup_to_tex()
+        else:
+            rp.speedup_to_markdown()
     else:
-        rp.times_to_markdown()
+        if args.tex:
+            rp.times_to_tex()
+        else:
+            rp.times_to_markdown()
