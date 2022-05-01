@@ -17,12 +17,12 @@ approaches:
 
 ## Organization of programs
 
-| Directory          | Loop fission | Parallel | Parallelization<br/>technique | Description                              |
-|:-------------------|:------------:|:--------:|:------------------------------|:-----------------------------------------|
-| `original`         |      ✖️      |    ✖️    | N/A                           | unmodified programs from PB/C suite      |
-| `original_autopar` |      ✖️      |    ✔️    | `autopar-clava`               | parallel versions of original programs   |
-| `parallel_autopar` |      ✔️      |    ✔️    | `autopar-clava`               | with loop fission transformation applied | 
-| `parallel_manual ` |      ✔️      |    ✔️    | by hand                       | with loop fission transformation applied |  
+| Directory          | Loop fission | Parallel | Description                                    |
+|:-------------------|:------------:|:--------:|:-----------------------------------------------|
+| `original`         |      ✖️      |    ✖️    | unmodified programs from PB/C suite            | 
+| `original_autopar` |      ✖️      |    ✔️    | original programs, parallelized automatically  |
+| `fission_autopar`  |      ✔️      |    ✔️    | with loop fission, parallelized automatically  | 
+| `fission_manual `  |      ✔️      |    ✔️    | with loop fission, parallelized by hand        |  
 
 **Other directories and files**
 
