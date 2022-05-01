@@ -3,11 +3,10 @@
 This repository is for benchmarking the ICC-fission algorithm presented in
 _"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
 
-It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2]
-benchmark suite, containing the subset of programs to which the loop fission 
-technique can be applied (6 examples). After applying the transformation, the 
-program is then parallelized using OpenMP directives to evaluate the resulting 
-efficiency.
+It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2], 
+containing the subset of programs to which the loop fission technique can be 
+applied (6 examples). After applying the transformation, the program is then 
+parallelized using OpenMP directives to evaluate the resulting efficiency.
 
 Annotating the transformed program with parallelization directives is outside
 the scope of the algorithm. We have used two different approaches:
