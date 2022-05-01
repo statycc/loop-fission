@@ -4,25 +4,29 @@ This repository is for benchmarking the ICC-fission algorithm presented in
 _"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
 
 It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2]
-benchmark suite, containing programs to which the loop fission technique can be
-applied (6 examples). After applying the transformation, the program is then
-parallelized using OpenMP directives to evaluate the resulting efficiency.
+benchmark suite, containing the subset of programs to which the loop fission 
+technique can be applied (6 examples). After applying the transformation, the 
+program is then parallelized using OpenMP directives to evaluate the resulting 
+efficiency.
 
 Annotating the transformed program with parallelization directives is outside
-the scope of the algorithm, therefore we have used here two different
-approaches:
+the scope of the algorithm. We have used two different approaches:
 
 1. manually inserted annotations
 2. automated annotations using [`autopar-clava`](https://github.com/specs-feup/clava).
+
+The two approaches serve different purposes: manual method enables finding optimal
+directives, but automatic method shows these tools can be pipelined, to work without
+human interaction.
 
 ## Organization of programs
 
 | Directory          | Loop fission | Parallel | Description                                    |
 |:-------------------|:------------:|:--------:|:-----------------------------------------------|
-| `original`         |      ✖️      |    ✖️    | unmodified programs from PB/C suite            | 
-| `original_autopar` |      ✖️      |    ✔️    | original programs, parallelized automatically  |
-| `fission_autopar`  |      ✔️      |    ✔️    | with loop fission, parallelized automatically  | 
-| `fission_manual `  |      ✔️      |    ✔️    | with loop fission, parallelized by hand        |  
+| `original`         |      🔴      |    🔴     | unmodified programs from PB/C suite            | 
+| `original_autopar` |      🔴      |    🟢     | original programs, parallelized automatically  |
+| `fission_autopar`  |      🟢      |    🟢     | with loop fission, parallelized automatically  | 
+| `fission_manual `  |      🟢      |    🟢     | with loop fission, parallelized by hand        |  
 
 **Other directories and files**
 
@@ -35,10 +39,10 @@ approaches:
 
 * `results/` contains captured benchmark results
 
-* `utilities/` are from PB/C suite and contains e.g. the benchmarking script.
+* `utilities/` are from PB/C suite and contains e.g. the benchmarking timing script.
 
 * `run.sh` is a wrapper for the timing script in utilities. It adds some command
-  line arguments and options to ease benchmarking full directories of programs.
+  line arguments and options to ease benchmarking full directories of programs at once.
 
 ### How to run benchmarks
 
@@ -57,15 +61,16 @@ If necessary change permissions: `chmod u+r+x ./run.sh`
 
 | FLAG | DESCRIPTION: options                                                    | DEFAULT     |
 |:----:|:------------------------------------------------------------------------|:------------|
-|  -c  | system compiler to use                                                  | `gcc`       |
-|  -d  | directory:  `parallel`, `original`                                      | `original`  | 
-|  -o  | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`        |
-|  -v  | max. variance when timing results (%) : > `0.0`                         | `5.0`       |
-|  -s  | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD`  |
+| `-c` | system compiler to use                                                  | `gcc`       |
+| `-d` | directory:  `original`, `original_autopar`, `fission_autopar`,...       | `original`  | 
+| `-o` | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`        |
+| `-v` | max. variance when timing results (%) : > `0.0`                         | `5.0`       |
+| `-s` | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD`  |
 
 **Duration**
 
-EXTRALARGE data without optimization: 10-15 min, less when using smaller sizes, compiler optimization.
+- `EXTRALARGE` data without optimization: 10-15 min
+- less when using smaller sizes, using compiler optimization
 
 ### Results
 
@@ -93,8 +98,8 @@ Timing options are same as default:
 ### Original source
 
 * [Information about Polybench/C @ Ohio State][PB]
-* [Ohio State University Software Distribution License](./LICENSE.txt)
 * [Download Polybench/C v4.2 @ SourceForge][4.2]
+* [Ohio State University Software Distribution License](./LICENSE.txt)
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/
