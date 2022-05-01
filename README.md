@@ -1,33 +1,48 @@
-# Polybench + pyalp
+# icc-fission Benchmarks
 
-This is a reorganized version of [Polybench/C benchmark suite][PB] [version 4.2][4.2] 
-with minimal changes and extensions, for purpose of timing pyalp transformations 
-on these programs.
+This repository is for benchmarking the ICC-fission algorithm presented in
+_"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
 
-**Changes to original suite:**
+It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2]
+benchmark suite, containing the subset of programs to which the loop fission 
+technique can be applied (6 examples). After applying the transformation, the 
+program is then parallelized using OpenMP directives to evaluate the resulting 
+efficiency.
 
-1. The original benchmark program files are under `original/`
-    - these are in a flat directory, unlike original source.
-    
-2. Headers moved to `headers` to enable sharing between the program directories
-    - references to headers have been changed from e.g. `"2mm.h" -> <2mm.h>`
+Annotating the transformed program with parallelization directives is outside
+the scope of the algorithm. We have used two different approaches:
 
-3. `time_benchmark.sh` changed to output results in tabular format
+1. manually inserted annotations
+2. automated annotations using [`autopar-clava`](https://github.com/specs-feup/clava).
 
-**Extensions:**
+The two approaches serve different purposes: manual method enables finding optimal
+directives, but automatic method shows these tools can be pipelined, to work without
+human interaction.
 
-1. Parallel versions of programs in `parallel/` directory
+## Organization of programs
 
-    - These are manually transformed versions of the benchmark programs 
-    - Filename schema:
-        - Filename ends with `_og.c` =>  non-parallelizable/same as original version
-        - Otherwise: file has been transformed and is parallelizable
-        
-2. `run.sh` script has been added 
+| Directory          | Loop fission | Parallel | Description                                    |
+|:-------------------|:------------:|:--------:|:-----------------------------------------------|
+| `original`         |      🔴      |    🔴     | unmodified programs from PB/C suite            | 
+| `original_autopar` |      🔴      |    🟢     | original programs, parallelized automatically  |
+| `fission_autopar`  |      🟢      |    🟢     | with loop fission, parallelized automatically  | 
+| `fission_manual `  |      🟢      |    🟢     | with loop fission, parallelized by hand        |  
 
-    - this is a wrapper for the built-in timing script
-    - enables timing entire directory at once
-    - adds some useful argument flags
+**Other directories and files**
+
+* `_annotated/` directories are preprocessed versions, for use
+  by `autopar-clava`. These are intermediate versions of programs, not relevant
+  for purposes of benchmarking.
+
+* `headers/` directory contains the original header files from PB/C suite, moved
+  to a separate directory for purposes of sharing.
+
+* `results/` contains captured benchmark results
+
+* `utilities/` are from PB/C suite and contains e.g. the benchmarking timing script.
+
+* `run.sh` is a wrapper for the timing script in utilities. It adds some command
+  line arguments and options to ease benchmarking full directories of programs at once.
 
 ### How to run benchmarks
 
@@ -46,17 +61,16 @@ If necessary change permissions: `chmod u+r+x ./run.sh`
 
 | FLAG | DESCRIPTION: options                                                    | DEFAULT     |
 |:----:|:------------------------------------------------------------------------|:------------|
-|  -c  | system compiler to use                                                  | `gcc`       |
-|  -d  | directory:  `parallel`, `original`                                      | `original`  | 
-|  -o  | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`        |
-|  -v  | max. variance when timing results (%) : > `0.0`                         | `5.0`       |
-|  -s  | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD`  |
-|  -a  | all programs should be timed                                            | _(not set)_ |
+| `-c` | system compiler to use                                                  | `gcc`       |
+| `-d` | directory:  `original`, `original_autopar`, `fission_autopar`,...       | `original`  | 
+| `-o` | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`        |
+| `-v` | max. variance when timing results (%) : > `0.0`                         | `5.0`       |
+| `-s` | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD`  |
 
 **Duration**
 
-For standard data size, parallelizable programs only takes < 5 min.  All programs (`-a` flag): 30-40 min.
-
+- `EXTRALARGE` data without optimization: 10-15 min
+- less when using smaller sizes, using compiler optimization
 
 ### Results
 
@@ -83,12 +97,9 @@ Timing options are same as default:
 
 ### Original source
 
-* [Polybench/C @ Ohio State][PB]
-* [Ohio State University Software Distribution License](./LICENSE.txt)
-* [Descriptions of programs](./polybench.pdf)
-* [Original readme](./README)
-* [Authors](./AUTHORS) and [Thanks](./THANKS)
+* [Information about Polybench/C @ Ohio State][PB]
 * [Download Polybench/C v4.2 @ SourceForge][4.2]
+* [Ohio State University Software Distribution License](./LICENSE.txt)
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/

@@ -10,7 +10,7 @@
 
 
 # parse command line args
-while getopts c:o:d:v:s:a flag
+while getopts c:o:d:v:s flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
@@ -18,7 +18,6 @@ do
         d) directory=${OPTARG};;
         v) max_var=${OPTARG};;
         s) size=${OPTARG};;
-        a) ALL=${OPTARG:-S};;
     esac
 done
 
@@ -98,16 +97,6 @@ do
     extension="${filename##*.}"
     filename="${filename%.*}"
     out=./"$CDIR"/"$filename"_time
-
-    [[ "$filename" == _* ]] && continue  # ignore non-transformed
-
-    if [ ! "$ALL" == "S" ];  then # ignore non-transformable
-       if [ "$SRC" == "parallel" ]; then
-            [[ "$filename" == *_og ]] && continue  
-       elif [ ! -f ./parallel/"$filename".c ]; then
-          continue
-       fi
-    fi
 
     # compile options
     "$CC" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c "$file" -DPOLYBENCH_TIME -D"$DS_SIZE"_DATASET -o "$out"
