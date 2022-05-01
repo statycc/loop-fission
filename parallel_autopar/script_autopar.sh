@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cp ../utilities/polybench.h ../parallel/
+cp ../utilities/polybench.h ../_annotated/parallel_annotated/
 
 for file in bicg fdtd-2d gesummv jacobi-1d jacobi-2d mvt; do
     echo "$file"
@@ -53,7 +53,7 @@ EOF
     cmake ..
     cd ../
     cp build/${file}_clava_weave/woven/${file}.c .
-    rm ../parallel/${file}.h
+    rm ../_annotated/parallel_annotated/${file}.h
     rm -rf build/
     rm CMakeLists.txt
     rm AutoPar.lara
