@@ -4,7 +4,7 @@ cp ../utilities/polybench.h ../_annotated/fission_annotated/
 
 for file in bicg fdtd-2d gesummv jacobi-1d jacobi-2d mvt; do
     echo "$file"
-    cp ../headers/${file}.h ../parallel/
+    cp ../headers/${file}.h ../_annotated/fission_annotated/
     
     tee CMakeLists.txt <<EOF >/dev/null
 ################ standard cmake script ################
@@ -17,7 +17,7 @@ set(CMAKE_C_STANDARD 11)
 find_package(OpenMP REQUIRED)
 set(CMAKE_C_FLAGS "\${CMAKE_C_FLAGS} \${OpenMP_C_FLAGS}")
     
-add_executable(${file} ../parallel/${file}.c)
+add_executable(${file} ../_annotated/fission_annotated/${file}.c)
 
 ################ clava-specific instructions ################
 # Required if CMake plugin is not installed
@@ -59,4 +59,4 @@ EOF
     rm AutoPar.lara
 done
 
-rm ../parallel/polybench.h
+rm ../_annotated/fission_annotated/polybench.h
