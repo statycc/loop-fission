@@ -212,7 +212,9 @@ class ResultPresenter:
         return table
 
     def __out_formatted(self, data, fmt):
-        if fmt == "tex":
+        if fmt == "plot":
+            self.plot()
+        elif fmt == "tex":
             self.to_tex(data)
         else:
             self.to_markdown(data)
@@ -337,14 +339,13 @@ if __name__ == '__main__':
         "-f", "--fmt",
         action="store",
         default="markdown",
-        help="output format: {tex, markdown}"
+        help="output format: {tex, markdown, plot}"
     )
 
     args = parser.parse_args()
     rp = parse_results(RESULTS_DIR)
-    rp.plot()
 
-    # if args.t == "speedup":
-    #     rp.speedup(args.f)
-    # else:
-    #     rp.times(args.f)
+    if args.data == "speedup":
+        rp.speedup(args.fmt)
+    else:
+        rp.times(args.fmt)
