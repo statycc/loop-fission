@@ -22,10 +22,10 @@ human interaction.
 
 | Directory          | Loop fission | Parallel | Description                                    |
 |:-------------------|:------------:|:--------:|:-----------------------------------------------|
-| `original`         |      🔴      |    🔴     | unmodified programs from PB/C suite            | 
-| `original_autopar` |      🔴      |    🟢     | original programs, parallelized automatically  |
-| `fission_autopar`  |      🟢      |    🟢     | with loop fission, parallelized automatically  | 
-| `fission_manual `  |      🟢      |    🟢     | with loop fission, parallelized by hand        |  
+| `original`         |      ➖      |    ➖     | unmodified programs from PB/C suite            | 
+| `original_autopar` |      ➖      |    ✅     | original programs, parallelized automatically  |
+| `fission_autopar`  |      ✅      |    ✅     | with loop fission, parallelized automatically  | 
+| `fission_manual `  |      ✅      |    ✅     | with loop fission, parallelized by hand        |  
 
 **Other directories and files**
 
