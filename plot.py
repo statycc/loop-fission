@@ -1,27 +1,65 @@
+"""
+Utility script for formatting results. (Python 3+).
+It creates tables and plots of the results.
+
+Usage:
+
+```
+python3 plot.py
+```
+
+List of options:
+
+```
+python3 plot.py --help
+```
+"""
+
 from argparse import ArgumentParser
 from functools import cmp_to_key
 from itertools import chain
+from math import ceil
 from os import walk, path, getcwd
 from pathlib import Path
 from typing import List
 
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
+
+# where to look for timing results
 RESULTS_DIR = './results'
+
+# name of original examples directory, for computing speedup
+OG_DIRNAME = 'original'
+
+# custom sort order for data sizes smallest -> largest
 SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
+COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
+
+plt.rc('axes', labelsize=8)
+plt.rc('xtick', labelsize=8)
+plt.rc('ytick', labelsize=8)
+plt.rc('legend', fontsize=6)
 
 
 def read_file(file_path):
+    """Basic file read, by line"""
     with open(file_path, 'r') as fp:
         return fp.readlines()
 
 
 def write_file(file_path, lines):
+    """Basic file write, lines of text"""
     with open(file_path, 'w') as fp:
         fp.write(lines)
 
 
 def parse_results(result_dir):
-    def rf(file_in, parser):
-        return parser(read_file(path.join(result_dir, file_in))) \
+    """Make a data object from the captured results"""
+
+    def rf(file_in, parser_func):
+        return parser_func(read_file(path.join(result_dir, file_in))) \
             if file_in else None
 
     def find_model(fn, models_):
@@ -53,6 +91,8 @@ def parse_results(result_dir):
 
 
 class Timing:
+    """Model for a single timing result."""
+
     def __init__(self, times: list = None, **kwargs):
         unpack = lambda key: kwargs[key][0] if key in kwargs else None
         self.times = times or []
@@ -73,37 +113,55 @@ class Timing:
 
 
 class ResultPresenter:
+    """Represents a collection of results, and offers some formatting
+    options """
 
     def __init__(self, results: List[Timing]):
         self.__results = results
+
+        # list of all (unique) recorded optimization levels
         self.opt_levels = sorted(
             list(set([r.opt_level for r in results])))
+
+        # list of all (unique) recorded data sizes
         self.data_sizes = sorted(
             list(set([r.data_size for r in results])),
             key=cmp_to_key(ResultPresenter.data_size_sort))
+
+        # list of source directories
         self.sources = sorted(
             list(set([r.source for r in results])))
+
+        # list of names of benchmarked programs
         self.programs = sorted(list(set(
             chain.from_iterable([r.programs for r in results]))))
 
     @staticmethod
     def data_size_sort(x, y):
-        if x in SIZES and y in SIZES:
-            xi, yi = SIZES.index(x), SIZES.index(y)
-            return -1 if xi < yi else 0 if xi == yi else 1
-        else:
-            1
+        """Sort data sizes."""
+        xi = SIZES.index(x) if x in SIZES else 1
+        yi = SIZES.index(y) if y in SIZES else 1
+        return -1 if xi < yi else 0 if xi == yi else 1
 
     def query(self, opt, size, source):
+        """Find timing result by given parameters."""
         return next(filter(
             lambda x: x.find(opt, size, source),
             self.__results), Timing())
 
-    def __make_table(self):
+    @staticmethod
+    def get_pad(matrix, col_index):
+        col_vector = [str(row[col_index]) for row in matrix]
+        return len(max(col_vector, key=len))
+
+    def __times_table(self):
+        """Generates a datatable of recorded times."""
         lp, ld = len(self.programs), len(self.data_sizes)
         lo, ls = len(self.opt_levels), len(self.sources)
         opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
         srcs = [self.sources[ci % ls] for ci in range(lo * ls)]
+
+        # fill initial header rows
         table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
 
         for ri in range(lp * ld):
@@ -120,15 +178,20 @@ class ResultPresenter:
                     s = self.sources[ci % ls]
                     row.append(self.query(o, d, s).get_time(p))
             table.append(row)
-
-        pad = len(max(self.programs + self.data_sizes, key=len))
-        return table, pad
+        return table
 
     def __speedup_table(self):
         lp, ld = len(self.programs), len(self.data_sizes)
         lo, ls = len(self.opt_levels), 1
         opts = [self.opt_levels[c % lo] for c in range(lo)]
+
+        # initial headers row
         table = [['Program', 'Data size'] + opts]
+
+        # fix original vs. parallel source for computing speedup
+        og_index = self.sources.index(OG_DIRNAME)
+        s1 = self.sources[og_index]
+        s2 = self.sources[0:2][(og_index + 1) % 2]
 
         for ri in range(lp * ld):
             row = []
@@ -141,54 +204,119 @@ class ResultPresenter:
                     row.append(d)
                 else:
                     o = self.opt_levels[(ci // ls) % lo]
-                    [s1, s2] = self.sources[0:2]
-                    t1 = self.query(o, d, s1).get_time(p)
-                    t2 = self.query(o, d, s2).get_time(p)
-                    row.append(round(t1 / t2, 2))
+                    ts = self.query(o, d, s1).get_time(p)  # sequential
+                    tp = self.query(o, d, s2).get_time(p)  # parallel
+                    speedup = ts / tp
+                    row.append(str(round(speedup, 2)).ljust(4, '0'))
             table.append(row)
+        return table
 
-        pad = len(max(self.programs + self.data_sizes, key=len))
-        return table, pad
+    def __out_formatted(self, data, fmt):
+        if fmt == "tex":
+            self.to_tex(data)
+        else:
+            self.to_markdown(data)
 
-    def __to_markdown(self, table, pad):
+    def to_markdown(self, table):
         text = []
-        table.insert(1, ['-' * pad] * len(table[0]))
+        pads = [self.get_pad(table, i) for i in range(len(table[0]))]
         for r in table:
             row = f' | '.join([
-                str(round(c, pad - 3)).ljust(pad, ' ')
+                str(round(c, pads[i] - 3)).ljust(pads[i], ' ')
                 if isinstance(c, float)
-                else str(c).ljust(pad, ' ') for c in r])
+                else str(c).ljust(pads[i], ' ')
+                for i, c in enumerate(r)])
             text.append("| " + row + " |")
+
+        text.insert(1, "| " + (" | ".join(
+            ['-' * pads[i] for i in range(len(table[0]))])) + " |")
         text = "\n".join(text)
         self.save(text, 'md')
 
-    def __to_tex(self, table, pad):
+    def to_tex(self, table):
         text = []
+        pads = [self.get_pad(table, i) for i in range(len(table[0]))]
+
         for r in table:
             row = f' & '.join([
-                str(round(c, pad - 3)).ljust(pad, ' ')
+                str(round(c, pads[i] - 3)).ljust(pads[i], ' ')
                 if isinstance(c, float)
-                else str(c).ljust(pad, ' ') for c in r])
+                else str(c).ljust(pads[i], ' ')
+                for i, c in enumerate(r)])
             text.append(row + "\\\\")
+
         text.insert(1, '\\hline')
         text = "\n".join(text)
         self.save(text, 'txt')
 
-    def times_to_markdown(self):
-        self.__to_markdown(*self.__make_table())
+    def times(self, fmt):
+        self.__out_formatted(self.__times_table(), fmt)
 
-    def times_to_tex(self):
-        self.__to_tex(*self.__make_table())
-
-    def speedup_to_markdown(self):
+    def speedup(self, fmt):
         if len(self.sources) != 2:
             return print('speedup assumes two source directories')
-        self.__to_markdown(*self.__speedup_table())
+        self.__out_formatted(self.__speedup_table(), fmt)
 
-    def speedup_to_tex(self):
-        if len(self.sources) != 2:
-            return print('speedup assumes two source directories')
-        self.__to_tex(*self.__speedup_table())
+    def plot(self):
+        rows, cols = 2, 3
+        labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
+        colors = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#073b4c']
+        fig_count = len(self.programs) // (rows * cols)
+
+        y_label = "Speedup"
+        data = self.__speedup_table()
+        bars = [(data[0].index(o), o) for o in self.opt_levels]
+        lx, w = np.arange(len(labels)), 0.80 / len(bars)
+        y_min, y_max = 0, ceil(np.amax(
+            [[float(c) for c in r[2:]] for r in data[1:]]))
+        bar_x = [lx + ((i - 1.5) * w) for i in range(0, 4)]
+        bar_props = {'edgecolor': "black", 'lw': 0.35,
+                     'width': w}
+
+        for f in range(fig_count):
+            fig, axs = plt.subplots(
+                figsize=[6, 4],
+                nrows=rows, ncols=cols, dpi=250)
+            axs = axs.flatten()
+            for p in range(rows * cols):
+                p_name = self.programs[f * (rows * cols) + p]
+                ri = [d[0] for d in data].index(p_name)
+                ry = ri + len(labels)
+
+                for i, (bi, label) in enumerate(bars):
+                    axs[p].bar(
+                        bar_x[i], [float(v[bi]) for v in data[ri:ry]],
+                        label=label, color=colors[i % len(colors)],
+                        **bar_props)
+
+                axs[p].set_ylim((y_min, y_max))
+                axs[p].set_ylabel(y_label)
+                axs[p].set_xticks(lx, labels)
+                axs[p].set_xlabel(p_name)
+                axs[p].tick_params(axis="y", direction="inout")
+                axs[p].tick_params(axis="x", length=0, pad=8)
+                axs[p].spines['right'].set_visible(False)
+                axs[p].spines['top'].set_visible(False)
+                axs[p].spines['bottom'].set_visible(False)
+                axs[p].legend([
+                    Line2D([0], [0], marker='s', lw=0,
+                           color=colors[i % len(colors)],
+                           markersize=4) for (i, _) in
+                    enumerate(self.opt_levels)],
+                    self.opt_levels[:],
+                    loc='upper left',
+                    handletextpad=-0.1,
+                    bbox_to_anchor=(0, 1.05, .5, 0.08),
+                    frameon=False,
+                    columnspacing=.25,
+                    borderpad=0,
+                    ncol=4)
+
+                axs[p].margins(0.05)
+
+            plt.tight_layout()
+            plt.savefig(f'result_{f + 1}.pdf')
+            plt.show()
 
     @staticmethod
     def save(content, extension='txt'):
@@ -200,25 +328,23 @@ class ResultPresenter:
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument(
-        "--speedup",
-        action='store_true',
-        help="skip writing result to file"
+        "-d", "--data",
+        action='store',
+        default='times',
+        help="data choice: {time, speedup}"
     )
     parser.add_argument(
-        "--tex",
-        action='store_true',
-        help="skip writing result to file"
+        "-f", "--fmt",
+        action="store",
+        default="markdown",
+        help="output format: {tex, markdown}"
     )
+
     args = parser.parse_args()
     rp = parse_results(RESULTS_DIR)
+    rp.plot()
 
-    if args.speedup:
-        if args.tex:
-            rp.speedup_to_tex()
-        else:
-            rp.speedup_to_markdown()
-    else:
-        if args.tex:
-            rp.times_to_tex()
-        else:
-            rp.times_to_markdown()
+    # if args.t == "speedup":
+    #     rp.speedup(args.f)
+    # else:
+    #     rp.times(args.f)
