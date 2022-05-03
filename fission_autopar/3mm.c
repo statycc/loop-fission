@@ -56,10 +56,10 @@ static void kernel_3mm(int ni, int nj, int nk, int nl, int nm, double E[800][900
    /*E := A*B*/
    #pragma omp parallel for default(shared) private(i, j, k) firstprivate(ni, nj, nk, A, B)
    for(i = 0; i < ni; i++) {
-      #pragma omp parallel for default(shared) private(j, k) firstprivate(nj, i, nk, A, B)
+      // #pragma omp parallel for default(shared) private(j, k) firstprivate(nj, i, nk, A, B)
       for(j = 0; j < nj; j++) {
          E[i][j] = 0.0;
-         #pragma omp parallel for default(shared) private(k) firstprivate(nk, i, j, A, B) reduction(+ : E[i][j])
+         // #pragma omp parallel for default(shared) private(k) firstprivate(nk, i, j, A, B) reduction(+ : E[i][j])
          for(k = 0; k < nk; ++k)
             E[i][j] += A[i][k] * B[k][j];
       }
@@ -67,10 +67,10 @@ static void kernel_3mm(int ni, int nj, int nk, int nl, int nm, double E[800][900
    /*F := C*D*/
    #pragma omp parallel for default(shared) private(i, j, k) firstprivate(nj, nl, nm, C, D)
    for(i = 0; i < nj; i++) {
-      #pragma omp parallel for default(shared) private(j, k) firstprivate(nl, i, nm, C, D)
+      // #pragma omp parallel for default(shared) private(j, k) firstprivate(nl, i, nm, C, D)
       for(j = 0; j < nl; j++) {
          F[i][j] = 0.0;
-         #pragma omp parallel for default(shared) private(k) firstprivate(nm, i, j, C, D) reduction(+ : F[i][j])
+         // #pragma omp parallel for default(shared) private(k) firstprivate(nm, i, j, C, D) reduction(+ : F[i][j])
          for(k = 0; k < nm; ++k)
             F[i][j] += C[i][k] * D[k][j];
       }
@@ -78,10 +78,10 @@ static void kernel_3mm(int ni, int nj, int nk, int nl, int nm, double E[800][900
    /*G := E*F*/
    #pragma omp parallel for default(shared) private(i, j, k) firstprivate(ni, nl, nj, E, F)
    for(i = 0; i < ni; i++) {
-      #pragma omp parallel for default(shared) private(j, k) firstprivate(nl, i, nj, E, F)
+      // #pragma omp parallel for default(shared) private(j, k) firstprivate(nl, i, nj, E, F)
       for(j = 0; j < nl; j++) {
          G[i][j] = 0.0;
-         #pragma omp parallel for default(shared) private(k) firstprivate(nj, i, j, E, F) reduction(+ : G[i][j])
+         // #pragma omp parallel for default(shared) private(k) firstprivate(nj, i, j, E, F) reduction(+ : G[i][j])
          for(k = 0; k < nj; ++k)
             G[i][j] += E[i][k] * F[k][j];
       }

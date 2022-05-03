@@ -65,24 +65,24 @@ static void kernel_fdtd_2d(int tmax, int nx, int ny, double ex[1000][1200], doub
    #pragma scop
    #pragma omp parallel for default(shared) private(t, j, i) firstprivate(tmax, ny, nx, _fict_) reduction(- : ey[:1000][:1200]) reduction(- : ex[:1000][:1200]) reduction(- : hz[:1000][:1200])
    for(t = 0; t < tmax; t++) {
-      #pragma omp parallel for default(shared) private(j) firstprivate(ny, t, _fict_)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(ny, t, _fict_)
       for(j = 0; j < ny; j++)
          ey[0][j] = _fict_[t];
-      #pragma omp parallel for default(shared) private(i, j) firstprivate(nx, ny, hz)
+      // #pragma omp parallel for default(shared) private(i, j) firstprivate(nx, ny, hz)
       for(i = 1; i < nx; i++) {
-         #pragma omp parallel for default(shared) private(j) firstprivate(ny, i, hz)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(ny, i, hz)
          for(j = 0; j < ny; j++)
             ey[i][j] = ey[i][j] - 0.5 * (hz[i][j] - hz[i - 1][j]);
       }
-      #pragma omp parallel for default(shared) private(i, j) firstprivate(nx, ny, hz)
+      // #pragma omp parallel for default(shared) private(i, j) firstprivate(nx, ny, hz)
       for(i = 0; i < nx; i++) {
-         #pragma omp parallel for default(shared) private(j) firstprivate(ny, i, hz)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(ny, i, hz)
          for(j = 1; j < ny; j++)
             ex[i][j] = ex[i][j] - 0.5 * (hz[i][j] - hz[i][j - 1]);
       }
-      #pragma omp parallel for default(shared) private(i, j) firstprivate(nx, ny, ex, ey)
+      // #pragma omp parallel for default(shared) private(i, j) firstprivate(nx, ny, ex, ey)
       for(i = 0; i < nx - 1; i++) {
-         #pragma omp parallel for default(shared) private(j) firstprivate(ny, i, ex, ey)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(ny, i, ex, ey)
          for(j = 0; j < ny - 1; j++)
             hz[i][j] = hz[i][j] - 0.7 * (ex[i][j + 1] - ex[i][j] + ey[i + 1][j] - ey[i][j]);
       }

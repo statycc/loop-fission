@@ -58,7 +58,7 @@ static void kernel_bicg(int m, int n, double A[2100][1900], double s[1900], doub
       s[i] = 0;
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, r, A) reduction(+ : s[:1900])
    for(i = 0; i < n; i++) {
-      #pragma omp parallel for default(shared) private(j) firstprivate(m, i, r, A)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i, r, A)
       for(j = 0; j < m; j++) {
          s[j] = s[j] + r[i] * A[i][j];
       }
@@ -66,7 +66,7 @@ static void kernel_bicg(int m, int n, double A[2100][1900], double s[1900], doub
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, A, p)
    for(i = 0; i < n; i++) {
       q[i] = 0.0;
-      #pragma omp parallel for default(shared) private(j) firstprivate(m, i, A, p) reduction(+ : q[i])
+      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i, A, p) reduction(+ : q[i])
       for(j = 0; j < m; j++) {
          q[i] = q[i] + A[i][j] * p[j];
       }
