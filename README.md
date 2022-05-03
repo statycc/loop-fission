@@ -29,14 +29,10 @@ human interaction.
 
 **Other directories and files**
 
-* `_annotated/` directories are preprocessed versions, for use
-  by `autopar-clava`. These are intermediate versions of programs, not relevant
-  for purposes of benchmarking.
+* `fission` non-parallelized versions of programs after applying loop fission.
 
 * `headers/` directory contains the original header files from PB/C suite, moved
   to a separate directory for purposes of sharing.
-
-* `results/` contains captured benchmark results
 
 * `utilities/` are from PB/C suite and contains e.g. the benchmarking timing script.
 
@@ -94,7 +90,7 @@ Timing options are same as default:
 
 * * *
 
-### Original source
+### About Polybench/C
 
 * [Information about Polybench/C @ Ohio State][PB]
 * [Download Polybench/C v4.2 @ SourceForge][4.2]
