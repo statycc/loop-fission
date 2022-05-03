@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# Check /opt/clava/Clava/Clava.jar
+clara_path=/opt/clava/Clava/Clava.jar
+# Please update with your own path if needed.
 
 cp ../utilities/polybench.h ../headers/
 # Because I can't figure out how to include two headers…
@@ -40,7 +41,7 @@ EOF
 for file in bicg fdtd-2d gesummv mvt; do
     echo "$file"
     # We optimize it using Clava and our .lara instructions
-    java -jar /opt/clava/Clava/Clava.jar PolybenchAutopar.lara -p ../fission/${file}.c  -ih ../headers/
+    java -jar $clara_path PolybenchAutopar.lara -p ../fission/${file}.c  -ih ../headers/
     # We copy the resulting file.
     cp woven_code/${file}.c .
 done
