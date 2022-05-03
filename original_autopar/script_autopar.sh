@@ -1,62 +1,53 @@
 #!/usr/bin/env bash
 
-cp ../utilities/polybench.h ../_annotated/original_annotated/
+clara_path=/opt/clava/Clava/Clava.jar
+# Please update with your own path if needed.
 
-for file in bicg fdtd-2d gesummv jacobi-1d jacobi-2d mvt; do
-    echo "$file"
-    cp ../headers/${file}.h ../_annotated/original_annotated/
-    
-    tee CMakeLists.txt <<EOF >/dev/null
-################ standard cmake script ################
-cmake_minimum_required(VERSION 3.0)
-project(AutoPar C)
+cp ../utilities/polybench.h ../headers/
+# Because I can't figure out how to include two headers…
+# https://github.com/specs-feup/clava/issues/59
 
-set(CMAKE_C_STANDARD 11)
+# The .lara file, taken from
+# https://raw.githubusercontent.com/specs-feup/specs-lara/master/ANTAREX/AutoPar/Polybench/PolybenchAutopar.lara
 
-# OpenMP flags
-find_package(OpenMP REQUIRED)
-set(CMAKE_C_FLAGS "\${CMAKE_C_FLAGS} \${OpenMP_C_FLAGS}")
-    
-add_executable(${file} ../_annotated/original_annotated/${file}.c)
-
-################ clava-specific instructions ################
-# Required if CMake plugin is not installed
-# Download CMake plugin from: https://githubom/specs-feup/clava/tree/master/CMake
-#set(Clava_DIR "<FOLDER WITH CLAVA CMAKE PLUGIN>")
-
-find_package(Clava REQUIRED)
-
-clava_weave(${file} AutoPar.lara)
-EOF
-
-    tee AutoPar.lara <<EOF >/dev/null
+tee PolybenchAutopar.lara <<EOF >/dev/null
 import clava.autopar.Parallelize;
+import clava.autopar.AutoParStats;
 
-aspectdef OmpParallelization
+aspectdef PolybenchAutopar
 
-	// Parallelize loop annotated with pragma
-    select function{"kernel_${file}"}.pragma.target end
+	// Reset stats
+	AutoParStats.reset();
+
+	var \$loops = [];
+	select file.function.loop end
 	apply
-		Parallelize.forLoops([\$target]);
+		// Only parallelize loops inside Polybench kernel functions
+		if(!\$function.name.startsWith("kernel_")) {
+			continue;
+		}
+		
+		// Set name
+		AutoParStats.get().setName(Io.removeExtension(\$file.name));
+		
+		\$loops.push(\$loop);
 	end
-
-	// Print modified code
-	select function{'kernel_${file}'} end
-	apply
-		println(\$function.code);
-	end
+	    
+	Parallelize.forLoops(\$loops);	
 end
 EOF
 
-    mkdir -p build
-    cd build
-    cmake ..
-    cd ../
-    cp build/${file}_clava_weave/woven/${file}.c .
-    rm ../_annotated/original_annotated/${file}.h
-    rm -rf build/
-    rm CMakeLists.txt
-    rm AutoPar.lara
+# For each of our example…
+for file in 3mm bicg fdtd-2d gesummv mvt; do
+    echo "$file"
+    # We optimize it using Clava and our .lara instructions
+    java -jar $clara_path PolybenchAutopar.lara -p ../original/${file}.c  -ih ../headers/
+    # We copy the resulting file.
+    cp woven_code/${file}.c .
 done
 
-rm ../_annotated/original_annotated/polybench.h
+# Cleanup.
+rm PolybenchAutopar.lara
+rm -rf woven_code
+rm *.json
+rm ../headers/polybench.h

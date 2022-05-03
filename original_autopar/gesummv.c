@@ -48,17 +48,19 @@ static void print_array(int n, double y[1300]) {
 including the call and return.*/
 static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300], double B[1300][1300], double tmp[1300], double x[1300], double y[1300]) {
    int i, j;
-   #pragma loop1
+   #pragma scop
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta, A, x, B)
    for(i = 0; i < n; i++) {
       tmp[i] = 0.0;
       y[i] = 0.0;
+      #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, x, B) reduction(+ : tmp[i]) reduction(+ : y[i])
       for(j = 0; j < n; j++) {
          tmp[i] = A[i][j] * x[j] + tmp[i];
          y[i] = B[i][j] * x[j] + y[i];
       }
       y[i] = alpha * tmp[i] + beta * y[i];
    }
+   #pragma endscop
 }
 
 int main(int argc, char **argv) {

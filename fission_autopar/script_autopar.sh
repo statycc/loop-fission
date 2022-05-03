@@ -38,7 +38,7 @@ end
 EOF
 
 # For each of our example…
-for file in bicg fdtd-2d gesummv mvt; do
+for file in 3mm bicg fdtd-2d gesummv mvt; do
     echo "$file"
     # We optimize it using Clava and our .lara instructions
     java -jar $clara_path PolybenchAutopar.lara -p ../fission/${file}.c  -ih ../headers/
