@@ -10,7 +10,7 @@
 
 
 # parse command line args
-while getopts c:o:d:v:s flag
+while getopts c:o:d:v:s: flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
@@ -31,7 +31,7 @@ MAX_VARIANCE="${max_var:-5.0}"              # max allowed variance b/w timing re
 DS_SIZE=${size:-STANDARD}                   # dataset size: MINI, SMALL, MEDIUM, LARGE, EXTRALARGE
 
 # configure other runtime options
-MAX_RETRIES=10                              # stop repeating after 10 retries
+MAX_RETRIES=100                             # stop repeating after N retries
 START=$(date '+%H:%M:%S');                  # start time
 DT=$(date '+%m%d%H%M%S');                   # current timestamp
 
@@ -40,7 +40,7 @@ CDIR="compiled_"$SRC""                      # for holding compiled programs
 RES_DIR="results"                           # where to save results
 
 # output filenames
-PATTERN="$SRC"_"$OPT"_"$DS_SIZE"_"$DT"
+PATTERN="$SRC"_"$OPT"_"$DS_SIZE"
 OUTFILE=./"$RES_DIR"/"$PATTERN".txt       # where to save timing results
 MODEL=./"$RES_DIR"/"$PATTERN"_model.txt   # where to save machine details
 
@@ -113,10 +113,20 @@ do
         # if variance is withing allowed range, or max retries exhausted
         if(( $(bc <<< "$variance < $MAX_VARIANCE") )) || [ $i -gt $MAX_RETRIES ]; then
             echo "$result" >> "$OUTFILE"
-            echo "✓ done with ${filename}"
+            if [ $i -gt 0 ]; then
+                printf '\r'
+                        cols="$(tput cols)"
+                        for i in $(seq "$cols"); do
+                                printf ' '
+                        done
+                printf '\r'
+            fi
+
+            echo "✓ done with ("$DS_SIZE", -"$OPT"): ${filename}"
+            printf '\r'
             break
         else
-            echo "⚠ $filename - repeating $i of $MAX_RETRIES - variance too high: ${variance} %"
+            echo -ne "⚠ $filename - repeating $i of $MAX_RETRIES - variance too high: ${variance} %\033[0K\r"
         fi
 
     done
