@@ -52,25 +52,20 @@ static void print_array(int m, int n, double s[1900], double q[2100]) {
 including the call and return.*/
 static void kernel_bicg(int m, int n, double A[2100][1900], double s[1900], double q[2100], double p[1900], double r[2100]) {
    int i, j;
-   #pragma loop1
+   #pragma scop
    #pragma omp parallel for default(shared) private(i) firstprivate(m)
    for(i = 0; i < m; i++)
       s[i] = 0;
-   #pragma loop2
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, r, A) reduction(+ : s[:1900])
-   for(i = 0; i < n; i++) {
-      for(j = 0; j < m; j++) {
-         s[j] = s[j] + r[i] * A[i][j];
-      }
-   }
-   #pragma loop3
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, A, p)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, r, A, p) reduction(+ : s[:1900])
    for(i = 0; i < n; i++) {
       q[i] = 0.0;
+      #pragma omp parallel for default(shared) private(j) firstprivate(m, i, r, A, p) reduction(+ : q[i])
       for(j = 0; j < m; j++) {
+         s[j] = s[j] + r[i] * A[i][j];
          q[i] = q[i] + A[i][j] * p[j];
       }
    }
+   #pragma endscop
 }
 
 int main(int argc, char **argv) {

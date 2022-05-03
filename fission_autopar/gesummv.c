@@ -48,28 +48,19 @@ static void print_array(int n, double y[1300]) {
 including the call and return.*/
 static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300], double B[1300][1300], double tmp[1300], double x[1300], double y[1300]) {
    int i, j;
-   #pragma loop1
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, A, x)
+   #pragma scop
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta, A, x, B)
    for(i = 0; i < n; i++) {
       tmp[i] = 0.0;
+      y[i] = 0.0;
+      #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, x, B) reduction(+ : tmp[i]) reduction(+ : y[i])
       for(j = 0; j < n; j++) {
          tmp[i] = A[i][j] * x[j] + tmp[i];
-      }
-   }
-   #pragma loop2
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, B, x)
-   for(i = 0; i < n; i++) {
-      y[i] = 0.0;
-      for(j = 0; j < n; j++) {
          y[i] = B[i][j] * x[j] + y[i];
       }
-   }
-   // this has to come after because it reads both arrays, this transform maybe wrong
-   #pragma loop3
-   #pragma omp parallel for default(shared) private(i) firstprivate(n, alpha, beta, tmp)
-   for(i = 0; i < n; i++) {
       y[i] = alpha * tmp[i] + beta * y[i];
    }
+   #pragma endscop
 }
 
 int main(int argc, char **argv) {

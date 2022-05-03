@@ -53,16 +53,20 @@ static void print_array(int n, double x1[2000], double x2[2000]) {
 including the call and return.*/
 static void kernel_mvt(int n, double x1[2000], double x2[2000], double y_1[2000], double y_2[2000], double A[2000][2000]) {
    int i, j;
-   #pragma loop1
+   #pragma scop
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, A, y_1)
-   for(i = 0; i < n; i++)
+   for(i = 0; i < n; i++) {
+      #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, y_1) reduction(+ : x1[i])
       for(j = 0; j < n; j++)
          x1[i] = x1[i] + A[i][j] * y_1[j];
-   #pragma loop2
+   }
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, A, y_2)
-   for(i = 0; i < n; i++)
+   for(i = 0; i < n; i++) {
+      #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, y_2) reduction(+ : x2[i])
       for(j = 0; j < n; j++)
          x2[i] = x2[i] + A[j][i] * y_2[j];
+   }
+   #pragma endscop
 }
 
 int main(int argc, char **argv) {

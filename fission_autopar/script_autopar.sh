@@ -1,62 +1,45 @@
 #!/usr/bin/env bash
 
-cp ../utilities/polybench.h ../_annotated/fission_annotated/
+# Check /opt/clava/Clava/Clava.jar
 
-for file in bicg fdtd-2d gesummv jacobi-1d jacobi-2d mvt; do
-    echo "$file"
-    cp ../headers/${file}.h ../_annotated/fission_annotated/
-    
-    tee CMakeLists.txt <<EOF >/dev/null
-################ standard cmake script ################
-cmake_minimum_required(VERSION 3.0)
-project(AutoPar C)
+cp ../utilities/polybench.h ../headers/
 
-set(CMAKE_C_STANDARD 11)
-
-# OpenMP flags
-find_package(OpenMP REQUIRED)
-set(CMAKE_C_FLAGS "\${CMAKE_C_FLAGS} \${OpenMP_C_FLAGS}")
-    
-add_executable(${file} ../_annotated/fission_annotated/${file}.c)
-
-################ clava-specific instructions ################
-# Required if CMake plugin is not installed
-# Download CMake plugin from: https://githubom/specs-feup/clava/tree/master/CMake
-#set(Clava_DIR "<FOLDER WITH CLAVA CMAKE PLUGIN>")
-
-find_package(Clava REQUIRED)
-
-clava_weave(${file} AutoPar.lara)
-EOF
-
-    tee AutoPar.lara <<EOF >/dev/null
+tee PolybenchAutopar.lara <<EOF >/dev/null
 import clava.autopar.Parallelize;
+import clava.autopar.AutoParStats;
 
-aspectdef OmpParallelization
+aspectdef PolybenchAutopar
 
-	// Parallelize loop annotated with pragma
-    select function{"kernel_${file}"}.pragma.target end
+	// Reset stats
+	AutoParStats.reset();
+
+	var \$loops = [];
+	select file.function.loop end
 	apply
-		Parallelize.forLoops([\$target]);
+		// Only parallelize loops inside Polybench kernel functions
+		if(!\$function.name.startsWith("kernel_")) {
+			continue;
+		}
+		
+		// Set name
+		AutoParStats.get().setName(Io.removeExtension(\$file.name));
+		
+		\$loops.push(\$loop);
 	end
-
-	// Print modified code
-	select function{'kernel_${file}'} end
-	apply
-		println(\$function.code);
-	end
+	    
+	Parallelize.forLoops(\$loops);	
 end
 EOF
 
-    mkdir -p build
-    cd build
-    cmake ..
-    cd ../
-    cp build/${file}_clava_weave/woven/${file}.c .
-    rm ../_annotated/fission_annotated/${file}.h
-    rm -rf build/
-    rm CMakeLists.txt
-    rm AutoPar.lara
+for file in bicg fdtd-2d gesummv mvt; do
+    echo "$file"
+    java -jar /opt/clava/Clava/Clava.jar PolybenchAutopar.lara -p ../original/${file}.c  -ih ../headers/
+    cp woven_code/${file}.c .
 done
 
-rm ../_annotated/fission_annotated/polybench.h
+rm PolybenchAutopar.lara
+rm -rf woven_code
+rm *.json
+rm ../headers/polybench.h
+
+#rm ../_annotated/fission_annotated/polybench.h
