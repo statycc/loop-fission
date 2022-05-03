@@ -1,6 +1,0 @@
-bicg_time	4.41100	0.00006800
-fdtd-2d_time	2.94100	0.00010200
-gesummv_time	1.70800	0.00015566
-jacobi-1d_time	1.96000	0.00005100
-jacobi-2d_time	3.33300	0.00009000
-mvt_time	0	0.00006600
