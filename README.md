@@ -29,7 +29,7 @@ human interaction.
 
 **Other directories and files**
 
-* `fission` non-parallelized versions of programs after applying loop fission.
+* `fission/` non-parallelized versions of programs after applying loop fission.
 
 * `headers/` directory contains the original header files from PB/C suite, moved
   to a separate directory for purposes of sharing.
@@ -38,8 +38,10 @@ human interaction.
 
 * `run.sh` is a wrapper for the timing script in utilities. It adds some command
   line arguments and options to ease benchmarking full directories of programs at once.
+
+* `script_autopar.sh` is used for inserting automatic parallelization directives. 
   
-* `plot.py` is used for generating results tables and plots  
+* `plot.py` is used for generating tables and plots from results.  
 
 ### How to run benchmarks
 
