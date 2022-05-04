@@ -50,9 +50,11 @@ static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300
    int i, j;
    #pragma scop
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta, A, x, B)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta, A, x, B)
    for(i = 0; i < n; i++) {
       tmp[i] = 0.0;
       y[i] = 0.0;
+      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, x, B) reduction(+ : tmp[i]) reduction(+ : y[i])
       // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, x, B) reduction(+ : tmp[i]) reduction(+ : y[i])
       for(j = 0; j < n; j++) {
          tmp[i] = A[i][j] * x[j] + tmp[i];

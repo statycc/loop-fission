@@ -112,7 +112,7 @@ EOF
 # TODO: make this loop write all outputs to $target_dir not to root
 
 # For each of our example…
-for file in 3mm bicg fdtd-2d gesummv mvt; do  # why hardcoded list, why not loop all in $folder?
+for file in 3mm bicg deriche gesummv mvt; do  # why hardcoded list, why not loop all in $folder?
     echo "$file"
     # We optimize it using Clava and our .lara instructions
     java -jar ${clara_path} PolybenchAutopar.lara -p ../${folder}/${file}.c  -ih "../headers/;../utilities/"
