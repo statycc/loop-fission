@@ -62,6 +62,7 @@ For customizable options, call the `run.sh` script directly, with choice of argu
 | `-o` | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`        |
 | `-v` | max. variance when timing results (%) : > `0.0`                         | `5.0`       |
 | `-s` | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD`  |
+| `-p` | benchmark specific program: `3mm`, `bicg`, `deriche` ...                | _not set_   |
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`
 
