@@ -215,14 +215,15 @@ class ResultPresenter:
             table.append(row)
         return table
 
-    def speedup_table(self, baseline):
+    def speedup_table(self, baseline, target=None):
         # fix original vs. parallel source for computing speedup
         base_i = self.sources.index(baseline)
         s1 = self.sources[base_i]
-        sp = [n for i, n in enumerate(self.sources) if i != base_i]
+        sp = [n for i, n in enumerate(self.sources) if
+              (i != base_i and (not target or target == n))]
 
         lp, ld = len(self.programs), len(self.data_sizes)
-        lo, ls = len(self.opt_levels), len(self.sources) - 1
+        lo, ls = len(self.opt_levels), len(sp)
         opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
         srcs = [sp[ci % ls] for ci in range(lo * ls)]
 
@@ -284,7 +285,7 @@ class ResultPresenter:
     def times(self, fmt):
         self.__out_formatted(self.time_table(), fmt)
 
-    def speedup(self, fmt, baseline):
+    def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
         src_error = f'speedup requires timing at least two groups of ' \
             f'programs, {src_len} found in {r} '
@@ -295,7 +296,7 @@ class ResultPresenter:
         if baseline not in self.sources:
             return print(bl_error)
 
-        data = self.speedup_table(baseline)
+        data = self.speedup_table(baseline, target)
 
         if fmt == "plot":
             self.plot(data)
@@ -392,11 +393,15 @@ if __name__ == '__main__':
         help="output format: {tex, md, plot}"
     )
     parser.add_argument(
-        "-ss", "--src_speedup",
+        "--ss",
         action="store",
         default="original",
-        help="source directory for calculating speedup ("
-             "default:original) "
+        help="source directory for speedup (default:original)"
+    )
+    parser.add_argument(
+        "--st",
+        action="store",
+        help="target directory for speedup (default:*)"
     )
     parser.add_argument(
         "-ms", "--millis",
@@ -414,9 +419,8 @@ if __name__ == '__main__':
     records = parse_results(RESULTS_DIR)
     rp = ResultPresenter(records, args.millis, args.digits)
 
-    if args.fmt == "plot":
-        rp.speedup(args.fmt, baseline=args.src_speedup)
-    elif args.data == "speedup":
-        rp.speedup(args.fmt, baseline=args.src_speedup)
+    # only plot speedup for now
+    if args.fmt == "plot" or args.data == "speedup":
+        rp.speedup(args.fmt, args.ss, args.st)
     else:
         rp.times(args.fmt)
