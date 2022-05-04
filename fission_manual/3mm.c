@@ -81,10 +81,12 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
   int i, j, k;
 
 #pragma scop
-#pragma omp parallel private(i, j)
+
+#pragma omp parallel private(i, j, k)
 {
-  #pragma omp for nowait 
+
   /* E := A*B */
+   #pragma omp for nowait
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
       {
@@ -92,8 +94,8 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 	    for (k = 0; k < _PB_NK; ++k)
     	    E[i][j] += A[i][k] * B[k][j];
       }
-  #pragma omp for
   /* F := C*D */
+  #pragma omp for
   for (i = 0; i < _PB_NJ; i++)
     for (j = 0; j < _PB_NL; j++)
       {
