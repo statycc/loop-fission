@@ -268,7 +268,7 @@ class ResultPresenter:
         text.insert(1, "| " + (" | ".join(
             ['-' * pads[i] for i in range(len(table[0]))])) + " |")
         text = "\n".join(text)
-        self.save(text, 'md')
+        self.save(text, 'txt')
 
     def to_tex(self, table):
         text = []
