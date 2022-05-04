@@ -10,7 +10,7 @@
 
 
 # parse command line args
-while getopts c:o:d:v:s: flag
+while getopts c:o:d:v:s:p: flag
 do
     case "${flag}" in
         c) compiler=${OPTARG};;
@@ -18,6 +18,7 @@ do
         d) directory=${OPTARG};;
         v) max_var=${OPTARG};;
         s) size=${OPTARG};;
+        p) prog=${OPTARG};;
     esac
 done
 
@@ -29,6 +30,7 @@ OPT="${opt_level:-O0}"                      # optimization level, default: O0
 SRC="${directory:-original}"                # source directory, default: original
 MAX_VARIANCE="${max_var:-5.0}"              # max allowed variance b/w timing results
 DS_SIZE=${size:-STANDARD}                   # dataset size: MINI, SMALL, MEDIUM, LARGE, EXTRALARGE
+PROGRAM=${prog}                             # benchmark specific program
 
 # configure other runtime options
 MAX_RETRIES=100                             # stop repeating after N retries
@@ -91,6 +93,7 @@ rm -rf "$OUTFILE"
 # compile and time each example
 for file in ./"$SRC"/*.c
 do
+
     i=0 # counter for timing retries
 
     # get filename without extension
@@ -98,6 +101,11 @@ do
     extension="${filename##*.}"
     filename="${filename%.*}"
     out=./"$CDIR"/"$filename"_time
+
+    # benchmark only specific program
+    if [ -n "$PROGRAM" ]; then
+        [[ "$PROGRAM" != "$filename" ]] && continue
+    fi
 
     # compile options
     "$CC" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c "$file" -DPOLYBENCH_TIME -D"$DS_SIZE"_DATASET -o "$out"
