@@ -13,12 +13,15 @@ The two approaches serve different purposes: manual method enables finding optim
 
 ## Organization of programs
 
-| Directory          | Loop fission | Parallel | Description                                   |
-|:-------------------|:------------:|:--------:|:----------------------------------------------|
-| `original`         |      ➖       |    ➖     | unmodified programs from PB/C suite           | 
-| `original_autopar` |      ➖       |    ✅     | original programs, parallelized automatically |
-| `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically | 
-| `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand       |  
+| Directory          | Loop fission | Parallel | Description                                       |
+|:-------------------|:------------:|:--------:|:--------------------------------------------------|
+| `original`         |      ➖       |    ➖     | unmodified programs from PB/C suite               | 
+| `original_autopar` |      ➖       |    ✅     | original programs, parallelized automatically[^1] |
+| `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically[^1] | 
+| `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand           |
+
+[^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [removes the `polybench_stop_instruments;` and `polybench_print_instruments;` instructions](https://github.com/specs-feup/specs-lara/issues/1) that are needed to time our examples. They are re-inserted using a simple text substitution in [our script script_autopar.sh](script_autopar.sh).
+
 
 **Other directories and files**
 
@@ -120,7 +123,7 @@ To recreate those files:
     
     - Execute the installation script as root.
 
-2. Set `clara_path` to the right path if it is not `/opt/clava/Clava/Clava.jar`.
+2. Set `clara_path` to the right path if it is not `/opt/clava/Clava/Clava.jar` in [our script script_autopar.sh](script_autopar.sh).
 
 3. Run the automatic annotation script: 
 
@@ -137,7 +140,8 @@ This script will perform following steps automatically, for each .c file:
 - Create the appropriate AutoPar.lara directions (that simply ask to fissionize all the loops in the method function that starts with kernel_),
 - Run clava,
 - Copy the optimized file to this folder,
-- Delete the temporary file.
+- Delete the temporary file,
+- Re-insert the directives needed to time our examples[^1].
 
 
 * * *
