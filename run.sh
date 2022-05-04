@@ -67,7 +67,7 @@ echo "compiler: "$CC"" >>  "$MODEL"
 echo "opt level: "$OPT"" >>  "$MODEL"
 echo "source: "$SRC"" >>  "$MODEL"
 echo "data size: "$DS_SIZE"" >>  "$MODEL"
-echo "\n# MACHINE" >>  "$MODEL"
+echo "# MACHINE" >>  "$MODEL"
 echo "OS: "$OSTYPE"" >> "$MODEL"
 
 # capture details of running machine
@@ -86,6 +86,7 @@ for file in ./"$CDIR"/*
 do
     rm -rf "$file"
 done
+rm -rf "$OUTFILE"
 
 # compile and time each example
 for file in ./"$SRC"/*.c
@@ -132,5 +133,6 @@ do
     done
 done
 
-echo "\n# TIME" >>  "$MODEL"
-echo "start: "$START"\nend:   "$(date '+%H:%M:%S')"" >>  "$MODEL"
+echo "# TIME" >>  "$MODEL"
+echo "start: "$START"" >>  "$MODEL"
+echo "end:   "$(date '+%H:%M:%S')"" >>  "$MODEL"
