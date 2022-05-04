@@ -95,6 +95,8 @@ int main(int argc, char **argv) {
    /*Run kernel.*/
    kernel_mvt(n, *x1, *x2, *y_1, *y_2, *A);
    /*Stop and print timer.*/
+   polybench_stop_instruments;
+   polybench_print_instruments;
    ;
    ;
    /*Prevent dead-code elimination. All live-out data must be printed

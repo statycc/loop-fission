@@ -125,6 +125,8 @@ int main(int argc, char **argv) {
    /*Run kernel.*/
    kernel_3mm(ni, nj, nk, nl, nm, *E, *A, *B, *F, *C, *D, *G);
    /*Stop and print timer.*/
+   polybench_stop_instruments;
+   polybench_print_instruments;
    ;
    ;
    /*Prevent dead-code elimination. All live-out data must be printed

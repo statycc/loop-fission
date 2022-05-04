@@ -91,6 +91,8 @@ int main(int argc, char **argv) {
    /*Run kernel.*/
    kernel_gesummv(n, alpha, beta, *A, *B, *tmp, *x, *y);
    /*Stop and print timer.*/
+   polybench_stop_instruments;
+   polybench_print_instruments;
    ;
    ;
    /*Prevent dead-code elimination. All live-out data must be printed
