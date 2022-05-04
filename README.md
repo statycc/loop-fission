@@ -1,43 +1,34 @@
 # ICC-Fission Benchmarks
 
-This repository is for benchmarking the ICC-fission algorithm presented in
-_"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
+This repository is for benchmarking the ICC-fission algorithm presented in _"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
 
-It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2], 
-containing the subset of programs to which the loop fission technique can be 
-applied (6 examples). After applying the transformation, the program is then 
-parallelized using OpenMP directives to evaluate the resulting efficiency.
+It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2], containing the subset of programs to which the loop fission technique can be applied (6 examples). After applying the transformation, the program is then parallelized using OpenMP directives to evaluate the resulting efficiency.
 
-Annotating the transformed program with parallelization directives is outside
-the scope of the algorithm. We have used two different approaches:
+Annotating the transformed program with parallelization directives is outside the scope of the algorithm. We have used two different approaches:
 
 1. manually inserted annotations
 2. automated annotations using [`autopar-clava`](https://github.com/specs-feup/clava).
 
-The two approaches serve different purposes: manual method enables finding optimal
-directives, but automatic method shows these tools can be pipelined, to work without
-human interaction.
+The two approaches serve different purposes: manual method enables finding optimal directives, but automatic method shows these tools can be pipelined, to work without human interaction.
 
 ## Organization of programs
 
-| Directory          | Loop fission | Parallel | Description                                    |
-|:-------------------|:------------:|:--------:|:-----------------------------------------------|
-| `original`         |      ➖      |    ➖     | unmodified programs from PB/C suite            | 
-| `original_autopar` |      ➖      |    ✅     | original programs, parallelized automatically  |
-| `fission_autopar`  |      ✅      |    ✅     | with loop fission, parallelized automatically  | 
-| `fission_manual `  |      ✅      |    ✅     | with loop fission, parallelized by hand        |  
+| Directory          | Loop fission | Parallel | Description                                   |
+|:-------------------|:------------:|:--------:|:----------------------------------------------|
+| `original`         |      ➖       |    ➖     | unmodified programs from PB/C suite           | 
+| `original_autopar` |      ➖       |    ✅     | original programs, parallelized automatically |
+| `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically | 
+| `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand       |  
 
 **Other directories and files**
 
 * `fission/` non-parallelized versions of programs after applying loop fission.
 
-* `headers/` directory contains the original header files from PB/C suite, moved
-  to a separate directory for purposes of sharing.
+* `headers/` directory contains the original header files from PB/C suite, moved to a separate directory for purposes of sharing.
 
 * `utilities/` are from PB/C suite and contains e.g. the benchmarking timing script.
 
-* `run.sh` is a wrapper for the timing script in utilities. It adds some command
-  line arguments and options to ease benchmarking full directories of programs at once.
+* `run.sh` is a wrapper for the timing script in utilities. It adds some command line arguments and options to ease benchmarking full directories of programs at once.
 
 * `script_autopar.sh` is used for inserting automatic parallelization directives. 
   
@@ -99,8 +90,7 @@ Timing options are same as default:
 
 ### Plotting
 
-After capturing results, use the plotting script to generate tables or graphs.
-This step require Python version 3.+ 
+After capturing results, use the plotting script to generate tables or graphs. This step requires Python version 3.+ 
 
 1. Install dependencies
     
@@ -119,8 +109,7 @@ For all various available options run: `python plot.py --help`
 
 ## Regenerating automatic parallelization directives 
 
-Program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) 
-from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite, after they have been "split" by our algorithm, as shared in [fission](./fission).
+Program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite, after they have been "split" by our algorithm, as shared in [fission](./fission).
 
 To recreate those files:
 

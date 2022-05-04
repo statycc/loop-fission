@@ -31,12 +31,18 @@ from matplotlib.lines import Line2D
 RESULTS_DIR = './results'
 
 # name of original examples directory, for computing speedup
-OG_DIRNAME = 'original'
+SEQ_TIME = 'original'
 
 # custom sort order for data sizes smallest -> largest
 SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
 COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
+# directory sorting in tables left -> right
+SOURCES = [SEQ_TIME, "original_autopar", "fission_autopar",
+           "fission_manual"]
+
+# Configs for plot/charts
+BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#073b4c']
 plt.rc('axes', labelsize=8)
 plt.rc('xtick', labelsize=8)
 plt.rc('ytick', labelsize=8)
@@ -130,18 +136,27 @@ class ResultPresenter:
 
         # list of source directories
         self.sources = sorted(
-            list(set([r.source for r in results])))
+            list(set([r.source for r in results])),
+            key=cmp_to_key(ResultPresenter.sources_sort))
 
         # list of names of benchmarked programs
         self.programs = sorted(list(set(
             chain.from_iterable([r.programs for r in results]))))
 
     @staticmethod
-    def data_size_sort(x, y):
-        """Sort data sizes."""
-        xi = SIZES.index(x) if x in SIZES else 1
-        yi = SIZES.index(y) if y in SIZES else 1
+    def custom_sort(x, y, src_arr):
+        """Determine custom sort order of x and y."""
+        xi = src_arr.index(x) if x in src_arr else 1
+        yi = src_arr.index(y) if y in src_arr else 1
         return -1 if xi < yi else 0 if xi == yi else 1
+
+    @staticmethod
+    def data_size_sort(x, y):
+        return ResultPresenter.custom_sort(x, y, SIZES)
+
+    @staticmethod
+    def sources_sort(x, y):
+        return ResultPresenter.custom_sort(x, y, SOURCES)
 
     def query(self, opt, size, source):
         """Find timing result by given parameters."""
@@ -153,6 +168,12 @@ class ResultPresenter:
     def get_pad(matrix, col_index):
         col_vector = [str(row[col_index]) for row in matrix]
         return len(max(col_vector, key=len))
+
+    @staticmethod
+    def save(content, extension='txt'):
+        file_name = path.join(getcwd(), f'result.{extension}')
+        write_file(file_name, content)
+        print(f'Wrote result to: {file_name}')
 
     def __times_table(self):
         """Generates a datatable of recorded times."""
@@ -189,7 +210,7 @@ class ResultPresenter:
         table = [['Program', 'Data size'] + opts]
 
         # fix original vs. parallel source for computing speedup
-        og_index = self.sources.index(OG_DIRNAME)
+        og_index = self.sources.index(SEQ_TIME)
         s1 = self.sources[og_index]
         s2 = self.sources[0:2][(og_index + 1) % 2]
 
@@ -206,7 +227,7 @@ class ResultPresenter:
                     o = self.opt_levels[(ci // ls) % lo]
                     ts = self.query(o, d, s1).get_time(p)  # sequential
                     tp = self.query(o, d, s2).get_time(p)  # parallel
-                    speedup = ts / tp
+                    speedup = ts / tp if (ts and tp) else 0
                     row.append(str(round(speedup, 2)).ljust(4, '0'))
             table.append(row)
         return table
@@ -261,18 +282,21 @@ class ResultPresenter:
 
     def plot(self):
         rows, cols = 2, 3
-        labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
-        colors = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#073b4c']
+        colors = BAR_COLORS
         fig_count = max(1, len(self.programs) // (rows * cols))
         subplots = min(len(self.programs), rows * cols)
-
+        labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         y_label = "Speedup"
+
         data = self.__speedup_table()
         bars = [(data[0].index(o), o) for o in self.opt_levels]
         lx, w = np.arange(len(labels)), 0.80 / len(bars)
+        x_adjust = (len(bars) / 2) - (1 / len(bars))
+
         y_min, y_max = 0, ceil(np.amax(
-            [[float(c) for c in r[2:]] for r in data[1:]]))
-        bar_x = [lx + ((i - 1.5) * w) for i in range(0, 4)]
+            [[(float(c) if c else 1)
+              for c in r[2:]] for r in data[1:]]))
+        bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
         bar_props = {'edgecolor': "black", 'lw': 0.35,
                      'width': w}
 
@@ -323,12 +347,6 @@ class ResultPresenter:
             plt.tight_layout()
             plt.savefig(f'result_{f + 1}.pdf')
             plt.show()
-
-    @staticmethod
-    def save(content, extension='txt'):
-        file_name = path.join(getcwd(), f'result.{extension}')
-        write_file(file_name, content)
-        print(f'Wrote result to: {file_name}')
 
 
 if __name__ == '__main__':
