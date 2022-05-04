@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 clara_path=/opt/clava/Clava/Clava.jar
-# Please update with your own path if needed.
 
-if [ "$1" != "" ]; then
+
+if [ "$1" != "" ]; then  # get source directory from first positional argument
     folder="$1"
 else
-    folder=original
+    folder=original      # ... or default to original
 fi
 
 
@@ -101,11 +101,17 @@ end
 
 EOF
 
+target_dir="$folder"_autopar
+[ -d "$target_dir" ] || mkdir "$target_dir"
+
+
+# TODO: make this loop write all outputs to $target_dir not to root
+
 # For each of our example…
-for file in 3mm bicg fdtd-2d gesummv mvt; do
+for file in 3mm bicg fdtd-2d gesummv mvt; do  # why hardcoded list, why not loop all in $folder?
     echo "$file"
     # We optimize it using Clava and our .lara instructions
-    java -jar ${clara_path} PolybenchAutopar.lara -p ../${folder}/${file}.c  -ih "../headers/;../utilities/"
+    java -jar ${clara_path} PolybenchAutopar.lara -p ./${folder}/${file}.c  -ih "./headers/;./utilities/"
     # We copy the resulting file.
     cp woven_code/${file}.c .
 done

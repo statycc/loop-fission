@@ -263,7 +263,8 @@ class ResultPresenter:
         rows, cols = 2, 3
         labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         colors = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#073b4c']
-        fig_count = len(self.programs) // (rows * cols)
+        fig_count = max(1, len(self.programs) // (rows * cols))
+        subplots = min(len(self.programs), rows * cols)
 
         y_label = "Speedup"
         data = self.__speedup_table()
@@ -277,10 +278,9 @@ class ResultPresenter:
 
         for f in range(fig_count):
             fig, axs = plt.subplots(
-                figsize=[6, 4],
-                nrows=rows, ncols=cols, dpi=250)
+                figsize=[7, 5], nrows=rows, ncols=cols, dpi=300)
             axs = axs.flatten()
-            for p in range(rows * cols):
+            for p in range(subplots):
                 p_name = self.programs[f * (rows * cols) + p]
                 ri = [d[0] for d in data].index(p_name)
                 ry = ri + len(labels)
@@ -296,7 +296,7 @@ class ResultPresenter:
                 axs[p].set_xticks(lx, labels)
                 axs[p].set_xlabel(p_name)
                 axs[p].tick_params(axis="y", direction="inout")
-                axs[p].tick_params(axis="x", length=0, pad=8)
+                axs[p].tick_params(axis="x", length=0, pad=4)
                 axs[p].spines['right'].set_visible(False)
                 axs[p].spines['top'].set_visible(False)
                 axs[p].spines['bottom'].set_visible(False)
@@ -315,6 +315,10 @@ class ResultPresenter:
                     ncol=4)
 
                 axs[p].margins(0.05)
+
+            # if there are fewer programs, clear the overestimate
+            for idx in range(len(self.programs), rows * cols):
+                fig.delaxes(axs[idx])
 
             plt.tight_layout()
             plt.savefig(f'result_{f + 1}.pdf')

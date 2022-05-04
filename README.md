@@ -43,7 +43,7 @@ human interaction.
   
 * `plot.py` is used for generating tables and plots from results.  
 
-### How to run benchmarks
+## How to run benchmarks
 
 **Basic usage** 
 
@@ -59,9 +59,6 @@ For customizable options, call the `run.sh` script directly, with choice of argu
 ./run.sh 
 ```
 
-If necessary, change permissions: `chmod u+r+x ./run.sh`
-
-
 **Available arguments**
 
 | FLAG | DESCRIPTION: options                                                    | DEFAULT     |
@@ -72,13 +69,14 @@ If necessary, change permissions: `chmod u+r+x ./run.sh`
 | `-v` | max. variance when timing results (%) : > `0.0`                         | `5.0`       |
 | `-s` | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD`  |
 
+If necessary, change permissions: `chmod u+r+x ./run.sh`
 
 **Duration**
 
-- `EXTRALARGE` original programs without optimization (`O0`): 20-25 min
+- `EXTRALARGE` original programs without compiler optimization: 20-25 min
 - less for parallel programs / smaller data size / higher compiler optimization levels
 
-#### Results
+### Results
 
 The results can be found in `results/` directory. Two files will be generated for each run:
 
@@ -99,42 +97,42 @@ Timing options are same as default:
 - perform 5 executions/program
 - take average of 3 runs (exclude min, max time)
 
-#### Plotting
+### Plotting
 
 After capturing results, use the plotting script to generate tables or graphs.
-This step uses Python 3.+ and [matplotlib](https://matplotlib.org/). 
+This step require Python version 3.+ 
 
-1. First install required dependencies:
-
-```text
-python -m pip install -q -r requirements.txt
-```
+1. Install dependencies
+    
+    ```text
+    python -m pip install -q -r requirements.txt
+    ```
 
 2. Generate tables or plots
 
-```text
-python plot.py
-```
+    ```text
+    python plot.py
+    ```
 
-To see various available options run: `python plot.py --help`
+For all various available options run: `python plot.py --help`
 
 
-### Regenerating automatic parallelization directives 
+## Regenerating automatic parallelization directives 
 
 Program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) 
 from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite, after they have been "split" by our algorithm, as shared in [fission](./fission).
 
 To recreate those files:
 
-1. **Install Clava**, per their [resources](https://github.com/specs-feup/clava#resources). For anything but windows,
+1. Install Clava, per their [resources](https://github.com/specs-feup/clava#resources). For anything but windows,
 
     - Download [their installation script](http://specs.fe.up.pt/tools/clava/clava-update), place it in the folder where you would like to install clava (e.g., `/opt`),
     
     - Execute the installation script as root.
 
-2. **Set `clara_path`** to the right path if it is not `/opt/clava/Clava/Clava.jar`.
+2. Set `clara_path` to the right path if it is not `/opt/clava/Clava/Clava.jar`.
 
-3. **Run** the automatic annotation script: 
+3. Run the automatic annotation script: 
 
     ```text
     ./script_autopar.sh [source-dir]
@@ -152,11 +150,9 @@ This script will perform following steps automatically, for each .c file:
 - Delete the temporary file.
 
 
-
-
 * * *
 
-### About Polybench/C
+## About Polybench/C
 
 * [Information about Polybench/C @ Ohio State][PB]
 * [Download Polybench/C v4.2 @ SourceForge][4.2]
