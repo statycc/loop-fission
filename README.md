@@ -1,4 +1,4 @@
-# icc-fission Benchmarks
+# ICC-Fission Benchmarks
 
 This repository is for benchmarking the ICC-fission algorithm presented in
 _"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
