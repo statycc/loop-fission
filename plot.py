@@ -293,9 +293,9 @@ class ResultPresenter:
         lx, w = np.arange(len(labels)), 0.80 / len(bars)
         x_adjust = (len(bars) / 2) - (1 / len(bars))
 
-        y_min, y_max = 0, ceil(np.amax(
+        y_min, y_max = 0, max(4, ceil(np.amax(
             [[(float(c) if c else 1)
-              for c in r[2:]] for r in data[1:]]))
+              for c in r[2:]] for r in data[1:]])))
         bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
         bar_props = {'edgecolor': "black", 'lw': 0.35,
                      'width': w}
