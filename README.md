@@ -13,14 +13,17 @@ The two approaches serve different purposes: manual method enables finding optim
 
 ## Organization of programs
 
-| Directory          | Loop fission | Parallel | Description                                   |
-|:-------------------|:------------:|:--------:|:----------------------------------------------|
-| `original`         |      ➖       |    ➖     | unmodified programs from PB/C suite           | 
-| `original_autopar` |      ➖       |    ✅     | original programs, parallelized automatically |
-| `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically | 
-| `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand       |  
+| Directory          | Loop fission | Parallel | Description                                       |
+|:-------------------|:------------:|:--------:|:--------------------------------------------------|
+| `original`         |      ➖       |    ➖     | unmodified programs from PB/C suite               | 
+| `original_autopar` |      ➖       |    ✅     | original programs, parallelized automatically[^1] |
+| `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically[^1] | 
+| `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand           |
 
-**Other directories and files**
+[^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [removes the `polybench_stop_instruments;` and `polybench_print_instruments;` instructions](https://github.com/specs-feup/specs-lara/issues/1) that are needed to time our examples. They are re-inserted using a simple text substitution in [our script script_autopar.sh](script_autopar.sh).
+
+
+### Other directories and files
 
 * `fission/` non-parallelized versions of programs after applying loop fission.
 
