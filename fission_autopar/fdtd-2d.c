@@ -121,6 +121,8 @@ int main(int argc, char **argv) {
    /*Run kernel.*/
    kernel_fdtd_2d(tmax, nx, ny, *ex, *ey, *hz, *_fict_);
    /*Stop and print timer.*/
+   polybench_stop_instruments;
+   polybench_print_instruments;
    ;
    ;
    /*Prevent dead-code elimination. All live-out data must be printed
