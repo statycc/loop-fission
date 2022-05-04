@@ -38,11 +38,11 @@ SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
 COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
 # directory sorting in tables left -> right
-SOURCES = [SEQ_TIME, "original_autopar", "fission_autopar",
+SOURCES = ['original', "original_autopar", "fission_autopar",
            "fission_manual"]
 
 # Configs for plot/charts
-BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#073b4c']
+BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#ff1744']
 plt.rc('axes', labelsize=8)
 plt.rc('xtick', labelsize=8)
 plt.rc('ytick', labelsize=8)
@@ -90,10 +90,9 @@ def parse_results(result_dir):
     filenames = next(walk(result_dir), (None, None, []))[2]
     models = [f for f in filenames if 'model' in f]
 
-    return ResultPresenter(
-        [parse_(*pair) for pair in
-         [(fn, find_model(fn, models)) for fn in  # time, model pairs
-          [f for f in filenames if f not in models]]])  # times
+    return [parse_(*pair) for pair in
+            [(fn, find_model(fn, models)) for fn in
+             [f for f in filenames if f not in models]]]
 
 
 class Timing:
@@ -122,7 +121,8 @@ class ResultPresenter:
     """Represents a collection of results, and offers some formatting
     options """
 
-    def __init__(self, results: List[Timing]):
+    def __init__(self, results: List[Timing], time_millis=False,
+                 digits=10):
         self.__results = results
 
         # list of all (unique) recorded optimization levels
@@ -143,6 +143,25 @@ class ResultPresenter:
         self.programs = sorted(list(set(
             chain.from_iterable([r.programs for r in results]))))
 
+        self.millis = time_millis
+        self.digits = digits
+
+    def time_str(self, t):
+        if not t:
+            return '-'
+        ms, d = self.millis, self.digits
+
+        t = t if not ms else t * 1000
+        cap_len = len(str(int(t)))
+        dig_len = d + (1 if d > 0 else 0)
+
+        return format(t, f'.{d}f')[:cap_len + dig_len]
+
+    def query(self, opt, size, source):
+        """Find timing result by given parameters."""
+        return next(filter(lambda x: x.find(opt, size, source),
+                           self.__results), Timing())
+
     @staticmethod
     def custom_sort(x, y, src_arr):
         """Determine custom sort order of x and y."""
@@ -158,12 +177,6 @@ class ResultPresenter:
     def sources_sort(x, y):
         return ResultPresenter.custom_sort(x, y, SOURCES)
 
-    def query(self, opt, size, source):
-        """Find timing result by given parameters."""
-        return next(filter(
-            lambda x: x.find(opt, size, source),
-            self.__results), Timing())
-
     @staticmethod
     def get_pad(matrix, col_index):
         col_vector = [str(row[col_index]) for row in matrix]
@@ -175,14 +188,14 @@ class ResultPresenter:
         write_file(file_name, content)
         print(f'Wrote result to: {file_name}')
 
-    def __times_table(self):
-        """Generates a datatable of recorded times."""
+    def time_table(self):
+        """Generates a 2d array of recorded times."""
         lp, ld = len(self.programs), len(self.data_sizes)
         lo, ls = len(self.opt_levels), len(self.sources)
-        opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
-        srcs = [self.sources[ci % ls] for ci in range(lo * ls)]
 
         # fill initial header rows
+        opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
+        srcs = [self.sources[ci % ls] for ci in range(lo * ls)]
         table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
 
         for ri in range(lp * ld):
@@ -197,22 +210,24 @@ class ResultPresenter:
                 else:
                     o = self.opt_levels[(ci // ls) % lo]
                     s = self.sources[ci % ls]
-                    row.append(self.query(o, d, s).get_time(p))
+                    t = self.time_str(self.query(o, d, s).get_time(p))
+                    row.append(t)
             table.append(row)
         return table
 
-    def __speedup_table(self):
+    def speedup_table(self, baseline):
+        # fix original vs. parallel source for computing speedup
+        base_i = self.sources.index(baseline)
+        s1 = self.sources[base_i]
+        sp = [n for i, n in enumerate(self.sources) if i != base_i]
+
         lp, ld = len(self.programs), len(self.data_sizes)
-        lo, ls = len(self.opt_levels), 1
-        opts = [self.opt_levels[c % lo] for c in range(lo)]
+        lo, ls = len(self.opt_levels), len(self.sources) - 1
+        opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
+        srcs = [sp[ci % ls] for ci in range(lo * ls)]
 
         # initial headers row
-        table = [['Program', 'Data size'] + opts]
-
-        # fix original vs. parallel source for computing speedup
-        og_index = self.sources.index(SEQ_TIME)
-        s1 = self.sources[og_index]
-        s2 = self.sources[0:2][(og_index + 1) % 2]
+        table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
 
         for ri in range(lp * ld):
             row = []
@@ -225,10 +240,11 @@ class ResultPresenter:
                     row.append(d)
                 else:
                     o = self.opt_levels[(ci // ls) % lo]
+                    s2 = srcs[ci % ls]
                     ts = self.query(o, d, s1).get_time(p)  # sequential
                     tp = self.query(o, d, s2).get_time(p)  # parallel
-                    speedup = ts / tp if (ts and tp) else 0
-                    row.append(str(round(speedup, 2)).ljust(4, '0'))
+                    speedup = ts / tp if (ts and tp and tp > 0) else 0
+                    row.append(self.time_str(speedup))
             table.append(row)
         return table
 
@@ -241,11 +257,10 @@ class ResultPresenter:
     def to_markdown(self, table):
         text = []
         pads = [self.get_pad(table, i) for i in range(len(table[0]))]
+
         for r in table:
             row = f' | '.join([
-                str(round(c, pads[i] - 3)).ljust(pads[i], ' ')
-                if isinstance(c, float)
-                else str(c).ljust(pads[i], ' ')
+                str(c).ljust(pads[i], ' ')
                 for i, c in enumerate(r)])
             text.append("| " + row + " |")
 
@@ -260,69 +275,73 @@ class ResultPresenter:
 
         for r in table:
             row = f' & '.join([
-                str(round(c, pads[i] - 3)).ljust(pads[i], ' ')
-                if isinstance(c, float)
-                else str(c).ljust(pads[i], ' ')
+                str(c).ljust(pads[i], ' ')
                 for i, c in enumerate(r)])
             text.append(row + "\\\\")
-
-        text.insert(1, '\\hline')
         text = "\n".join(text)
         self.save(text, 'txt')
 
     def times(self, fmt):
-        if fmt == "plot":
-            return self.speedup(fmt)
-        self.__out_formatted(self.__times_table(), fmt)
+        self.__out_formatted(self.time_table(), fmt)
 
-    def speedup(self, fmt):
-        if len(self.sources) != 2:
-            return print('speedup assumes two source directories')
-        if SEQ_TIME not in self.sources:
-            return print('time original examples before speedup')
+    def speedup(self, fmt, baseline):
+        src_len, r = len(self.sources), RESULTS_DIR
+        src_error = f'speedup requires timing at least two groups of ' \
+            f'programs, {src_len} found in {r} '
+        bl_error = f'timing results not found for {baseline} in {r} '
+
+        if src_len < 2:
+            return print(src_error)
+        if baseline not in self.sources:
+            return print(bl_error)
+
+        data = self.speedup_table(baseline)
+
         if fmt == "plot":
-            self.plot()
+            self.plot(data)
         else:
-            self.__out_formatted(self.__speedup_table(), fmt)
+            self.__out_formatted(data, fmt)
 
-    def plot(self):
+    def plot(self, data):
         p_count = len(self.programs)
         rows, cols = min(p_count, 2), min(p_count, 3)
         colors = BAR_COLORS
-        fig_count = max(1, p_count // (rows * cols))
         subplots = min(p_count, rows * cols)
         labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         y_label = "Speedup"
 
-        data = self.__speedup_table()
         bars = [(data[0].index(o), o) for o in self.opt_levels]
         lx, w = np.arange(len(labels)), 0.80 / len(bars)
         x_adjust = (len(bars) / 2) - (1 / len(bars))
 
         y_min, y_max = 0, max(4, ceil(np.amax(
-            [[(float(c) if c else 1)
-              for c in r[2:]] for r in data[1:]])))
+            [[(float(c) if c and c != '-' else 1)
+              for c in r[2:]] for r in data[2:]])))
         bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
-        bar_props = {'edgecolor': "black", 'lw': 0.35,
-                     'width': w}
+        bar_props = {'edgecolor': "black", 'lw': 0.35, 'width': w}
+        sub_props = {'figsize': [7, 5], 'nrows': rows, 'ncols': cols,
+                     'dpi': 300}
 
-        for f in range(fig_count):
-            fig, axs = plt.subplots(
-                figsize=[7, 5], nrows=rows, ncols=cols, dpi=300)
+        for src_i in range(len(self.sources) - 1):
+            data_cols = [o + src_i for (o, _) in bars]
+            col_name = data[1][data_cols[0]]
+            fig, axs = plt.subplots(**sub_props)
+
             if p_count > 1:
                 axs = axs.flatten()
             for p in range(subplots):
                 subplt = axs[p] if p_count > 1 else axs
+                p_name = self.programs[p]
 
-                p_name = self.programs[f * (rows * cols) + p]
                 ri = [d[0] for d in data].index(p_name)
                 ry = ri + len(labels)
 
-                for i, (bi, label) in enumerate(bars):
-                    subplt.bar(
-                        bar_x[i], [float(v[bi]) for v in data[ri:ry]],
-                        label=label, color=colors[i % len(colors)],
-                        **bar_props)
+                for i, bi in enumerate(data_cols):
+                    series = [float(v[bi]) if v[bi] != '-'
+                              else 0 for v in data[ri:ry]]
+                    subplt.bar(bar_x[i], series,
+                               color=colors[i % len(colors)],
+                               **bar_props)
 
                 subplt.set_ylim((y_min, y_max))
                 subplt.set_ylabel(y_label)
@@ -354,7 +373,7 @@ class ResultPresenter:
                 fig.delaxes(axs[idx])
 
             plt.tight_layout()
-            plt.savefig(f'result_{f + 1}.pdf')
+            plt.savefig(f'result_{col_name}.pdf')
             plt.show()
 
 
@@ -363,20 +382,41 @@ if __name__ == '__main__':
     parser.add_argument(
         "-d", "--data",
         action='store',
-        default='times',
+        default='time',
         help="data choice: {time, speedup}"
     )
     parser.add_argument(
         "-f", "--fmt",
         action="store",
-        default="markdown",
-        help="output format: {tex, markdown, plot}"
+        default="md",
+        help="output format: {tex, md, plot}"
     )
+    parser.add_argument(
+        "-ss", "--src_speedup",
+        action="store",
+        default="original",
+        help="source directory for calculating speedup ("
+             "default:original) "
+    )
+    parser.add_argument(
+        "-ms", "--millis",
+        action='store_true',
+        help="display table of times in milliseconds"
+    )
+    parser.add_argument(
+        '--digits',
+        type=int,
+        choices=range(0, 15),
+        metavar="[0-15]",
+        help='number of digits for tabular values', default=10)
 
     args = parser.parse_args()
-    rp = parse_results(RESULTS_DIR)
+    records = parse_results(RESULTS_DIR)
+    rp = ResultPresenter(records, args.millis, args.digits)
 
-    if args.data == "speedup":
-        rp.speedup(args.fmt)
+    if args.fmt == "plot":
+        rp.speedup(args.fmt, baseline=args.src_speedup)
+    elif args.data == "speedup":
+        rp.speedup(args.fmt, baseline=args.src_speedup)
     else:
         rp.times(args.fmt)
