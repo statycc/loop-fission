@@ -30,6 +30,10 @@ original:
 original_autopar:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original_autopar -s $(size) -o $(opt); ))
 
+.NOTPARALLEL:
+.PHONY: original_autopar_edited
+original_autopar_edited:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original_autopar_edited -s $(size) -o $(opt); ))
 
 .NOTPARALLEL:
 .PHONY: fission_manual
