@@ -10,6 +10,12 @@ else
 fi
 
 
+# Target directory is name of the original target
+# followed by "_autopar"
+target_dir="$folder"_autopar
+[ -d "$target_dir" ] || mkdir "$target_dir"
+cd "$target_dir"
+
 # The .lara file, taken from
 # https://raw.githubusercontent.com/specs-feup/specs-lara/master/ANTAREX/AutoPar/Polybench/PolybenchAutopar.lara
 
@@ -101,8 +107,6 @@ end
 
 EOF
 
-target_dir="$folder"_autopar
-[ -d "$target_dir" ] || mkdir "$target_dir"
 
 
 # TODO: make this loop write all outputs to $target_dir not to root
@@ -111,12 +115,16 @@ target_dir="$folder"_autopar
 for file in 3mm bicg fdtd-2d gesummv mvt; do  # why hardcoded list, why not loop all in $folder?
     echo "$file"
     # We optimize it using Clava and our .lara instructions
-    java -jar ${clara_path} PolybenchAutopar.lara -p ./${folder}/${file}.c  -ih "./headers/;./utilities/"
+    java -jar ${clara_path} PolybenchAutopar.lara -p ../${folder}/${file}.c  -ih "../headers/;../utilities/"
     # We copy the resulting file.
     cp woven_code/${file}.c .
+    # This substitution restores the timing function needed for the benchmarks.
+    sed -i 's-\/\*Stop and print timer.\*/-\/\*Stop and print timer.\*/\n   polybench_stop_instruments;\n   polybench_print_instruments;-g' ${file}.c
+    # cf. https://github.com/specs-feup/specs-lara/issues/1
 done
 
 # Cleanup.
 rm PolybenchAutopar.lara
 rm -rf woven_code
 rm *.json
+cd ../
