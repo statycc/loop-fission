@@ -281,10 +281,11 @@ class ResultPresenter:
         self.__out_formatted(self.__speedup_table(), fmt)
 
     def plot(self):
-        rows, cols = 2, 3
+        p_count = len(self.programs)
+        rows, cols = min(p_count, 2), min(p_count, 3)
         colors = BAR_COLORS
-        fig_count = max(1, len(self.programs) // (rows * cols))
-        subplots = min(len(self.programs), rows * cols)
+        fig_count = max(1, p_count // (rows * cols))
+        subplots = min(p_count, rows * cols)
         labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         y_label = "Speedup"
 
@@ -303,28 +304,31 @@ class ResultPresenter:
         for f in range(fig_count):
             fig, axs = plt.subplots(
                 figsize=[7, 5], nrows=rows, ncols=cols, dpi=300)
-            axs = axs.flatten()
+            if p_count > 1:
+                axs = axs.flatten()
             for p in range(subplots):
+                subplt = axs[p] if p_count > 1 else axs
+
                 p_name = self.programs[f * (rows * cols) + p]
                 ri = [d[0] for d in data].index(p_name)
                 ry = ri + len(labels)
 
                 for i, (bi, label) in enumerate(bars):
-                    axs[p].bar(
+                    subplt.bar(
                         bar_x[i], [float(v[bi]) for v in data[ri:ry]],
                         label=label, color=colors[i % len(colors)],
                         **bar_props)
 
-                axs[p].set_ylim((y_min, y_max))
-                axs[p].set_ylabel(y_label)
-                axs[p].set_xticks(lx, labels)
-                axs[p].set_xlabel(p_name)
-                axs[p].tick_params(axis="y", direction="inout")
-                axs[p].tick_params(axis="x", length=0, pad=4)
-                axs[p].spines['right'].set_visible(False)
-                axs[p].spines['top'].set_visible(False)
-                axs[p].spines['bottom'].set_visible(False)
-                axs[p].legend([
+                subplt.set_ylim((y_min, y_max))
+                subplt.set_ylabel(y_label)
+                subplt.set_xticks(lx, labels)
+                subplt.set_xlabel(p_name)
+                subplt.tick_params(axis="y", direction="inout")
+                subplt.tick_params(axis="x", length=0, pad=4)
+                subplt.spines['right'].set_visible(False)
+                subplt.spines['top'].set_visible(False)
+                subplt.spines['bottom'].set_visible(False)
+                subplt.legend([
                     Line2D([0], [0], marker='s', lw=0,
                            color=colors[i % len(colors)],
                            markersize=4) for (i, _) in
@@ -338,7 +342,7 @@ class ResultPresenter:
                     borderpad=0,
                     ncol=4)
 
-                axs[p].margins(0.05)
+                subplt.margins(0.05)
 
             # if there are fewer programs, clear the overestimate
             for idx in range(len(self.programs), rows * cols):
