@@ -105,7 +105,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
       }
 }
 /* G := E*F */
-#pragma omp parallel for
+#pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
   for (j = 0; j < _PB_NL; j++)
   {

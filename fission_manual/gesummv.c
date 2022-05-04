@@ -105,7 +105,7 @@ void kernel_gesummv(int n,
 }
 
 // this has to come after because it reads both arrays, this transform maybe wrong
-#pragma omp parallel for
+#pragma omp parallel for private(i, j)
 for (i = 0; i < _PB_N; i++)
 {
     y[i] = alpha * tmp[i] + beta * y[i];

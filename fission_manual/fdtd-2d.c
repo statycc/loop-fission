@@ -121,7 +121,7 @@ void kernel_fdtd_2d(int tmax,
     }
 }
 
-#pragma omp parallel for
+#pragma omp parallel for private(t, i, j)
 for(t = 0; t < _PB_TMAX; t++)
 {
   for (i = 0; i < _PB_NX - 1; i++)
