@@ -233,9 +233,7 @@ class ResultPresenter:
         return table
 
     def __out_formatted(self, data, fmt):
-        if fmt == "plot":
-            self.plot()
-        elif fmt == "tex":
+        if fmt == "tex":
             self.to_tex(data)
         else:
             self.to_markdown(data)
@@ -273,12 +271,19 @@ class ResultPresenter:
         self.save(text, 'txt')
 
     def times(self, fmt):
+        if fmt == "plot":
+            return self.speedup(fmt)
         self.__out_formatted(self.__times_table(), fmt)
 
     def speedup(self, fmt):
         if len(self.sources) != 2:
             return print('speedup assumes two source directories')
-        self.__out_formatted(self.__speedup_table(), fmt)
+        if SEQ_TIME not in self.sources:
+            return print('time original examples before speedup')
+        if fmt == "plot":
+            self.plot()
+        else:
+            self.__out_formatted(self.__speedup_table(), fmt)
 
     def plot(self):
         p_count = len(self.programs)
