@@ -146,12 +146,13 @@ class ResultPresenter:
         self.millis = time_millis
         self.digits = digits
 
-    def time_str(self, t):
+    def time_str(self, t, scale=True):
         if not t:
             return '-'
         ms, d = self.millis, self.digits
 
-        t = t if not ms else t * 1000
+        if scale:
+            t = t if not ms else t * 1000
         cap_len = len(str(int(t)))
         dig_len = d + (1 if d > 0 else 0)
 
@@ -183,8 +184,8 @@ class ResultPresenter:
         return len(max(col_vector, key=len))
 
     @staticmethod
-    def save(content, extension='txt'):
-        file_name = path.join(getcwd(), f'result.{extension}')
+    def save(content, filename='result', extension='txt'):
+        file_name = path.join(getcwd(), f'{filename}.{extension}')
         write_file(file_name, content)
         print(f'Wrote result to: {file_name}')
 
@@ -245,17 +246,17 @@ class ResultPresenter:
                     ts = self.query(o, d, s1).get_time(p)  # sequential
                     tp = self.query(o, d, s2).get_time(p)  # parallel
                     speedup = ts / tp if (ts and tp and tp > 0) else 0
-                    row.append(self.time_str(speedup))
+                    row.append(self.time_str(speedup, scale=False))
             table.append(row)
         return table
 
-    def __out_formatted(self, data, fmt):
+    def __out_formatted(self, data, fmt, fn):
         if fmt == "tex":
-            self.to_tex(data)
+            self.to_tex(data, fn)
         else:
-            self.to_markdown(data)
+            self.to_markdown(data, fn)
 
-    def to_markdown(self, table):
+    def to_markdown(self, table, fn):
         text = []
         pads = [self.get_pad(table, i) for i in range(len(table[0]))]
 
@@ -268,9 +269,9 @@ class ResultPresenter:
         text.insert(1, "| " + (" | ".join(
             ['-' * pads[i] for i in range(len(table[0]))])) + " |")
         text = "\n".join(text)
-        self.save(text, 'txt')
+        self.save(text, fn, 'txt')
 
-    def to_tex(self, table):
+    def to_tex(self, table, fn):
         text = []
         pads = [self.get_pad(table, i) for i in range(len(table[0]))]
 
@@ -280,10 +281,11 @@ class ResultPresenter:
                 for i, c in enumerate(r)])
             text.append(row + "\\\\")
         text = "\n".join(text)
-        self.save(text, 'txt')
+        self.save(text, fn, 'txt')
 
     def times(self, fmt):
-        self.__out_formatted(self.time_table(), fmt)
+        fn = "-".join(self.sources).lower()
+        self.__out_formatted(self.time_table(), fmt, fn)
 
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
@@ -296,26 +298,28 @@ class ResultPresenter:
         if baseline not in self.sources:
             return print(bl_error)
 
+        fn = "-".join([baseline, target or 'all'])
         data = self.speedup_table(baseline, target)
 
         if fmt == "plot":
-            self.plot(data)
+            self.plot(data, baseline)
         else:
-            self.__out_formatted(data, fmt)
+            self.__out_formatted(data, fmt, fn)
 
-    def plot(self, data):
+    def plot(self, data, fn):
         p_count = len(self.programs)
         rows, cols = min(p_count, 2), min(p_count, 3)
         colors = BAR_COLORS
         subplots = min(p_count, rows * cols)
         labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
+        src_len = (len(data[0]) - 2) // len(self.opt_levels)
         y_label = "Speedup"
 
         bars = [(data[0].index(o), o) for o in self.opt_levels]
         lx, w = np.arange(len(labels)), 0.80 / len(bars)
         x_adjust = (len(bars) / 2) - (1 / len(bars))
 
-        y_min, y_max = 0, max(4, ceil(np.amax(
+        y_min, y_max = 0, max(1, ceil(np.amax(
             [[(float(c) if c and c != '-' else 1)
               for c in r[2:]] for r in data[2:]])))
         bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
@@ -323,7 +327,7 @@ class ResultPresenter:
         sub_props = {'figsize': [7, 5], 'nrows': rows, 'ncols': cols,
                      'dpi': 300}
 
-        for src_i in range(len(self.sources) - 1):
+        for src_i in range(src_len):
             data_cols = [o + src_i for (o, _) in bars]
             col_name = data[1][data_cols[0]]
             fig, axs = plt.subplots(**sub_props)
@@ -333,6 +337,8 @@ class ResultPresenter:
             for p in range(subplots):
                 subplt = axs[p] if p_count > 1 else axs
                 p_name = self.programs[p]
+                subplt.axhline(y=1, color='#999', linestyle='-',
+                               zorder=0)
 
                 ri = [d[0] for d in data].index(p_name)
                 ry = ri + len(labels)
@@ -374,7 +380,7 @@ class ResultPresenter:
                 fig.delaxes(axs[idx])
 
             plt.tight_layout()
-            plt.savefig(f'result_{col_name}.pdf')
+            plt.savefig(f'{fn}-{col_name}.pdf')
             plt.show()
 
 

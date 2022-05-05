@@ -68,7 +68,8 @@ If necessary, change permissions: `chmod u+r+x ./run.sh`
 
 **Duration**
 
-- `EXTRALARGE` original programs without compiler optimization: 20-25 min
+- Benchmarking all programs using `make all`: about 2h
+- `EXTRALARGE` original programs only, without compiler optimization: 20-25 min
 - less for parallel programs / smaller data size / higher compiler optimization levels
 
 ### Results
