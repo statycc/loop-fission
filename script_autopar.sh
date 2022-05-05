@@ -2,17 +2,16 @@
 
 clara_path=/opt/clava/Clava/Clava.jar
 
-
 if [ "$1" != "" ]; then  # get source directory from first positional argument
     folder="$1"
 else
     folder=original      # ... or default to original
 fi
 
-
 # Target directory is name of the original target
+# prefixed with "_" and
 # followed by "_autopar"
-target_dir="$folder"_autopar
+target_dir=_"$folder"_autopar
 [ -d "$target_dir" ] || mkdir "$target_dir"
 cd "$target_dir"
 
@@ -108,19 +107,13 @@ end
 EOF
 
 
-
-# TODO: make this loop write all outputs to $target_dir not to root
-
 # For each of our example…
-for file in 3mm bicg deriche gesummv mvt; do  # why hardcoded list, why not loop all in $folder?
+for file in `cd ../${folder}; ls -1 *.c`; do
     echo "$file"
     # We optimize it using Clava and our .lara instructions
-    java -jar ${clara_path} PolybenchAutopar.lara -p ../${folder}/${file}.c  -ih "../headers/;../utilities/"
+    java -jar ${clara_path} PolybenchAutopar.lara -p ../${folder}/${file}  -ih "../headers/;../utilities/"
     # We copy the resulting file.
-    cp woven_code/${file}.c .
-    # This substitution restores the timing function needed for the benchmarks.
-    sed -i 's-\/\*Stop and print timer.\*/-\/\*Stop and print timer.\*/\n   polybench_stop_instruments;\n   polybench_print_instruments;-g' ${file}.c
-    # cf. https://github.com/specs-feup/specs-lara/issues/1
+    cp woven_code/${file} .
 done
 
 # Cleanup.

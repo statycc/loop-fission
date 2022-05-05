@@ -20,7 +20,7 @@ The two approaches serve different purposes: manual method enables finding optim
 | `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically[^1] | 
 | `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand           |
 
-[^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [removes the `polybench_stop_instruments;` and `polybench_print_instruments;` instructions](https://github.com/specs-feup/specs-lara/issues/1) that are needed to time our examples. They are re-inserted using a simple text substitution in [our script script_autopar.sh](script_autopar.sh).
+[^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [edits significantly the original source code](https://github.com/specs-feup/specs-lara/issues/1), outside of the function that needs to be parallelized, strictly speaking. This affects the original timing used by Polybench/C. As a consequence, those files have been obtained by running [our script script_autopar.sh](script_autopar.sh) to obtain the version with openmp annotation, and then those annotations have been placed in the original file.
 
 
 **Other directories and files**
@@ -113,7 +113,7 @@ For all various available options run: `python plot.py --help`
 
 ## Regenerating automatic parallelization directives 
 
-Program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite, after they have been "split" by our algorithm, as shared in [fission](./fission).
+The openmp annotations in the program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite in [original](./original), and on the same files after they have been "split" by our algorithm, as shared in [fission](./fission).
 
 To recreate those files:
 
@@ -131,17 +131,17 @@ To recreate those files:
     ./script_autopar.sh [source-dir]
     ``` 
     
-    For source directory specify either `original` or `fission`
+    For source directory specify either `original` or `fission`, and the result will be in `_original_autopar` and `_fission_autopar`.
     
 
 This script will perform following steps automatically, for each .c file:
 
-- Copy the appropriate headers,
 - Create the appropriate AutoPar.lara directions (that simply ask to fissionize all the loops in the method function that starts with kernel_),
 - Run clava,
 - Copy the optimized file to this folder,
 - Delete the temporary file,
-- Re-insert the directives needed to time our examples[^1].
+
+Note that the files shared in `original_autopar` and `fission_autopar` are obtained by "extracting" the openmp annotation from the resulting files and inserting them in the original files[^1].
 
 
 * * *

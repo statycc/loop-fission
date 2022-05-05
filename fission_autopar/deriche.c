@@ -88,7 +88,7 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
    b1 =  POW_FUN(SCALAR_VAL(2.0),-alpha);
    b2 = -EXP_FUN(SCALAR_VAL(-2.0)*alpha);
    c1 = c2 = 1;
-
+   #pragma omp parallel for default(shared) private(i, j, ym1, ym2, xm1) firstprivate(w, h, a1, a2, b1, b2, imgIn)
    for (i=0; i<_PB_W; i++) {
         ym1 = SCALAR_VAL(0.0);
         ym2 = SCALAR_VAL(0.0);
@@ -100,7 +100,7 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
             ym1 = y1[i][j];
         }
     }
-
+    #pragma omp parallel for default(shared) private(i, j, yp1, yp2, xp1, xp2) firstprivate(w, h, a3, a4, b1, b2, imgIn)
     for (i=0; i<_PB_W; i++) {
         yp1 = SCALAR_VAL(0.0);
         yp2 = SCALAR_VAL(0.0);
@@ -114,12 +114,12 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
             yp1 = y2[i][j];
         }
     }
-
+    #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c1, y1, y2)
     for (i=0; i<_PB_W; i++)
         for (j=0; j<_PB_H; j++) {
             imgOut[i][j] = c1 * (y1[i][j] + y2[i][j]);
         }
-
+    #pragma omp parallel for default(shared) private(j, i, tm1, ym1, ym2) firstprivate(h, w, a5, a6, b1, b2, imgOut)
     for (j=0; j<_PB_H; j++) {
         tm1 = SCALAR_VAL(0.0);
         ym1 = SCALAR_VAL(0.0);
@@ -132,7 +132,7 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
         }
     }
 
-
+    #pragma omp parallel for default(shared) private(j, i, tp1, tp2, yp1, yp2) firstprivate(h, w, a7, a8, b1, b2, imgOut)
     for (j=0; j<_PB_H; j++) {
         tp1 = SCALAR_VAL(0.0);
         tp2 = SCALAR_VAL(0.0);
@@ -146,7 +146,7 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
             yp1 = y2[i][j];
         }
     }
-
+    #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c2, y1, y2)
     for (i=0; i<_PB_W; i++)
         for (j=0; j<_PB_H; j++)
             imgOut[i][j] = c2*(y1[i][j] + y2[i][j]);
