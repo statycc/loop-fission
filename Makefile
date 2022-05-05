@@ -18,6 +18,7 @@ SIZES = MINI SMALL MEDIUM LARGE EXTRALARGE
 clean:
 	rm -rf compiled*/
 	rm -rf results/
+	rm -rf _*_autopar/
 
 .NOTPARALLEL:
 .PHONY: original
