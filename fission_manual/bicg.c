@@ -80,6 +80,8 @@ void kernel_bicg(int m, int n,
   int i, j;
 
 #pragma scop
+
+  #pragma omp parallel for private(i)
   for (i = 0; i < _PB_M; i++)
     s[i] = 0;
 
