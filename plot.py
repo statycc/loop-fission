@@ -324,7 +324,7 @@ class ResultPresenter:
               for c in r[2:]] for r in data[2:]])))
         bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
         bar_props = {'edgecolor': "black", 'lw': 0.35, 'width': w}
-        sub_props = {'figsize': [7, 5], 'nrows': rows, 'ncols': cols,
+        sub_props = {'nrows': rows, 'ncols': cols,
                      'dpi': 300}
 
         for src_i in range(src_len):
@@ -337,8 +337,8 @@ class ResultPresenter:
             for p in range(subplots):
                 subplt = axs[p] if p_count > 1 else axs
                 p_name = self.programs[p]
-                subplt.axhline(y=1, color='#999', linestyle='-',
-                               zorder=0)
+                subplt.axhline(y=1, color='#777', lw=2,
+                               linestyle='dashed', zorder=0)
 
                 ri = [d[0] for d in data].index(p_name)
                 ry = ri + len(labels)
