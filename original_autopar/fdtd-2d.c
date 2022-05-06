@@ -97,7 +97,7 @@ void kernel_fdtd_2d(int tmax,
 {
   int t, i, j;
 
-#pragma scop
+  #pragma scop
   #pragma omp parallel for default(shared) private(t, j, i) firstprivate(tmax, ny, nx, _fict_) reduction(- : ey[:NX][:NY]) reduction(- : ex[:NX][:NY]) reduction(- : hz[:NX][:NY])
   for(t = 0; t < _PB_TMAX; t++)
     {

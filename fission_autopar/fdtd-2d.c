@@ -98,7 +98,7 @@ void kernel_fdtd_2d(int tmax,
   int t, i, j;
 
   #pragma scop
-  #pragma omp parallel for default(shared) private(t, j, i) firstprivate(tmax, ny, nx, _fict_, hz) reduction(- : ey[:NX][:NY])
+  #pragma omp parallel for default(shared) private(t, j, i) firstprivate(_PB_TMAX, _PB_NY, _PB_NX, _fict_, hz) reduction(- : ey[:NX][:NY])
   for (t = 0; t < _PB_TMAX; t++) {
     for (j = 0; j < _PB_NY; j++)
       ey[0][j] = _fict_[t];
@@ -107,13 +107,13 @@ void kernel_fdtd_2d(int tmax,
       for (j = 0; j < _PB_NY; j++)
         ey[i][j] = ey[i][j] - SCALAR_VAL(0.5) * (hz[i][j] - hz[i - 1][j]);
   }
-  #pragma omp parallel for default(shared) private(t, i, j) firstprivate(tmax, nx, ny, hz) reduction(- : ex[:NX][:NY])
+  #pragma omp parallel for default(shared) private(t, i, j) firstprivate(_PB_TMAX, _PB_NX, _PB_NY, hz) reduction(- : ex[:NX][:NY])
   for (t = 0; t < _PB_TMAX; t++) {
     for (i = 0; i < _PB_NX; i++)
       for (j = 1; j < _PB_NY; j++)
         ex[i][j] = ex[i][j] - SCALAR_VAL(0.5) * (hz[i][j] - hz[i][j - 1]);
   }
-  #pragma omp parallel for default(shared) private(t, i, j) firstprivate(tmax, nx, ny, ex, ey) reduction(- : hz[:NX][:NY])
+  #pragma omp parallel for default(shared) private(t, i, j) firstprivate(_PB_TMAX, _PB_NX, _PB_NY, ex, ey) reduction(- : hz[:NX][:NY])
   for (t = 0; t < _PB_TMAX; t++) {
     for (i = 0; i < _PB_NX - 1; i++)
       for (j = 0; j < _PB_NY - 1; j++)
