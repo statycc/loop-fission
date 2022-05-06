@@ -150,8 +150,17 @@ Note that the files shared in `original_autopar` and `fission_autopar` are obtai
 ## About Polybench/C
 
 * [Information about Polybench/C @ Ohio State][PB]
-* [Download Polybench/C v4.2 @ SourceForge][4.2]
-* [Ohio State University Software Distribution License](./LICENSE.txt)
+* [Download Polybench/C v4.2 @ SourceForge][4.2] ([Ohio State University Software Distribution License](./LICENSE.txt))
+
+[PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
+[4.2]: https://sourceforge.net/projects/polybench/files/
+
+* * *
+
+## About AutoPar-Clava
+
+* [Information about Clava][https://github.com/specs-feup/clava/] ([Apache License](https://github.com/specs-feup/clava/blob/master/LICENSE))
+* [The specs-lara repository][https://github.com/specs-feup/specs-lara], where the Polybench/C examples are shared before and after optimization ([MIT License](https://github.com/specs-feup/specs-lara/blob/master/LICENSE))
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/

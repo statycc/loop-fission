@@ -32,11 +32,6 @@ original_autopar:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original_autopar -s $(size) -o $(opt); ))
 
 .NOTPARALLEL:
-.PHONY: original_autopar_edited
-original_autopar_edited:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original_autopar_edited -s $(size) -o $(opt); ))
-
-.NOTPARALLEL:
 .PHONY: fission_manual
 fission_manual:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_manual -s $(size) -o $(opt); ))
@@ -74,3 +69,7 @@ getsummv:
 .NOTPARALLEL:
 mvt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p mvt -s $(size) -o $(opt); ))
+
+.NOTPARALLEL:
+everything: | clean original original_autopar fission_manual fission_autopar
+	
