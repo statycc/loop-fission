@@ -108,7 +108,7 @@ do
     fi
 
     # compile options
-    "$CC" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c "$file" -DPOLYBENCH_TIME -D"$DS_SIZE"_DATASET -o "$out"
+    "$CC" "$file" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c  -DPOLYBENCH_TIME -D"$DS_SIZE"_DATASET -o "$out"
 
     while : ; do
 
