@@ -51,7 +51,7 @@ plt.rc('legend', fontsize=6)
 
 def read_file(file_path):
     """Basic file read, by line"""
-    with open(file_path, 'r') as fp:
+    with open(file_path, 'r', errors='replace') as fp:
         return fp.readlines()
 
 
@@ -324,8 +324,7 @@ class ResultPresenter:
               for c in r[2:]] for r in data[2:]])))
         bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
         bar_props = {'edgecolor': "black", 'lw': 0.35, 'width': w}
-        sub_props = {'nrows': rows, 'ncols': cols,
-                     'dpi': 300}
+        sub_props = {'nrows': rows, 'ncols': cols, 'dpi': 300}
 
         for src_i in range(src_len):
             data_cols = [o + src_i for (o, _) in bars]
