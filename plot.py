@@ -53,6 +53,58 @@ def read_file(file_path):
         return fp.readlines()
 
 
+def setup_args():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "-d", "--data",
+        action='store',
+        default='time',
+        help="data choice: {time, speedup}"
+    )
+    parser.add_argument(
+        "-o", "--out",
+        action='store',
+        default='plots',
+        help="output directory"
+    )
+    parser.add_argument(
+        "-f", "--fmt",
+        action="store",
+        default="md",
+        help="output format: {tex, md, plot}"
+    )
+    parser.add_argument(
+        "--ss",
+        action="store",
+        default="original",
+        help="source directory for speedup [default: original]"
+    )
+    parser.add_argument(
+        "--st",
+        action="store",
+        help="target directory for speedup [default: *]"
+    )
+    parser.add_argument(
+        "--millis",
+        action='store_true',
+        help="display table of times in milliseconds, not seconds"
+    )
+    parser.add_argument(
+        '--digits',
+        type=int,
+        choices=range(0, 15),
+        metavar="[0-15]",
+        help='number of digits for tabular values [default: 6]',
+        default=6)
+    parser.add_argument(
+        "--dir_filter",
+        action='store',
+        help="Comma separated list of directories to consider "
+        f'[default: {DIR_FILTER}]'
+    )
+    return parser
+
+
 def parse_results(result_dir, dir_filter):
     """Make a data object from the captured results"""
 
@@ -132,7 +184,7 @@ class ResultPresenter:
     options """
 
     def __init__(self, results: List[Timing], out_dir,
-                 time_millis=False, digits=10):
+                 time_millis, digits):
         self.__results = results
 
         # list of all (unique) recorded optimization levels
@@ -198,9 +250,11 @@ class ResultPresenter:
     def write_table(data, fmt, fn, out_dir):
         writer, ext = MarkdownTableWriter, 'md'
         headers, values = data[0], data[1:]
+        # remove line w/ dir names if all values are the same
+        if len(list(set([v for v in values[0] if len(v) > 0]))) == 1:
+            values = values[1:]
         if fmt == "tex":
             writer, ext = LatexTableWriterExt, 'tex'
-            values = values[1:]
         fn = fn if fn and len(fn) > 0 else 'result'
         f_path = path.join(out_dir, f'{fn}.{ext}')
         writer(headers=headers, value_matrix=values).dump(f_path)
@@ -368,56 +422,8 @@ class ResultPresenter:
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument(
-        "-d", "--data",
-        action='store',
-        default='time',
-        help="data choice: {time, speedup}"
-    )
-    parser.add_argument(
-        "-o", "--out",
-        action='store',
-        default='plots',
-        help="output directory"
-    )
-    parser.add_argument(
-        "-f", "--fmt",
-        action="store",
-        default="md",
-        help="output format: {tex, md, plot}"
-    )
-    parser.add_argument(
-        "--ss",
-        action="store",
-        default="original",
-        help="source directory for speedup [default: original]"
-    )
-    parser.add_argument(
-        "--st",
-        action="store",
-        help="target directory for speedup [default: *]"
-    )
-    parser.add_argument(
-        "--millis",
-        action='store_true',
-        help="display table of times in milliseconds, not seconds"
-    )
-    parser.add_argument(
-        '--digits',
-        type=int,
-        choices=range(0, 15),
-        metavar="[0-15]",
-        help='number of digits for tabular values [default: 6]',
-        default=6)
-    parser.add_argument(
-        "--dir_filter",
-        action='store',
-        help="Comma separated list of directories to consider "
-        f'[default: {DIR_FILTER}]'
-    )
 
-    args = parser.parse_args()
+    args = setup_args().parse_args()
 
     dir_fil = [d.strip() for d in args.dir_filter.split(",")] \
         if args.dir_filter else DIR_FILTER
