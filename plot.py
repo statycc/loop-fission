@@ -56,12 +56,6 @@ def read_file(file_path):
         return fp.readlines()
 
 
-def write_file(file_path, lines):
-    """Basic file write, lines of text"""
-    with open(file_path, 'w') as fp:
-        fp.write(lines)
-
-
 def parse_results(result_dir):
     """Make a data object from the captured results"""
 
@@ -94,6 +88,20 @@ def parse_results(result_dir):
     return [parse_(*pair) for pair in
             [(fn, find_model(fn, models)) for fn in
              [f for f in filenames if f not in models]]]
+
+
+class LatexTableWriterExt(LatexTableWriter):
+    """Overrides for this table writer behavior"""
+
+    def _get_opening_row_items(self) -> List[str]:
+        return ["".join([
+            r"\begin{tabular}{",
+            "{:s}".format(
+                " | ".join(self._get_col_align_char_list())),
+            r"} \hline", ])]
+
+    def _get_closing_row_items(self) -> List[str]:
+        return [r"\end{tabular}"]
 
 
 class Timing:
@@ -190,7 +198,7 @@ class ResultPresenter:
         writer, ext = MarkdownTableWriter, 'md'
         headers, values = data[0], data[1:]
         if fmt == "tex":
-            writer, ext = LatexTableWriter, 'tex'
+            writer, ext = LatexTableWriterExt, 'tex'
             values = values[1:]
         fn = fn if fn and len(fn) > 0 else 'result'
         f_path = path.join(out_dir, f'{fn}.{ext}')

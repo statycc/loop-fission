@@ -113,7 +113,6 @@ After capturing results, use the plotting script to generate tables or graphs. T
 
 For all various available options run: `python plot.py --help`
 
-
 ## Regenerating automatic parallelization directives 
 
 The openmp annotations in the program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite in [original](./original), and on the same files after they have been "split" by our algorithm, as shared in [fission](./fission).
