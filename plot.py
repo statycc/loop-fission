@@ -31,22 +31,19 @@ from pytablewriter import MarkdownTableWriter, LatexTableWriter
 # where to look for timing results
 RESULTS_DIR = './results'
 
-# name of original examples directory, for computing speedup
-SEQ_TIME = 'original'
-
 # custom sort order for data sizes smallest -> largest
 SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
 COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
 # directory sorting in tables left -> right
 SOURCES = ['original', "original_autopar", "fission_autopar",
-           "fission_manual"]
+           "fission_manual", "case_norm", "case_alt"]
+DIR_FILTER = ",".join(SOURCES[0:4])
 
-# Configs for plot/charts
+# Configs for fixed plot/charts properties
 BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#ff1744']
-plt.rc('axes', labelsize=8)
-plt.rc('xtick', labelsize=8)
-plt.rc('ytick', labelsize=8)
+AXLINE = {'y': 1, 'color': '#777', 'lw': 1.5, 'ls': '-', 'zorder': 0}
+plt.rc('font', **{'size': 8})
 plt.rc('legend', fontsize=6)
 
 
@@ -56,7 +53,7 @@ def read_file(file_path):
         return fp.readlines()
 
 
-def parse_results(result_dir):
+def parse_results(result_dir, dir_filter):
     """Make a data object from the captured results"""
 
     def rf(file_in, parser_func):
@@ -80,18 +77,22 @@ def parse_results(result_dir):
              if ':' in l]]} if raw_model is not None else None
 
     def parse_(timing, model):
-        return Timing(rf(timing, parse_times), **rf(model, parse_model))
+        tm = Timing(rf(timing, parse_times), **rf(model, parse_model))
+        return tm if tm.source in dir_filter else None
 
+    # get a list of all files in results directory
     filenames = next(walk(result_dir), (None, None, []))[2]
-    models = [f for f in filenames if 'model' in f]
+    models = [f for f in filenames if f.endswith('model.txt')]
 
-    return [parse_(*pair) for pair in
-            [(fn, find_model(fn, models)) for fn in
-             [f for f in filenames if f not in models]]]
+    # pair the results with their model; the finally remove nulls
+    return [p for p in
+            [parse_(*pair) for pair in
+             [(fn, find_model(fn, models)) for fn in
+              [f for f in filenames if f not in models]]] if p]
 
 
 class LatexTableWriterExt(LatexTableWriter):
-    """Overrides for this table writer behavior"""
+    """Overrides for LaTeX table writer behavior"""
 
     def _get_opening_row_items(self) -> List[str]:
         return ["".join([
@@ -273,7 +274,7 @@ class ResultPresenter:
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
         src_error = f'speedup requires timing at least two groups of ' \
-            f'programs, {src_len} found in {r} '
+            f'programs, found {src_len} matching plot criteria'
         bl_error = f'timing results not found for {baseline} in {r} '
 
         if src_len < 2:
@@ -319,8 +320,7 @@ class ResultPresenter:
             for p in range(subplots):
                 subplt = axs[p] if p_count > 1 else axs
                 p_name = self.programs[p]
-                subplt.axhline(y=1, color='#777', lw=2,
-                               linestyle='dashed', zorder=0)
+                subplt.axhline(**AXLINE)
 
                 ri = [d[0] for d in data].index(p_name)
                 ry = ri + len(labels)
@@ -391,30 +391,39 @@ if __name__ == '__main__':
         "--ss",
         action="store",
         default="original",
-        help="source directory for speedup [default:original]"
+        help="source directory for speedup [default: original]"
     )
     parser.add_argument(
         "--st",
         action="store",
-        help="target directory for speedup [default:*]"
+        help="target directory for speedup [default: *]"
     )
     parser.add_argument(
-        "-ms", "--millis",
+        "--millis",
         action='store_true',
-        help="display table of times in milliseconds"
+        help="display table of times in milliseconds, not seconds"
     )
     parser.add_argument(
         '--digits',
         type=int,
         choices=range(0, 15),
         metavar="[0-15]",
-        help='number of digits for tabular values [default:6]',
+        help='number of digits for tabular values [default: 6]',
         default=6)
+    parser.add_argument(
+        "--dir_filter",
+        action='store',
+        help="Comma separated list of directories to consider "
+        f'[default: {DIR_FILTER}]'
+    )
 
     args = parser.parse_args()
-    records = parse_results(RESULTS_DIR)
+
+    dir_fil = [d.strip() for d in args.dir_filter.split(",")] \
+        if args.dir_filter else DIR_FILTER
+
     rp = ResultPresenter(
-        results=parse_results(RESULTS_DIR),
+        results=parse_results(RESULTS_DIR, dir_fil),
         out_dir=args.out,
         time_millis=args.millis,
         digits=args.digits)
