@@ -38,7 +38,7 @@ START=$(date '+%H:%M:%S');                  # start time
 DT=$(date '+%m%d%H%M%S');                   # current timestamp
 
 # output directories
-CDIR="compiled_"$SRC""                      # for holding compiled programs
+CDIR="compiled"                             # for holding compiled programs
 RES_DIR="results"                           # where to save results
 
 # output filenames
@@ -108,7 +108,7 @@ do
     fi
 
     # compile options
-    "$CC" "$file" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c  -DPOLYBENCH_TIME -D"$DS_SIZE"_DATASET -o "$out"
+    "$CC" "$file" -"$OPT" -lm -fopenmp -I utilities -I headers utilities/polybench.c -DPOLYBENCH_TIME -D"$DS_SIZE"_DATASET -o "$out"
 
     while : ; do
 

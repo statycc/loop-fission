@@ -19,13 +19,14 @@ from argparse import ArgumentParser
 from functools import cmp_to_key
 from itertools import chain
 from math import ceil
-from os import walk, path, getcwd
+from os import walk, path, makedirs
 from pathlib import Path
 from typing import List
 
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+from pytablewriter import MarkdownTableWriter, LatexTableWriter
 
 # where to look for timing results
 RESULTS_DIR = './results'
@@ -121,8 +122,8 @@ class ResultPresenter:
     """Represents a collection of results, and offers some formatting
     options """
 
-    def __init__(self, results: List[Timing], time_millis=False,
-                 digits=10):
+    def __init__(self, results: List[Timing], out_dir,
+                 time_millis=False, digits=10):
         self.__results = results
 
         # list of all (unique) recorded optimization levels
@@ -145,6 +146,8 @@ class ResultPresenter:
 
         self.millis = time_millis
         self.digits = digits
+        self.ensure_out_dir(out_dir)
+        self.out_dir = out_dir
 
     def time_str(self, t, scale=True):
         if not t:
@@ -164,6 +167,10 @@ class ResultPresenter:
                            self.__results), Timing())
 
     @staticmethod
+    def ensure_out_dir(dir_path):
+        return path.exists(dir_path) or makedirs(dir_path)
+
+    @staticmethod
     def custom_sort(x, y, src_arr):
         """Determine custom sort order of x and y."""
         xi = src_arr.index(x) if x in src_arr else 1
@@ -179,15 +186,16 @@ class ResultPresenter:
         return ResultPresenter.custom_sort(x, y, SOURCES)
 
     @staticmethod
-    def get_pad(matrix, col_index):
-        col_vector = [str(row[col_index]) for row in matrix]
-        return len(max(col_vector, key=len))
-
-    @staticmethod
-    def save(content, filename='result', extension='txt'):
-        file_name = path.join(getcwd(), f'{filename}.{extension}')
-        write_file(file_name, content)
-        print(f'Wrote result to: {file_name}')
+    def write_table(data, fmt, fn, out_dir):
+        writer, ext = MarkdownTableWriter, 'md'
+        headers, values = data[0], data[1:]
+        if fmt == "tex":
+            writer, ext = LatexTableWriter, 'tex'
+            values = values[1:]
+        fn = fn if fn and len(fn) > 0 else 'result'
+        f_path = path.join(out_dir, f'{fn}.{ext}')
+        writer(headers=headers, value_matrix=values).dump(f_path)
+        print(f'Wrote result to: {f_path}')
 
     def time_table(self):
         """Generates a 2d array of recorded times."""
@@ -250,42 +258,9 @@ class ResultPresenter:
             table.append(row)
         return table
 
-    def __out_formatted(self, data, fmt, fn):
-        if fmt == "tex":
-            self.to_tex(data, fn)
-        else:
-            self.to_markdown(data, fn)
-
-    def to_markdown(self, table, fn):
-        text = []
-        pads = [self.get_pad(table, i) for i in range(len(table[0]))]
-
-        for r in table:
-            row = f' | '.join([
-                str(c).ljust(pads[i], ' ')
-                for i, c in enumerate(r)])
-            text.append("| " + row + " |")
-
-        text.insert(1, "| " + (" | ".join(
-            ['-' * pads[i] for i in range(len(table[0]))])) + " |")
-        text = "\n".join(text)
-        self.save(text, fn, 'txt')
-
-    def to_tex(self, table, fn):
-        text = []
-        pads = [self.get_pad(table, i) for i in range(len(table[0]))]
-
-        for r in table:
-            row = f' & '.join([
-                str(c).ljust(pads[i], ' ')
-                for i, c in enumerate(r)])
-            text.append(row + "\\\\")
-        text = "\n".join(text)
-        self.save(text, fn, 'txt')
-
     def times(self, fmt):
         fn = "-".join(self.sources).lower()
-        self.__out_formatted(self.time_table(), fmt, fn)
+        self.write_table(self.time_table(), fmt, fn, self.out_dir)
 
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
@@ -304,7 +279,7 @@ class ResultPresenter:
         if fmt == "plot":
             self.plot(data, baseline)
         else:
-            self.__out_formatted(data, fmt, fn)
+            self.write_table(data, fmt, fn, self.out_dir)
 
     def plot(self, data, fn):
         p_count = len(self.programs)
@@ -379,7 +354,8 @@ class ResultPresenter:
                 fig.delaxes(axs[idx])
 
             plt.tight_layout()
-            plt.savefig(f'{fn}-{col_name}.pdf')
+            plt_path = path.join(self.out_dir, f'{fn}-{col_name}.pdf')
+            plt.savefig(plt_path)
             plt.show()
 
 
@@ -392,6 +368,12 @@ if __name__ == '__main__':
         help="data choice: {time, speedup}"
     )
     parser.add_argument(
+        "-o", "--out",
+        action='store',
+        default='plots',
+        help="output directory"
+    )
+    parser.add_argument(
         "-f", "--fmt",
         action="store",
         default="md",
@@ -401,12 +383,12 @@ if __name__ == '__main__':
         "--ss",
         action="store",
         default="original",
-        help="source directory for speedup (default:original)"
+        help="source directory for speedup [default:original]"
     )
     parser.add_argument(
         "--st",
         action="store",
-        help="target directory for speedup (default:*)"
+        help="target directory for speedup [default:*]"
     )
     parser.add_argument(
         "-ms", "--millis",
@@ -418,11 +400,16 @@ if __name__ == '__main__':
         type=int,
         choices=range(0, 15),
         metavar="[0-15]",
-        help='number of digits for tabular values', default=10)
+        help='number of digits for tabular values [default:6]',
+        default=6)
 
     args = parser.parse_args()
     records = parse_results(RESULTS_DIR)
-    rp = ResultPresenter(records, args.millis, args.digits)
+    rp = ResultPresenter(
+        results=parse_results(RESULTS_DIR),
+        out_dir=args.out,
+        time_millis=args.millis,
+        digits=args.digits)
 
     # only plot speedup for now
     if args.fmt == "plot" or args.data == "speedup":
