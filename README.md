@@ -187,8 +187,8 @@ Note that the files shared in `original_autopar` and `fission_autopar` are obtai
 
 ## About AutoPar-Clava
 
-* [Information about Clava][https://github.com/specs-feup/clava/] ([Apache License](https://github.com/specs-feup/clava/blob/master/LICENSE))
-* [The specs-lara repository][https://github.com/specs-feup/specs-lara], where the Polybench/C examples are shared before and after optimization ([MIT License](https://github.com/specs-feup/specs-lara/blob/master/LICENSE))
+* [Information about Clava](https://github.com/specs-feup/clava/) ([Apache License](https://github.com/specs-feup/clava/blob/master/LICENSE))
+* [The specs-lara repository](https://github.com/specs-feup/specs-lara), where the Polybench/C examples are shared before and after optimization ([MIT License](https://github.com/specs-feup/specs-lara/blob/master/LICENSE))
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/
