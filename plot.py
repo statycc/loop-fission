@@ -23,7 +23,9 @@ from pathlib import Path
 from re import match
 from typing import List
 
+import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib import ticker
 from matplotlib.lines import Line2D
 from pytablewriter import MarkdownTableWriter, LatexTableWriter
 
@@ -314,8 +316,14 @@ class ResultPresenter:
         vf = lambda p, d, o, s: self.time_str(
             self.query(o, d, s).get_time(p))
         table = self.generate_table(self.sources, vf)
-        fn = "-".join(self.sources).lower()
-        self.write_table(table, fmt, fn, self.out_dir)
+
+        if fmt == "plot":
+            fn = lambda x: x
+            label = f'clock time ({"ms" if self.millis else "s"})'
+            self.plot(table, fn, self.sources, label, log_scale=True)
+        else:
+            fn = "-".join(self.sources).lower()
+            self.write_table(table, fmt, fn, self.out_dir)
 
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
@@ -340,14 +348,14 @@ class ResultPresenter:
             return self.time_str(speedup, scale=False)
 
         table = self.generate_table(sp, value_func)
-        fn = "-".join([baseline, target or 'all'])
-
         if fmt == "plot":
-            self.plot_speed(table, baseline, sp)
+            fn = lambda x: f'{baseline}-{x}'
+            self.plot(table, fn, sp, "speedup")
         else:
+            fn = "-".join([baseline, target or 'all'])
             self.write_table(table, fmt, fn, self.out_dir)
 
-    def plot_speed(self, data, src_name, targets):
+    def plot(self, data, fn, targets, ylabel, log_scale=False):
         rows, cols = min(self.prog_count, 2), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
@@ -358,22 +366,9 @@ class ResultPresenter:
             axs = axs.flatten() if self.prog_count > 1 else [axs]
 
             for sub_plot, prog_name in zip(axs, self.programs):
-                sub_plot.yaxis.grid(True, **YGRID)
-                sub_plot.axhline(**AXLINE)
-                sub_plot.set_ylim((ymin, ymax))
-                sub_plot.set_yticks(range(ymax + 1))
-                sub_plot.set_ylabel('Speedup')
-                sub_plot.set_xticks(range(len(lbls)), lbls)
-                sub_plot.set_xlabel(prog_name, labelpad=0)
-                sub_plot.tick_params(axis="y", direction="inout")
-                sub_plot.tick_params(axis="x", length=0, pad=4)
-                sub_plot.spines['right'].set_visible(False)
-                sub_plot.spines['top'].set_visible(False)
-                sub_plot.spines['bottom'].set_visible(False)
-                sub_plot.margins(0.05)
 
                 # draw the various bars
-                ll, lb = len(lbls), len(bars)
+                ll, lb, plot_max = len(lbls), len(bars), -1
                 bw, x_off = 0.80 / lb, (lb / 2) - (1 / lb)
                 y1, lines = [d[0] for d in data].index(prog_name), []
                 for i, bi in enumerate([o + ci for o in bars]):
@@ -382,7 +377,26 @@ class ResultPresenter:
                     values = [self.to_float(v[bi]) for v in dr]
                     sub_plot.bar(pos, values, color=c, width=bw, **BARS)
                     lines.append(Line2D([0], [0], color=c, **LSYMBOL))
+                    plot_max = max(plot_max, max(values))
                 sub_plot.legend(lines, self.opt_levels[:], **LEGEND)
+
+                if not log_scale:
+                    sub_plot.axhline(**AXLINE)
+                    sub_plot.locator_params(axis='y', nbins=5)
+                    sub_plot.set_ylim((ymin, ymax + 1))
+                else:
+                    sub_plot.set_yscale('log')
+
+                sub_plot.yaxis.grid(True, **YGRID)
+                sub_plot.set_ylabel(ylabel)
+                sub_plot.set_xlabel(prog_name, labelpad=0)
+                sub_plot.set_xticks(range(len(lbls)), lbls)
+                sub_plot.tick_params(axis="y", direction="inout")
+                sub_plot.tick_params(axis="x", length=0, pad=4)
+                sub_plot.spines['right'].set_visible(False)
+                sub_plot.spines['top'].set_visible(False)
+                sub_plot.spines['bottom'].set_visible(False)
+                sub_plot.margins(0.05)
 
             # if there are fewer programs, clear the overestimate
             for idx in range(self.prog_count, rows * cols):
@@ -390,7 +404,7 @@ class ResultPresenter:
 
             fig.tight_layout()
             fig.subplots_adjust(wspace=.2, hspace=.3)
-            fig_name = f'{src_name}-{target_name}.pdf'
+            fig_name = f'{fn(target_name) or "plot"}.pdf'
             plt.savefig(path.join(self.out_dir, fig_name))
             plt.show()
 
@@ -409,7 +423,7 @@ if __name__ == '__main__':
         digits=args.digits)
 
     # only plot speedup for now
-    if args.fmt == "plot" or args.data == "speedup":
+    if args.data == "speedup":
         rp.speedup(args.fmt, args.ss, args.st)
     else:
         rp.times(args.fmt)
