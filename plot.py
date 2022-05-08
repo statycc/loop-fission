@@ -18,12 +18,11 @@ python3 plot.py --help
 from argparse import ArgumentParser
 from functools import cmp_to_key
 from itertools import chain
-from math import ceil
 from os import walk, path, makedirs
 from pathlib import Path
+from re import match
 from typing import List
 
-import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from pytablewriter import MarkdownTableWriter, LatexTableWriter
@@ -42,7 +41,14 @@ DIR_FILTER = ",".join(SOURCES[0:4])
 
 # Configs for fixed plot/charts properties
 BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#ff1744']
-AXLINE = {'y': 1, 'color': '#777', 'lw': 1.5, 'ls': '-', 'zorder': 0}
+YGRID = {'ls': 'dotted', 'zorder': 0, 'lw': .75}
+AXLINE = {'y': 1, 'color': '#777', 'lw': 1.5, 'ls': '-', 'zorder': 2}
+SPLOT = {'dpi': 300}
+BARS = {'edgecolor': "black", 'lw': 0.35, 'zorder': 3}
+LSYMBOL = {'marker': 's', 'lw': 0, 'markersize': 4}
+LEGEND = {'loc': 'upper left', 'handletextpad': -0.1,
+          'bbox_to_anchor': (0, 1.0, .5, 0.08), 'frameon': False,
+          'columnspacing': .25, 'borderpad': 0, 'ncol': 4}
 plt.rc('font', **{'size': 8})
 plt.rc('legend', fontsize=6)
 
@@ -227,6 +233,10 @@ class ResultPresenter:
         return next(filter(lambda x: x.find(opt, size, source),
                            self.__results), Timing())
 
+    @property
+    def prog_count(self):
+        return len(self.programs)
+
     @staticmethod
     def ensure_out_dir(dir_path):
         return path.exists(dir_path) or makedirs(dir_path)
@@ -247,6 +257,21 @@ class ResultPresenter:
         return ResultPresenter.custom_sort(x, y, SOURCES)
 
     @staticmethod
+    def to_float(value):
+        return float(value) if match(r'^-?\d+(?:\.\d+)$', value) else 0
+
+    @staticmethod
+    def max_value(arr):
+        mx_num = max([j for sub in [
+            [ResultPresenter.to_float(e) for e in r]
+            for r in arr[2:]] for j in sub])
+        return max(1, int(-1 * mx_num // 1 * -1))
+
+    @staticmethod
+    def color(index):
+        return BAR_COLORS[index % len(BAR_COLORS)]
+
+    @staticmethod
     def write_table(data, fmt, fn, out_dir):
         writer, ext = MarkdownTableWriter, 'md'
         headers, values = data[0], data[1:]
@@ -260,70 +285,37 @@ class ResultPresenter:
         writer(headers=headers, value_matrix=values).dump(f_path)
         print(f'Wrote result to: {f_path}')
 
-    def time_table(self):
-        """Generates a 2d array of recorded times."""
-        lp, ld = len(self.programs), len(self.data_sizes)
-        lo, ls = len(self.opt_levels), len(self.sources)
+    def generate_table(self, sources, value_func):
+        ops, prs, szs = self.opt_levels, self.programs, self.data_sizes
+        lp, ld, lo, ls = len(prs), len(szs), len(ops), len(sources)
 
         # fill initial header rows
-        opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
-        srcs = [self.sources[ci % ls] for ci in range(lo * ls)]
+        opts = [ops[(c // ls) % lo] for c in range(lo * ls)]
+        srcs = [sources[ci % ls] for ci in range(lo * ls)]
         table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
 
         for ri in range(lp * ld):
             row = []
-            p = self.programs[ri // ld]  # which program
-            d = self.data_sizes[ri % ld]  # which data size
+            p = prs[ri // ld]  # which program
+            d = szs[ri % ld]  # which data size
             for ci in range(-2, lo * ls):
                 if ci == -2:
                     row.append(p if ri % ld == 0 else '')
                 elif ci == -1:
                     row.append(d)
                 else:
-                    o = self.opt_levels[(ci // ls) % lo]
-                    s = self.sources[ci % ls]
-                    t = self.time_str(self.query(o, d, s).get_time(p))
-                    row.append(t)
-            table.append(row)
-        return table
-
-    def speedup_table(self, baseline, target=None):
-        # fix original vs. parallel source for computing speedup
-        base_i = self.sources.index(baseline)
-        s1 = self.sources[base_i]
-        sp = [n for i, n in enumerate(self.sources) if
-              (i != base_i and (not target or target == n))]
-
-        lp, ld = len(self.programs), len(self.data_sizes)
-        lo, ls = len(self.opt_levels), len(sp)
-        opts = [self.opt_levels[(c // ls) % lo] for c in range(lo * ls)]
-        srcs = [sp[ci % ls] for ci in range(lo * ls)]
-
-        # initial headers row
-        table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
-
-        for ri in range(lp * ld):
-            row = []
-            p = self.programs[ri // ld]  # which program
-            d = self.data_sizes[ri % ld]  # which data size
-            for ci in range(-2, lo * ls):
-                if ci == -2:
-                    row.append(p if ri % ld == 0 else '')
-                elif ci == -1:
-                    row.append(d)
-                else:
-                    o = self.opt_levels[(ci // ls) % lo]
-                    s2 = srcs[ci % ls]
-                    ts = self.query(o, d, s1).get_time(p)  # sequential
-                    tp = self.query(o, d, s2).get_time(p)  # parallel
-                    speedup = ts / tp if (ts and tp and tp > 0) else 0
-                    row.append(self.time_str(speedup, scale=False))
+                    o = ops[(ci // ls) % lo]  # which opt
+                    s = sources[ci % ls]  # which source
+                    row.append(value_func(p, d, o, s))
             table.append(row)
         return table
 
     def times(self, fmt):
+        vf = lambda p, d, o, s: self.time_str(
+            self.query(o, d, s).get_time(p))
+        table = self.generate_table(self.sources, vf)
         fn = "-".join(self.sources).lower()
-        self.write_table(self.time_table(), fmt, fn, self.out_dir)
+        self.write_table(table, fmt, fn, self.out_dir)
 
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
@@ -336,88 +328,70 @@ class ResultPresenter:
         if baseline not in self.sources:
             return print(bl_error)
 
+        bi = self.sources.index(baseline)
+        s1 = self.sources[bi]
+        sp = [n for i, n in enumerate(self.sources) if
+              (i != bi and (not target or target == n))]
+
+        def value_func(p, d, o, s2):
+            ts = self.query(o, d, s1).get_time(p)  # sequential
+            tp = self.query(o, d, s2).get_time(p)  # parallel
+            speedup = ts / tp if (ts and tp and tp > 0) else 0
+            return self.time_str(speedup, scale=False)
+
+        table = self.generate_table(sp, value_func)
         fn = "-".join([baseline, target or 'all'])
-        data = self.speedup_table(baseline, target)
 
         if fmt == "plot":
-            self.plot(data, baseline)
+            self.plot_speed(table, baseline, sp)
         else:
-            self.write_table(data, fmt, fn, self.out_dir)
+            self.write_table(table, fmt, fn, self.out_dir)
 
-    def plot(self, data, fn):
-        p_count = len(self.programs)
-        rows, cols = min(p_count, 2), min(p_count, 3)
-        colors = BAR_COLORS
-        subplots = min(p_count, rows * cols)
-        labels = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
-        src_len = (len(data[0]) - 2) // len(self.opt_levels)
-        y_label = "Speedup"
+    def plot_speed(self, data, src_name, targets):
+        rows, cols = min(self.prog_count, 2), min(self.prog_count, 3)
+        lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
+        bars = [data[0].index(o) for o in self.opt_levels]
+        ymin, ymax = 0, self.max_value(data)
 
-        bars = [(data[0].index(o), o) for o in self.opt_levels]
-        lx, w = np.arange(len(labels)), 0.80 / len(bars)
-        x_adjust = (len(bars) / 2) - (1 / len(bars))
+        for ci, target_name in enumerate(targets):
+            fig, axs = plt.subplots(**SPLOT, nrows=rows, ncols=cols)
+            axs = axs.flatten() if self.prog_count > 1 else [axs]
 
-        y_min, y_max = 0, max(1, ceil(np.amax(
-            [[(float(c) if c and c != '-' else 1)
-              for c in r[2:]] for r in data[2:]])))
-        bar_x = [lx + ((i - x_adjust) * w) for i in range(0, len(bars))]
-        bar_props = {'edgecolor': "black", 'lw': 0.35, 'width': w}
-        sub_props = {'nrows': rows, 'ncols': cols, 'dpi': 300}
+            for sub_plot, prog_name in zip(axs, self.programs):
+                sub_plot.yaxis.grid(True, **YGRID)
+                sub_plot.axhline(**AXLINE)
+                sub_plot.set_ylim((ymin, ymax))
+                sub_plot.set_yticks(range(ymax + 1))
+                sub_plot.set_ylabel('Speedup')
+                sub_plot.set_xticks(range(len(lbls)), lbls)
+                sub_plot.set_xlabel(prog_name, labelpad=0)
+                sub_plot.tick_params(axis="y", direction="inout")
+                sub_plot.tick_params(axis="x", length=0, pad=4)
+                sub_plot.spines['right'].set_visible(False)
+                sub_plot.spines['top'].set_visible(False)
+                sub_plot.spines['bottom'].set_visible(False)
+                sub_plot.margins(0.05)
 
-        for src_i in range(src_len):
-            data_cols = [o + src_i for (o, _) in bars]
-            col_name = data[1][data_cols[0]]
-            fig, axs = plt.subplots(**sub_props)
-
-            if p_count > 1:
-                axs = axs.flatten()
-            for p in range(subplots):
-                subplt = axs[p] if p_count > 1 else axs
-                p_name = self.programs[p]
-                subplt.axhline(**AXLINE)
-
-                ri = [d[0] for d in data].index(p_name)
-                ry = ri + len(labels)
-
-                for i, bi in enumerate(data_cols):
-                    series = [float(v[bi]) if v[bi] != '-'
-                              else 0 for v in data[ri:ry]]
-                    subplt.bar(bar_x[i], series,
-                               color=colors[i % len(colors)],
-                               **bar_props)
-
-                subplt.set_ylim((y_min, y_max))
-                subplt.set_ylabel(y_label)
-                subplt.set_xticks(lx, labels)
-                subplt.set_xlabel(p_name)
-                subplt.tick_params(axis="y", direction="inout")
-                subplt.tick_params(axis="x", length=0, pad=4)
-                subplt.spines['right'].set_visible(False)
-                subplt.spines['top'].set_visible(False)
-                subplt.spines['bottom'].set_visible(False)
-                subplt.legend([
-                    Line2D([0], [0], marker='s', lw=0,
-                           color=colors[i % len(colors)],
-                           markersize=4) for (i, _) in
-                    enumerate(self.opt_levels)],
-                    self.opt_levels[:],
-                    loc='upper left',
-                    handletextpad=-0.1,
-                    bbox_to_anchor=(0, 1.05, .5, 0.08),
-                    frameon=False,
-                    columnspacing=.25,
-                    borderpad=0,
-                    ncol=4)
-
-                subplt.margins(0.05)
+                # draw the various bars
+                ll, lb = len(lbls), len(bars)
+                bw, x_off = 0.80 / lb, (lb / 2) - (1 / lb)
+                y1, lines = [d[0] for d in data].index(prog_name), []
+                for i, bi in enumerate([o + ci for o in bars]):
+                    pos = [a + ((i - x_off) * bw) for a in range(ll)]
+                    c, dr = self.color(i), data[y1:y1 + ll]
+                    values = [self.to_float(v[bi]) for v in dr]
+                    sub_plot.bar(pos, values, color=c, width=bw, **BARS)
+                    lines.append(Line2D([0], [0], color=c, **LSYMBOL))
+                sub_plot.legend(lines, self.opt_levels[:], **LEGEND)
 
             # if there are fewer programs, clear the overestimate
-            for idx in range(len(self.programs), rows * cols):
+            for idx in range(self.prog_count, rows * cols):
                 fig.delaxes(axs[idx])
 
-            plt.tight_layout()
-            plt_path = path.join(self.out_dir, f'{fn}-{col_name}.pdf')
-            plt.savefig(plt_path)
+            fig.tight_layout()
+            fig.subplots_adjust(wspace=.2, hspace=.3)
+            fig_name = f'{src_name}-{target_name}.pdf'
+            plt.savefig(path.join(self.out_dir, fig_name))
             plt.show()
 
 
