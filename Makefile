@@ -40,10 +40,14 @@ original_autopar:
 fission_manual:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_manual -s $(size) -o $(opt); ))
 
-
 .PHONY: fission_autopar
 fission_autopar:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_autopar -s $(size) -o $(opt); ))
+
+case_studies:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d case_study-a -s $(size) -o $(opt); ))
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d case_study-b -s $(size) -o $(opt); ))
+
 
 # Benchmark specific programs
 # Specify DIR argument otherwise it defaults to original

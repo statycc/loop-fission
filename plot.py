@@ -39,7 +39,7 @@ COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
 # directory sorting in tables left -> right
 SOURCES = ['original', "original_autopar", "fission_autopar",
-           "fission_manual", "case_norm", "case_alt"]
+           "fission_manual", "case_study-a", "case_study-b"]
 DIR_FILTER = ",".join(SOURCES[0:4])
 
 # Configs for fixed plot/charts properties

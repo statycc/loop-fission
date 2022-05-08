@@ -1,13 +1,8 @@
 /**
- * This version is stamped on May 10, 2016
- *
- * Contact:
- *   Louis-Noel Pouchet <pouchet.ohio-state.edu>
- *   Tomofumi Yuki <tomofumi.yuki.fr>
- *
- * Web address: http://polybench.sourceforge.net
+ * Modified version of PolyBench/C 3mm.c
+ * to evaluate impact of loop fusion.
  */
-/* 3mm.c: this file is part of PolyBench/C */
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -78,45 +73,54 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 		DATA_TYPE POLYBENCH_2D(D,NM,NL,nm,nl),
 		DATA_TYPE POLYBENCH_2D(G,NI,NL,ni,nl))
 {
-  int i, j, k;
+int i, j, k;
 
 #pragma scop
 
 #pragma omp parallel private(i, j, k)
 {
-
-  /* E := A*B */
-   #pragma omp for nowait
+  #pragma omp for nowait
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
-      {
-    	E[i][j] = SCALAR_VAL(0.0);
-	    for (k = 0; k < _PB_NK; ++k)
-    	    E[i][j] += A[i][k] * B[k][j];
-      }
+      E[i][j] = SCALAR_VAL(0.0);
+
+  #pragma omp for nowait
+  for (i = 0; i < _PB_NJ; i++)
+    for (j = 0; j < _PB_NL; j++)
+	  F[i][j] = SCALAR_VAL(0.0);
+
+  #pragma omp for
+  for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NL; j++)
+      G[i][j] = SCALAR_VAL(0.0);
+}
+
+#pragma omp parallel private(i, j, k)
+{
+  /* E := A*B */
+  #pragma omp for nowait
+  for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NJ; j++)
+	  for (k = 0; k < _PB_NK; ++k)
+        E[i][j] += A[i][k] * B[k][j];
+
+
   /* F := C*D */
   #pragma omp for
   for (i = 0; i < _PB_NJ; i++)
     for (j = 0; j < _PB_NL; j++)
-      {
-	    F[i][j] = SCALAR_VAL(0.0);
-	    for (k = 0; k < _PB_NM; ++k)
-	        F[i][j] += C[i][k] * D[k][j];
-      }
+	  for (k = 0; k < _PB_NM; ++k)
+	     F[i][j] += C[i][k] * D[k][j];
 }
+
 /* G := E*F */
 #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
   for (j = 0; j < _PB_NL; j++)
-  {
-    G[i][j] = SCALAR_VAL(0.0);
     for (k = 0; k < _PB_NJ; ++k)
-    G[i][j] += E[i][k] * F[k][j];
-  }
-
+      G[i][j] += E[i][k] * F[k][j];
 
 #pragma endscop
-
 }
 
 

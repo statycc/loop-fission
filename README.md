@@ -19,8 +19,8 @@ The two approaches serve different purposes: manual method enables finding optim
 | `original_autopar` |      ➖       |    ✅     | original programs, parallelized automatically[^1] |
 | `fission_autopar`  |      ✅       |    ✅     | with loop fission, parallelized automatically[^1] | 
 | `fission_manual `  |      ✅       |    ✅     | with loop fission, parallelized by hand           |
-| `case_norm`        |      ➖       |    ➖     | Other case studies: baseline versions             | 
-| `case_alt`         |      ✅       |    ✅     | Other case studies: alternative versions for comparison |
+| `case_study-a`     |      ➖       |    ➖     | Case studies: baseline versions                   | 
+| `case_study-b`     |      ✅       |    ✅     | Case studies: alternative versions for comparison |
 
 [^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [edits significantly the original source code](https://github.com/specs-feup/specs-lara/issues/1), outside of the function that needs to be parallelized, strictly speaking. This affects the original timing used by Polybench/C. As a consequence, those files have been obtained by running [our script script_autopar.sh](script_autopar.sh) to obtain the version with openmp annotation, and then those annotations have been placed in the original file.
 

@@ -1,13 +1,8 @@
 /**
- * This version is stamped on May 10, 2016
- *
- * Contact:
- *   Louis-Noel Pouchet <pouchet.ohio-state.edu>
- *   Tomofumi Yuki <tomofumi.yuki.fr>
- *
- * Web address: http://polybench.sourceforge.net
+ * Modified version of PolyBench/C 3mm.c
+ * to evaluate impact of loop fusion.
  */
-/* 3mm.c: this file is part of PolyBench/C */
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -78,40 +73,37 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 		DATA_TYPE POLYBENCH_2D(D,NM,NL,nm,nl),
 		DATA_TYPE POLYBENCH_2D(G,NI,NL,ni,nl))
 {
-  int i, j, k, m, l;
+int i, j, k, l, m;
 
 #pragma scop
 
-#pragma omp parallel for private(i, l)
-for (i = 0; i < _PB_NI; i++)
-  for (l = 0; l < _PB_NL; l++)
-    G[i][l] = SCALAR_VAL(0.0);
-
-#pragma omp parallel for private(i, j, k, m, l)
+#pragma omp parallel for private(i, j, k, l, m)
 for (j = 0; j < _PB_NJ; j++){
 
   /* E := A*B */
-  for (i = 0; i < _PB_NI; i++)
-      E[i][j] = SCALAR_VAL(0.0);
-
-  for (l = 0; l < _PB_NL; l++)
-      F[j][l] = SCALAR_VAL(0.0);
-
-  /* E := A*B */
-  for (i = 0; i < _PB_NI; i++)
-      for (k = 0; k < _PB_NK; ++k)
-          E[i][j] += A[i][k] * B[k][j];
+  for (i = 0; i < _PB_NI; i++){
+    E[i][j] = SCALAR_VAL(0.0);
+    for (k = 0; k < _PB_NK; ++k)
+      E[i][j] += A[i][k] * B[k][j];
+  }
 
   /* F := C*D */
-  for (l = 0; l < _PB_NL; l++)
-      for (m = 0; m < _PB_NM; ++m)
-          F[j][l] += C[j][m] * D[m][l];
-
-  /* G := E*F */
-  for (i = 0; i < _PB_NI; i++)
-    for (l = 0; l < _PB_NL; l++)
-      G[i][l] += E[i][j] * F[j][l];
+  for (l = 0; l < _PB_NL; l++){
+    F[j][l] = SCALAR_VAL(0.0);
+    for (m = 0; m < _PB_NM; ++m)
+      F[j][l] += C[j][m] * D[m][l];
+  }
 }
+
+/* G := E*F */
+#pragma omp parallel for private(i, l, j)
+for (i = 0; i < _PB_NI; i++)
+  for (l = 0; l < _PB_NL; l++){
+    G[i][l] = SCALAR_VAL(0.0);
+    for (j = 0; j < _PB_NJ; j++)
+      G[i][l] += E[i][j] * F[j][l];
+  }
+
 
 #pragma endscop
 
