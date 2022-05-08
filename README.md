@@ -43,7 +43,13 @@ The two approaches serve different purposes: manual method enables finding optim
 
 **Basic usage** 
 
-Benchmark all programs
+Benchmark PB/C programs in all 4 directories
+
+```text
+make everything
+```
+
+Benchmark PB/C `original` vs. `fission_manual`
 
 ```text
 make all
@@ -70,9 +76,11 @@ If necessary, change permissions: `chmod u+r+x ./run.sh`
 
 **Duration**
 
-- Benchmarking all programs using `make all`: about 2h
-- `EXTRALARGE` original programs only, without compiler optimization: 20-25 min
-- less for parallel programs / smaller data size / higher compiler optimization levels
+For a machine with 4 cores
+
+- Benchmark all 4 program directories:  80-100 min
+- original programs only (not parallel):  40-50 min
+- parallel directories: 12-20 min/each
 
 ### Results
 

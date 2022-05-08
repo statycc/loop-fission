@@ -68,11 +68,11 @@ mvt:
 
 .PHONY: plots
 plots:
-	python3 plot.py -d time -f md
-	python3 plot.py -d time -f tex
+	python3 plot.py -d time -f md --millis
+	python3 plot.py -d time -f tex --millis
 	python3 plot.py -d time -f plot
-	python3 plot.py -d speedup -f md
-	python3 plot.py -d speedup -f tex
+	python3 plot.py -d speedup -f md --digits 3
+	python3 plot.py -d speedup -f tex --digits 3
 	python3 plot.py -d speedup -f plot
 	python3 plot.py -d speedup -f tex --ss original_autopar --st fission_manual
 	python3 plot.py -d speedup -f tex --ss fission_autopar --st fission_manual
