@@ -23,9 +23,7 @@ from pathlib import Path
 from re import match
 from typing import List
 
-import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib import ticker
 from matplotlib.lines import Line2D
 from pytablewriter import MarkdownTableWriter, LatexTableWriter
 
@@ -43,16 +41,14 @@ DIR_FILTER = ",".join(SOURCES[0:4])
 
 # Configs for fixed plot/charts properties
 BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#ff1744']
-YGRID = {'ls': 'dotted', 'zorder': 0, 'lw': .75}
 AXLINE = {'y': 1, 'color': '#777', 'lw': 1.5, 'ls': '-', 'zorder': 2}
-SPLOT = {'dpi': 300}
 BARS = {'edgecolor': "black", 'lw': 0.35, 'zorder': 3}
-LSYMBOL = {'marker': 's', 'lw': 0, 'markersize': 4}
 LEGEND = {'loc': 'upper left', 'handletextpad': -0.1,
           'bbox_to_anchor': (0, 1.0, .5, 0.08), 'frameon': False,
           'columnspacing': .25, 'borderpad': 0, 'ncol': 4}
-plt.rc('font', **{'size': 8})
-plt.rc('legend', fontsize=6)
+LSYMBOL = {'marker': 's', 'lw': 0, 'markersize': 4}
+SPLOT = {'dpi': 300}
+YGRID = {'ls': 'dotted', 'zorder': 0, 'lw': .75}
 
 
 def read_file(file_path):
@@ -104,6 +100,11 @@ def setup_args():
         metavar="[0-15]",
         help='number of digits for tabular values [default: 6]',
         default=6)
+    parser.add_argument(
+        "--show",
+        action='store_true',
+        help="show plot/table on screen or terminal"
+    )
     parser.add_argument(
         "--dir_filter",
         action='store',
@@ -192,7 +193,7 @@ class ResultPresenter:
     options """
 
     def __init__(self, results: List[Timing], out_dir,
-                 time_millis, digits):
+                 time_millis, digits, show):
         self.__results = results
 
         # list of all (unique) recorded optimization levels
@@ -217,6 +218,7 @@ class ResultPresenter:
         self.digits = digits
         self.ensure_out_dir(out_dir)
         self.out_dir = out_dir
+        self.show = show
 
     def time_str(self, t, scale=True):
         if not t:
@@ -274,17 +276,22 @@ class ResultPresenter:
         return BAR_COLORS[index % len(BAR_COLORS)]
 
     @staticmethod
-    def write_table(data, fmt, fn, out_dir):
+    def write_table(data, fmt, fn, out_dir, show):
         writer, ext = MarkdownTableWriter, 'md'
         headers, values = data[0], data[1:]
+
         # remove line w/ dir names if all values are the same
         if len(list(set([v for v in values[0] if len(v) > 0]))) == 1:
             values = values[1:]
+
         if fmt == "tex":
             writer, ext = LatexTableWriterExt, 'tex'
+
         fn = fn if fn and len(fn) > 0 else 'result'
         f_path = path.join(out_dir, f'{fn}.{ext}')
-        writer(headers=headers, value_matrix=values).dump(f_path)
+        w = writer(headers=headers, value_matrix=values)
+        w.dump(f_path)
+        if show: w.write_table()
         print(f'Wrote result to: {f_path}')
 
     def generate_table(self, sources, value_func):
@@ -318,12 +325,12 @@ class ResultPresenter:
         table = self.generate_table(self.sources, vf)
 
         if fmt == "plot":
-            fn = lambda x: x
+            fn = lambda x: "time_" + x
             label = f'clock time ({"ms" if self.millis else "s"})'
-            self.plot(table, fn, self.sources, label, log_scale=True)
+            self.plot(table, fn, self.sources, label, True)
         else:
-            fn = "-".join(self.sources).lower()
-            self.write_table(table, fmt, fn, self.out_dir)
+            fn = "time_" + ("-".join(self.sources).lower())
+            self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
@@ -349,26 +356,30 @@ class ResultPresenter:
 
         table = self.generate_table(sp, value_func)
         if fmt == "plot":
-            fn = lambda x: f'{baseline}-{x}'
-            self.plot(table, fn, sp, "speedup")
+            fn = lambda x: f'speedup_{baseline}-{x}'
+            self.plot(table, fn, sp, "speedup", False)
         else:
-            fn = "-".join([baseline, target or 'all'])
-            self.write_table(table, fmt, fn, self.out_dir)
+            fn = "speedup_" + ("-".join([baseline, target or 'all']))
+            self.write_table(table, fmt, fn, self.out_dir, self.show)
 
-    def plot(self, data, fn, targets, ylabel, log_scale=False):
+    def plot(self, data, fn, prog_dir, ylabel, log):
         rows, cols = min(self.prog_count, 2), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
+        plt.rc('font', **{'size': 12 if self.prog_count == 1 else 8})
+        plt.rc('legend', fontsize=10 if self.prog_count == 1 else 6)
         ymin, ymax = 0, self.max_value(data)
 
-        for ci, target_name in enumerate(targets):
+        # draw a figure for each program directory
+        for ci, target_name in enumerate(prog_dir):
             fig, axs = plt.subplots(**SPLOT, nrows=rows, ncols=cols)
             axs = axs.flatten() if self.prog_count > 1 else [axs]
 
+            # draw a sub plot for each program
             for sub_plot, prog_name in zip(axs, self.programs):
 
                 # draw the various bars
-                ll, lb, plot_max = len(lbls), len(bars), -1
+                ll, lb = len(lbls), len(bars)
                 bw, x_off = 0.80 / lb, (lb / 2) - (1 / lb)
                 y1, lines = [d[0] for d in data].index(prog_name), []
                 for i, bi in enumerate([o + ci for o in bars]):
@@ -377,16 +388,17 @@ class ResultPresenter:
                     values = [self.to_float(v[bi]) for v in dr]
                     sub_plot.bar(pos, values, color=c, width=bw, **BARS)
                     lines.append(Line2D([0], [0], color=c, **LSYMBOL))
-                    plot_max = max(plot_max, max(values))
                 sub_plot.legend(lines, self.opt_levels[:], **LEGEND)
 
-                if not log_scale:
+                # format y axis scale
+                if log:
+                    sub_plot.set_yscale('log')
+                else:
                     sub_plot.axhline(**AXLINE)
                     sub_plot.locator_params(axis='y', nbins=5)
-                    sub_plot.set_ylim((ymin, ymax + 1))
-                else:
-                    sub_plot.set_yscale('log')
+                    sub_plot.set_ylim((ymin, ymax))
 
+                # format rest of the plot
                 sub_plot.yaxis.grid(True, **YGRID)
                 sub_plot.set_ylabel(ylabel)
                 sub_plot.set_xlabel(prog_name, labelpad=0)
@@ -403,10 +415,12 @@ class ResultPresenter:
                 fig.delaxes(axs[idx])
 
             fig.tight_layout()
-            fig.subplots_adjust(wspace=.2, hspace=.3)
+            fig.subplots_adjust(wspace=.4 if log else .25, hspace=.3)
             fig_name = f'{fn(target_name) or "plot"}.pdf'
-            plt.savefig(path.join(self.out_dir, fig_name))
-            plt.show()
+            f_path = path.join(self.out_dir, fig_name)
+            plt.savefig(f_path)
+            print(f'Saved plot to to: {f_path}')
+            if self.show: plt.show()
 
 
 if __name__ == '__main__':
@@ -420,7 +434,8 @@ if __name__ == '__main__':
         results=parse_results(RESULTS_DIR, dir_fil),
         out_dir=args.out,
         time_millis=args.millis,
-        digits=args.digits)
+        digits=args.digits,
+        show=args.show)
 
     # only plot speedup for now
     if args.data == "speedup":
