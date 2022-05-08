@@ -74,6 +74,10 @@ plots:
 	python3 plot.py -d speedup -f md
 	python3 plot.py -d speedup -f tex
 	python3 plot.py -d speedup -f plot
+	python3 plot.py -d speedup -f tex --ss original_autopar --st fission_manual
+	python3 plot.py -d speedup -f tex --ss fission_autopar --st fission_manual
+	python3 plot.py -d speedup -f plot --ss original_autopar --st fission_manual
+	python3 plot.py -d speedup -f plot --ss fission_autopar --st fission_manual
 
 # Rule to measure all the folders
 # This uses order-only-prerequisites to make sure that 
