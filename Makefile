@@ -66,6 +66,15 @@ getsummv:
 mvt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p mvt -s $(size) -o $(opt); ))
 
+.PHONY: plots
+plots:
+	python3 plot.py -d time -f md
+	python3 plot.py -d time -f tex
+	python3 plot.py -d time -f plot
+	python3 plot.py -d speedup -f md
+	python3 plot.py -d speedup -f tex
+	python3 plot.py -d speedup -f plot
+
 # Rule to measure all the folders
 # This uses order-only-prerequisites to make sure that 
 # the targets are executed one after the other.

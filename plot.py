@@ -15,6 +15,7 @@ python3 plot.py --help
 ```
 """
 
+import warnings
 from argparse import ArgumentParser
 from functools import cmp_to_key
 from itertools import chain
@@ -26,6 +27,8 @@ from typing import List
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from pytablewriter import MarkdownTableWriter, LatexTableWriter
+
+warnings.filterwarnings("ignore")
 
 # where to look for timing results
 RESULTS_DIR = './results'
@@ -103,7 +106,7 @@ def setup_args():
     parser.add_argument(
         "--show",
         action='store_true',
-        help="show plot/table on screen or terminal"
+        help="show generated plot or table"
     )
     parser.add_argument(
         "--dir_filter",
