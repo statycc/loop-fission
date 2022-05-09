@@ -86,10 +86,11 @@ plots:
 # Rule to measure all the folders
 # This uses order-only-prerequisites to make sure that 
 # the targets are executed one after the other.
-everything: | clean original original_autopar fission_manual fission_autopar
+everything: | clean original original_autopar fission_manual fission_autopar case_studies plots
 
 # Cleaning command
 clean:
 	rm -rf compiled*/
 	rm -rf results/
 	rm -rf _*_autopar/
+	rm -rf ____tempfile.data.polybench 
