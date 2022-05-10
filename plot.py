@@ -40,6 +40,7 @@ COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 # directory sorting in tables left -> right
 SOURCES = ['original', "original_autopar", "fission_autopar",
            "fission_manual", "case_study-a", "case_study-b"]
+COMPACT_SRC = ['og', "o.a", "f.a", "f.m", "a", "b"]
 DIR_FILTER = ",".join(SOURCES[0:4])
 
 # Configs for fixed plot/charts properties
@@ -297,14 +298,17 @@ class ResultPresenter:
         if show: w.write_table()
         print(f'Wrote result to: {f_path}')
 
-    def generate_table(self, sources, value_func):
+    def generate_table(self, sources, value_func, compact=False):
         ops, prs, szs = self.opt_levels, self.programs, self.data_sizes
         lp, ld, lo, ls = len(prs), len(szs), len(ops), len(sources)
 
         # fill initial header rows
         opts = [ops[(c // ls) % lo] for c in range(lo * ls)]
         srcs = [sources[ci % ls] for ci in range(lo * ls)]
-        table = [['Program', 'Data size'] + opts, ['', ''] + srcs]
+        if compact:
+            srcs = [COMPACT_SRC[SOURCES.index(s)] for s in srcs]
+        table = [['Program', ('Size' if compact else 'Data Size')]
+                 + opts, ['', ''] + srcs]
 
         for ri in range(lp * ld):
             row = []
@@ -314,7 +318,8 @@ class ResultPresenter:
                 if ci == -2:
                     row.append(p if ri % ld == 0 else '')
                 elif ci == -1:
-                    row.append(d)
+                    row.append(COMPACT_SZ[SIZES.index(d)]
+                               if compact else d)
                 else:
                     o = ops[(ci // ls) % lo]  # which opt
                     s = sources[ci % ls]  # which source
@@ -357,7 +362,7 @@ class ResultPresenter:
             speedup = ts / tp if (ts and tp and tp > 0) else 0
             return self.time_str(speedup, scale=False)
 
-        table = self.generate_table(sp, value_func)
+        table = self.generate_table(sp, value_func, compact=True)
         if fmt == "plot":
             fn = lambda x: f'speedup_{baseline}-{x}'
             self.plot(table, fn, sp, "speedup", False)
