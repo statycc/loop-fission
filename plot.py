@@ -381,8 +381,8 @@ class ResultPresenter:
         rows, cols = min(self.prog_count, 2), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
-        plt.rc('font', **{'size': 18 if self.prog_count == 1 else 8})
-        plt.rc('legend', fontsize=15 if self.prog_count == 1 else 6)
+        plt.rc('font', **{'size': 8 if self.prog_count == 1 else 8})
+        plt.rc('legend', fontsize=6 if self.prog_count == 1 else 6)
         ymin, ymax = 0, self.max_value(data)
 
         # draw a figure for each program directory
