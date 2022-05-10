@@ -115,6 +115,11 @@ def setup_args():
         help="Comma separated list of directories to consider "
         f'[default: {DIR_FILTER}]'
     )
+    parser.add_argument(
+        "--prog_filter",
+        action='store',
+        help="Comma separated list of programs to consider [default: *]"
+    )
     return parser
 
 
@@ -197,7 +202,7 @@ class ResultPresenter:
     options """
 
     def __init__(self, results: List[Timing], out_dir,
-                 time_millis, digits, show):
+                 time_millis, digits, pfilter, show):
         self.__results = results
 
         # list of all (unique) recorded optimization levels
@@ -215,13 +220,15 @@ class ResultPresenter:
             key=cmp_to_key(ResultPresenter.sources_sort))
 
         # list of names of benchmarked programs
-        self.programs = sorted(list(set(
+        self.programs = [p for p in sorted(list(set(
             chain.from_iterable([r.programs for r in results]))))
+                         if not pfilter or p in pfilter]
 
         self.millis = time_millis
         self.digits = digits
         self.ensure_out_dir(out_dir)
         self.out_dir = out_dir
+        self.pfilter = pfilter
         self.show = show
 
     def time_str(self, t, scale=True):
@@ -437,12 +444,15 @@ if __name__ == '__main__':
 
     dir_fil = [d.strip() for d in args.dir_filter.split(",")] \
         if args.dir_filter else DIR_FILTER
+    prog_fil = [p.strip() for p in args.prog_filter.split(",")] \
+        if args.prog_filter else None
 
     rp = ResultPresenter(
         results=parse_results(RESULTS_DIR, dir_fil),
         out_dir=args.out,
         time_millis=args.millis,
         digits=args.digits,
+        pfilter=prog_fil,
         show=args.show)
 
     # only plot speedup for now

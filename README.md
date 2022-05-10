@@ -124,18 +124,19 @@ To customize plot options, call the `plot.py` directly with selected arguments
 
 **Available arguments** 
 
-| arg                       | Description [Default value]                                                                                             |
-|:--------------------------|:------------------------------------------------------------------------------------------------------------------------|
-| `-d DATA`, `--data DATA`  | data choice: {time, speedup}                                                                                            |
-| `-o OUT`, `--out OUT`     | output directory                                                                                                        |
-| `-f FMT`, `--fmt FMT`     | output format: {tex, md, plot}                                                                                          |
-| `--ss SS`                 | source directory for speedup [default: original]                                                                        |
-| `--st ST`                 | target directory for speedup [default: *]                                                                               |
-| `--millis`                | display table of times in milliseconds, not seconds                                                                     |
-| `--digits [0-15]`         | number of digits for tabular values [default: 6]                                                                        |
-| `--show`                  | show generated plot or table                                                                                            |
-| `--dir_filter DIR_FILTER` | Comma separated list of directories to consider<br/>[default: original,original_autopar,fission_autopar,fission_manual] |
-| `-h`, `--help`            | show help message and exit                                                                                              |
+| arg                         | Description [Default value]                                                                                             |
+|:----------------------------|:------------------------------------------------------------------------------------------------------------------------|
+| `-d DATA`, `--data DATA`    | data choice: {time, speedup}                                                                                            |
+| `-o OUT`, `--out OUT`       | output directory                                                                                                        |
+| `-f FMT`, `--fmt FMT`       | output format: {tex, md, plot}                                                                                          |
+| `--ss SS`                   | source directory for speedup [default: original]                                                                        |
+| `--st ST`                   | target directory for speedup [default: *]                                                                               |
+| `--millis`                  | display table of times in milliseconds, not seconds                                                                     |
+| `--digits [0-15]`           | number of digits for tabular values [default: 6]                                                                        |
+| `--show`                    | show generated plot or table                                                                                            |
+| `--dir_filter DIR_FILTER`   | Comma separated list of directories to consider<br/>[default: original,original_autopar,fission_autopar,fission_manual] |
+| `--prog_filter PROG_FILTER` | Comma separated list of programs to consider [default: (not set)]
+| `-h`, `--help`              | show help message and exit                                                                                              |
  
  
 To view the various available arguments run: `python plot.py --help`
