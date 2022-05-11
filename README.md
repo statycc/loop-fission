@@ -2,7 +2,7 @@
 
 This repository is for benchmarking the ICC-fission algorithm presented in _"A Novel Loop Fission Technique Inspired by Implicit Computational Complexity"_.
 
-It is a based on [Polybench/C benchmark suite][PB] [version 4.2][4.2], containing the subset of programs to which the loop fission technique can be applied (6 examples). After applying the transformation, the program is then parallelized using OpenMP directives to evaluate the resulting efficiency.
+It is a based on [PolyBench/C benchmark suite][PB] [version 4.2][4.2], containing the subset of programs to which the loop fission technique can be applied (6 examples). After applying the transformation, the program is then parallelized using OpenMP directives to evaluate the resulting efficiency.
 
 Annotating the transformed program with parallelization directives is outside the scope of the algorithm. We have used two different approaches:
 
@@ -22,7 +22,7 @@ The two approaches serve different purposes: manual method enables finding optim
 | `case_study-a`     |      ➖       |    ✅     | Case studies: baseline versions                   | 
 | `case_study-b`     |      ✅       |    ✅     | Case studies: alternative versions for comparison |
 
-[^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [edits significantly the original source code](https://github.com/specs-feup/specs-lara/issues/1), outside of the function that needs to be parallelized, strictly speaking. This affects the original timing used by Polybench/C. As a consequence, those files have been obtained by running [our script script_autopar.sh](script_autopar.sh) to obtain the version with openmp annotation, and then those annotations have been placed in the original file.
+[^1]: [`autopar-clava`](https://github.com/specs-feup/clava) [edits significantly the original source code](https://github.com/specs-feup/specs-lara/issues/1), outside of the function that needs to be parallelized, strictly speaking. This affects the original timing used by PolyBench/C. As a consequence, those files have been obtained by running [our script script_autopar.sh](script_autopar.sh) to obtain the version with openmp annotation, and then those annotations have been placed in the original file.
 
 
 **Other directories and files**
@@ -143,7 +143,7 @@ To view the various available arguments run: `python plot.py --help`
 
 ## Regenerating automatic parallelization directives 
 
-The openmp annotations in the program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) from [clava](https://github.com/specs-feup/clava) on the selected files from the polybench benchmarking suite in [original](./original), and on the same files after they have been "split" by our algorithm, as shared in [fission](./fission).
+The openmp annotations in the program files in `original_autopar` and `fission_autopar` were obtained by running the source-to-source compiler [AutoPar-Clava](https://dx.doi.org/10.1007/s11227-019-03109-9/) from [clava](https://github.com/specs-feup/clava) on the selected files from the PolyBench benchmarking suite in [original](./original), and on the same files after they have been "split" by our algorithm, as shared in [fission](./fission).
 
 To recreate those files:
 
@@ -176,10 +176,10 @@ Note that the files shared in `original_autopar` and `fission_autopar` are obtai
 
 * * *
 
-## About Polybench/C
+## About PolyBench/C
 
-* [Information about Polybench/C @ Ohio State][PB]
-* [Download Polybench/C v4.2 @ SourceForge][4.2] ([Ohio State University Software Distribution License](./LICENSE.txt))
+* [Information about PolyBench/C @ Ohio State][PB]
+* [Download PolyBench/C v4.2 @ SourceForge][4.2] ([Ohio State University Software Distribution License](./LICENSE.txt))
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/
@@ -189,7 +189,7 @@ Note that the files shared in `original_autopar` and `fission_autopar` are obtai
 ## About AutoPar-Clava
 
 * [Information about Clava](https://github.com/specs-feup/clava/) ([Apache License](https://github.com/specs-feup/clava/blob/master/LICENSE))
-* [The specs-lara repository](https://github.com/specs-feup/specs-lara), where the Polybench/C examples are shared before and after optimization ([MIT License](https://github.com/specs-feup/specs-lara/blob/master/LICENSE))
+* [The specs-lara repository](https://github.com/specs-feup/specs-lara), where the PolyBench/C examples are shared before and after optimization ([MIT License](https://github.com/specs-feup/specs-lara/blob/master/LICENSE))
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/
