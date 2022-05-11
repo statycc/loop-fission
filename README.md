@@ -193,5 +193,3 @@ Note that the files shared in `original_autopar` and `fission_autopar` are obtai
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
 [4.2]: https://sourceforge.net/projects/polybench/files/
-
-1226
