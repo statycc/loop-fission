@@ -124,18 +124,18 @@ To customize plot options, call the `plot.py` directly with selected arguments
 
 **Available arguments** 
 
-| Argument                    | Description                                                                                           |
+| ARGUMENT                    | DESCRIPTION                                                                                |
 |:----------------------------|:------------------------------------------------------------------------------------------------------------------------|
-| `-d DATA`, `--data DATA`    | data choice: {`time`, `speedup`}                                                                                            |
-| `-o OUT`, `--out OUT`       | output directory                                                                                                        |
-| `-f FMT`, `--fmt FMT`       | output format: {`tex`, `md`, `plot`}                                                                                          |
-| `--ss SS`                   | source directory for speedup [default: `original`]                                                                        |
-| `--st ST`                   | target directory for speedup [default: _(not set)_]                                                                               |
+| `-d DATA`, `--data DATA`    | data choice: {`time`, `speedup`}                                                                                        |
+| `-o OUT`, `--out OUT`       | output directory [default: `plots`]                                                                                     |
+| `-f FMT`, `--fmt FMT`       | output format: {`tex`, `md`, `plot`}                                                                                    |
+| `--ss SS`                   | source directory for speedup [default: `original`]                                                                      |
+| `--st ST`                   | target directory for speedup [default: _(not set)_]                                                                     |
 | `--millis`                  | display table of times in milliseconds, not seconds                                                                     |
-| `--digits [0-15]`           | number of digits for tabular values [default: `6`]                                                                        |
+| `--digits [0-15]`           | number of digits for tabular values [default: `6`]                                                                      |
 | `--show`                    | show generated plot or table                                                                                            |
 | `--dir_filter DIR_FILTER`   | Comma separated list of directories to consider<br/>[default: `original,original_autopar,fission_autopar,fission_manual`] |
-| `--prog_filter PROG_FILTER` | Comma separated list of programs to consider [default: _(not set)_]
+| `--prog_filter PROG_FILTER` | Comma separated list of programs to consider [default: _(not set)_]                                                     |
 | `-h`, `--help`              | show help message and exit                                                                                              |
  
  
