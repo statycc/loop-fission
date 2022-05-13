@@ -124,7 +124,7 @@ To customize plot options, call the `plot.py` directly with selected arguments
 
 **Available arguments** 
 
-| arg                         | Description [Default value]                                                                                             |
+| Argument                    | Description                                                                                           |
 |:----------------------------|:------------------------------------------------------------------------------------------------------------------------|
 | `-d DATA`, `--data DATA`    | data choice: {`time`, `speedup`}                                                                                            |
 | `-o OUT`, `--out OUT`       | output directory                                                                                                        |
