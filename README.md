@@ -126,16 +126,16 @@ To customize plot options, call the `plot.py` directly with selected arguments
 
 | arg                         | Description [Default value]                                                                                             |
 |:----------------------------|:------------------------------------------------------------------------------------------------------------------------|
-| `-d DATA`, `--data DATA`    | data choice: {time, speedup}                                                                                            |
+| `-d DATA`, `--data DATA`    | data choice: {`time`, `speedup`}                                                                                            |
 | `-o OUT`, `--out OUT`       | output directory                                                                                                        |
-| `-f FMT`, `--fmt FMT`       | output format: {tex, md, plot}                                                                                          |
-| `--ss SS`                   | source directory for speedup [default: original]                                                                        |
-| `--st ST`                   | target directory for speedup [default: *]                                                                               |
+| `-f FMT`, `--fmt FMT`       | output format: {`tex`, `md`, `plot`}                                                                                          |
+| `--ss SS`                   | source directory for speedup [default: `original`]                                                                        |
+| `--st ST`                   | target directory for speedup [default: _(not set)_]                                                                               |
 | `--millis`                  | display table of times in milliseconds, not seconds                                                                     |
-| `--digits [0-15]`           | number of digits for tabular values [default: 6]                                                                        |
+| `--digits [0-15]`           | number of digits for tabular values [default: `6`]                                                                        |
 | `--show`                    | show generated plot or table                                                                                            |
-| `--dir_filter DIR_FILTER`   | Comma separated list of directories to consider<br/>[default: original,original_autopar,fission_autopar,fission_manual] |
-| `--prog_filter PROG_FILTER` | Comma separated list of programs to consider [default: (not set)]
+| `--dir_filter DIR_FILTER`   | Comma separated list of directories to consider<br/>[default: `original,original_autopar,fission_autopar,fission_manual`] |
+| `--prog_filter PROG_FILTER` | Comma separated list of programs to consider [default: _(not set)_]
 | `-h`, `--help`              | show help message and exit                                                                                              |
  
  
@@ -176,17 +176,14 @@ Note that the files shared in `original_autopar` and `fission_autopar` are obtai
 
 * * *
 
-## About PolyBench/C
+## About 
+
+### PolyBench/C
 
 * [Information about PolyBench/C @ Ohio State][PB]
 * [Download PolyBench/C v4.2 @ SourceForge][4.2] ([Ohio State University Software Distribution License](./LICENSE.txt))
 
-[PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/ 
-[4.2]: https://sourceforge.net/projects/polybench/files/
-
-* * *
-
-## About AutoPar-Clava
+### AutoPar-Clava
 
 * [Information about Clava](https://github.com/specs-feup/clava/) ([Apache License](https://github.com/specs-feup/clava/blob/master/LICENSE))
 * [The specs-lara repository](https://github.com/specs-feup/specs-lara), where the PolyBench/C examples are shared before and after optimization ([MIT License](https://github.com/specs-feup/specs-lara/blob/master/LICENSE))
