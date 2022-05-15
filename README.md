@@ -47,6 +47,11 @@ They show appreciable gains, first on the "case_study" example (parallelization 
 
 ![Gain on parallelization of while loops](plots/speedup_case_study-a-case_study-b.png "Speedup obtained by parallelizing the `while` loop in the case\_study program")
 
+but also on the six selected programs:
+
+![Gain on parallelization of for loops](plots/speedup_original-fission_manual.png "Speedup obtained by parallelizing the loops in six programs from the PolyBench/C suite")
+
+
 ## How to run benchmarks
 
 **Basic usage** 
