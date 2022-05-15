@@ -455,7 +455,6 @@ if __name__ == '__main__':
         pfilter=prog_fil,
         show=args.show)
 
-    # only plot speedup for now
     if args.data == "speedup":
         rp.speedup(args.fmt, args.ss, args.st)
     else:
