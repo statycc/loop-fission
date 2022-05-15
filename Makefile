@@ -27,16 +27,19 @@ OPT_LEVELS = O0 O1 O2 O3
 SIZES = MINI SMALL MEDIUM LARGE EXTRALARGE
 
 # Rules for folders
-
+.PHONY: original
 original:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original -s $(size) -o $(opt); ))
 
+.PHONY: original_autopar
 original_autopar:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original_autopar -s $(size) -o $(opt); ))
 
+.PHONY: fission_manual
 fission_manual:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_manual -s $(size) -o $(opt); ))
 
+.PHONY: fission_autopar
 fission_autopar:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_autopar -s $(size) -o $(opt); ))
 
@@ -66,6 +69,7 @@ getsummv:
 mvt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p mvt -s $(size) -o $(opt); ))
 
+.PHONY: plots
 plots:
 	python3 plot.py -d time -f md --millis
 	python3 plot.py -d time -f tex --millis
@@ -87,5 +91,6 @@ everything: | clean original original_autopar fission_manual fission_autopar cas
 clean:
 	rm -rf compiled*/
 	rm -rf results/
+	rm -rf plots/
 	rm -rf _*_autopar/
 	rm -rf ____tempfile.data.polybench 
