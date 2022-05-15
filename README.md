@@ -39,6 +39,14 @@ The two approaches serve different purposes: manual method enables finding optim
   
 * `plot.py` is used for generating tables and plots from results.  
 
+
+The files in `results` and `plots` are provided for convenience, as an example of the results we have obtained, and can safely be deleted or overwritten.
+They were obtained on a Linux 4.19.0-20-amd64 #1 SMP Debian 4.19.235-1 (2022-03-17) x86\_64 GNU/Linux  machine, with 4 Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz processors.
+
+They show appreciable gains, first on the "case_study" example (parallelization of `while` loop, outside the scope of most automatic parallelization tool):
+
+![Gain on parallelization of while loops](plots/speedup_case_study-a-case_study-b.png "Speedup obtained by parallelizing the `while` loop in the case\_study program")
+
 ## How to run benchmarks
 
 **Basic usage** 
