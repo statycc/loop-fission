@@ -183,10 +183,10 @@ To recreate those files:
 
 This script will perform following steps automatically, for each .c file:
 
-- Create the appropriate AutoPar.lara directions (that simply ask to fissionize all the loops in the method function that starts with kernel_),
+- Create the appropriate AutoPar.lara directions (that simply ask to fissionize all the loops in the method function that starts with `kernel_`),
 - Run clava,
 - Copy the optimized file to this folder,
-- Delete the temporary file,
+- Delete the temporary file.
 
 Note that the files shared in `original_autopar` and `fission_autopar` are obtained by "extracting" the openmp annotation from the resulting files and inserting them in the original files[^1].
 

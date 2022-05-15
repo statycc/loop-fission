@@ -81,6 +81,7 @@ plots:
 	python3 plot.py -d speedup -f tex --ss fission_autopar --st fission_manual
 	python3 plot.py -d speedup -f plot --ss original_autopar --st fission_manual
 	python3 plot.py -d speedup -f plot --ss fission_autopar --st fission_manual
+	python3 plot.py --show -d speedup --ss case_study-a -f plot --prog_filter="3mm_while" --prog_filter="3mm_while" --dir_filter="case_study-a,case_study-b"
 
 # Rule to measure all the folders
 # This uses order-only-prerequisites to make sure that 
