@@ -140,19 +140,19 @@ To customize plot options, call the `plot.py` directly with selected arguments
 
 **Available arguments** 
 
-| ARGUMENT        | DESCRIPTION : options                                                              | DEFAULT     |
-|:----------------|:-----------------------------------------------------------------------------------|-------------|
-| `-d`, `--data`  | data choice: `time`, `speedup`                                                     | `time`      |
-| `-o`, `--out`   | path to output directory                                                           | `plots`     |
-| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                                 | `md`        |
-| `--ss`          | source directory for calculating speedup                                           | `original`  |
-| `--st`          | target directory for calculating speedup (all when not set)                        | _(not set)_ |
-| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                     | _(not set)_ |
-| `--digits`      | number of digits for tabular values, 0-15                                          | `6`         |
-| `--show`        | show generated plot or table                                                       | _(not set)_ |
-| `--dir_filter`  | Comma separated list of directories to consider: `original`, `fission_autopar`,... | (see below) |
-| `--prog_filter` | Comma separated list of programs to consider: `3mm`, `bicg`, `deriche` ...         | _(not set)_ |
-| `-h`, `--help`  | show help message and exit                                                         | _(not set)_ |
+| ARGUMENT        | DESCRIPTION : options                                                                  | DEFAULT     |
+|:----------------|:---------------------------------------------------------------------------------------|-------------|
+| `-d`, `--data`  | data choice: `time`, `speedup`                                                         | `time`      |
+| `-o`, `--out`   | path to output directory                                                               | `plots`     |
+| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                                     | `md`        |
+| `--ss`          | source directory for calculating speedup                                               | `original`  |
+| `--st`          | target directory for calculating speedup (all when not set)                            | _(not set)_ |
+| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                         | _(not set)_ |
+| `--digits`      | number of digits for tabular values, 0-15                                              | `6`         |
+| `--show`        | show generated plot or table                                                           | _(not set)_ |
+| `--dir_filter`  | Comma separated list of directories to consider:<br/>`original`, `fission_autopar`,... | (see below) |
+| `--prog_filter` | Comma separated list of programs to consider:<br/>`3mm`, `bicg`, `deriche` ...         | _(not set)_ |
+| `-h`, `--help`  | show help message and exit                                                             | _(not set)_ |
 
 Note about `--dir_filter`: by default the PolyBench/C program directories are used for plotting: 
 `"original,original_autopar,fission_autopar,fission_manual"`. To plot case study results, make sure to override this argument.
