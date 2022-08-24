@@ -1,6 +1,0 @@
-3mm_time	4.10200	0.00001633
-bicg_time	2.87100	0.00002333
-deriche_time	2.38000	0.00004200
-fdtd-2d_time	0	0
-gesummv_time	0	0.00000700
-mvt_time	0	0.00000500
