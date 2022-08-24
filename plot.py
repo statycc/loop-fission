@@ -39,7 +39,7 @@ COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
 # directory sorting in tables left -> right
 SOURCES = ['original', "original_autopar", "fission_autopar",
-           "fission_manual", "case_study-a", "case_study-b"]
+           "fission_par", "case_study-a", "case_study-b"]
 COMPACT_SRC = ['og', "o.a", "f.a", "f.m", "a", "b"]
 DIR_FILTER = ",".join(SOURCES[0:4])
 
