@@ -99,7 +99,7 @@ void kernel_bicg(int m, int n,
       }
       i++;
   }
-  
+
 #pragma endscop
 
 }
