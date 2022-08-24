@@ -79,23 +79,29 @@ void kernel_bicg(int m, int n,
 {
   int i, j;
 
-  #pragma scop
-  for (i = 0; i < _PB_M; i++)
-    s[i] = 0;
+#pragma scop
 
-  for (i = 0; i < _PB_N; i++) {
-    for (j = 0; j < _PB_M; j++) {
-      s[j] = s[j] + r[i] * A[i][j];
-    }
+  i = 0;
+  while(i < _PB_M){
+     s[i] = 0;
+     i++;
+  }
+  i = 0;
+  while (i < _PB_N)
+  {
+      q[i] = SCALAR_VAL(0.0);
+      j = 0;
+      while (j < _PB_M)
+      {
+          s[j] = s[j] + r[i] * A[i][j];
+          q[i] = q[i] + A[i][j] * p[j];
+          j++;
+      }
+      i++;
   }
 
-  for (i = 0; i < _PB_N; i++) {
-    q[i] = SCALAR_VAL(0.0);
-    for (j = 0; j < _PB_M; j++) {
-      q[i] = q[i] + A[i][j] * p[j];
-    }
-  }
-  #pragma endscop
+#pragma endscop
+
 }
 
 
