@@ -81,30 +81,55 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
   int i, j, k;
 
 #pragma scop
+
   /* E := A*B */
-  for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NJ; j++)
-      {
-	E[i][j] = SCALAR_VAL(0.0);
-	for (k = 0; k < _PB_NK; ++k)
-	  E[i][j] += A[i][k] * B[k][j];
+  i = 0;
+  while(i < _PB_NI){
+    j = 0;
+    while(j < _PB_NJ){
+      E[i][j] = SCALAR_VAL(0.0);
+      k = 0;
+	  while (k < _PB_NK){
+	    E[i][j] += A[i][k] * B[k][j];
+	    k++;
       }
+      j++;
+    }
+    i++;
+  }
+
   /* F := C*D */
-  for (i = 0; i < _PB_NJ; i++)
-    for (j = 0; j < _PB_NL; j++)
-      {
-	F[i][j] = SCALAR_VAL(0.0);
-	for (k = 0; k < _PB_NM; ++k)
-	  F[i][j] += C[i][k] * D[k][j];
+  i = 0;
+  while(i < _PB_NJ){
+    j = 0;
+    while(j < _PB_NL){
+      F[i][j] = SCALAR_VAL(0.0);
+      k = 0;
+	  while(k < _PB_NM){
+	    F[i][j] += C[i][k] * D[k][j];
+	    k++;
       }
+      j++;
+    }
+    i++;
+  }
+
   /* G := E*F */
-  for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NL; j++)
-      {
-	G[i][j] = SCALAR_VAL(0.0);
-	for (k = 0; k < _PB_NJ; ++k)
-	  G[i][j] += E[i][k] * F[k][j];
+  i = 0;
+  while (i < _PB_NI){
+    j = 0;
+    while (j < _PB_NL){
+      G[i][j] = SCALAR_VAL(0.0);
+      k = 0;
+	  while(k < _PB_NJ){
+	    G[i][j] += E[i][k] * F[k][j];
+	    k++;
       }
+      j++;
+    }
+    i++;
+  }
+
 #pragma endscop
 
 }
