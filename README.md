@@ -7,9 +7,9 @@ This repository is for benchmarking the loop fission algorithm presented in _"{p
 | Directory     | Loop fission | Parallel | Description                                                     |
 |:--------------|:------------:|:--------:|:----------------------------------------------------------------|
 | `original`    |      ➖       |    ➖     | baseline, unmodified programs                                   | 
-| `fission`     |      ✅       |          | programs after applying our loop fission method                 |
+| `fission`     |      ✅       |    ➖     | programs after applying our loop fission method                 |
 | `fission_par` |      ✅       |    ✅     | transformed and parallelized programs, using our method         |
-| `alt`         |      ✅       |          | programs after applying alternative loop fission transformation |
+| `alt`         |      ✅       |    ➖     | programs after applying alternative loop fission transformation |
 | `alt_par`     |      ✅       |    ✅     | transformed and parallelized programs, using alternative method |
 
 **Other directories and files**
