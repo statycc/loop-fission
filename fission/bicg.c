@@ -86,6 +86,19 @@ void kernel_bicg(int m, int n,
      s[i] = 0;
      i++;
   }
+
+  i = 0;
+  while (i < _PB_N)
+  {
+      j = 0;
+      while (j < _PB_M)
+      {
+          s[j] = s[j] + r[i] * A[i][j];
+          j++;
+      }
+      i++;
+  }
+
   i = 0;
   while (i < _PB_N)
   {
@@ -93,7 +106,6 @@ void kernel_bicg(int m, int n,
       j = 0;
       while (j < _PB_M)
       {
-          s[j] = s[j] + r[i] * A[i][j];
           q[i] = q[i] + A[i][j] * p[j];
           j++;
       }

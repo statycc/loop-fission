@@ -80,18 +80,36 @@ void kernel_gesummv(int n,
   int i, j;
 
 #pragma scop
+
   i = 0;
   while (i < _PB_N)
   {
      tmp[i] = SCALAR_VAL(0.0);
-     y[i] = SCALAR_VAL(0.0);
      j = 0;
      while(j < _PB_N)
      {
         tmp[i] = A[i][j] * x[j] + tmp[i];
+        j++;
+     }
+     i++;
+  }
+
+  i = 0;
+  while (i < _PB_N)
+  {
+     y[i] = SCALAR_VAL(0.0);
+     j = 0;
+     while(j < _PB_N)
+     {
         y[i] = B[i][j] * x[j] + y[i];
         j++;
      }
+     i++;
+  }
+
+  i = 0;
+  while (i < _PB_N)
+  {
      y[i] = alpha * tmp[i] + beta * y[i];
      i++;
   }

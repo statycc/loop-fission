@@ -117,7 +117,12 @@ void kernel_fdtd_2d(int tmax,
 	   }
 	   i++;
     }
+    t++;
+  }
 
+  t = 0;
+  while(t < _PB_TMAX)
+  {
     i = 0;
     while (i < _PB_NX){
        j = 1;
@@ -127,7 +132,13 @@ void kernel_fdtd_2d(int tmax,
 	   }
 	   i++;
     }
+    t++;
+  }
 
+
+  t = 0;
+  while(t < _PB_TMAX)
+  {
     i = 0;
     while(i < _PB_NX - 1){
       j = 0;
@@ -137,7 +148,6 @@ void kernel_fdtd_2d(int tmax,
       }
       i++;
     }
-
     t++;
   }
 
