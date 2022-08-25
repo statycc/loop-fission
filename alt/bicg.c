@@ -81,30 +81,25 @@ void kernel_bicg(int m, int n,
 
 #pragma scop
 
-  #pragma omp parallel for private(i)
-  for (i = 0; i < _PB_M; i++)
-    s[i] = 0;
-
-   #pragma omp parallel default(shared) private(i, j) firstprivate(_PB_N, _PB_M, A)
-   {
-     #pragma omp for firstprivate(r) reduction(+:s[:M]) nowait
-     for (i = 0; i < _PB_N; i++)
-     {
-        for (j = 0; j < _PB_M; j++)
-        {
+  i = 0;
+  while(i < _PB_M){
+     s[i] = 0;
+     i++;
+  }
+  i = 0;
+  while (i < _PB_N)
+  {
+      q[i] = SCALAR_VAL(0.0);
+      j = 0;
+      while (j < _PB_M)
+      {
           s[j] = s[j] + r[i] * A[i][j];
-        }
-     }     
-     #pragma omp for firstprivate(p)
-     for (i = 0; i < _PB_N; i++)
-     {
-        q[i] = SCALAR_VAL(0.0);
-        for (j = 0; j < _PB_M; j++)
-        {
           q[i] = q[i] + A[i][j] * p[j];
-        }
-     }
-   }
+          j++;
+      }
+      i++;
+  }
+
 #pragma endscop
 
 }

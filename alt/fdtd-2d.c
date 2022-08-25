@@ -99,36 +99,47 @@ void kernel_fdtd_2d(int tmax,
 
 #pragma scop
 
-#pragma omp parallel private(t, i, j)
-{
-    #pragma omp for nowait
-    for(t = 0; t < _PB_TMAX; t++)
-    {
-      for (j = 0; j < _PB_NY; j++)
-	    ey[0][j] = _fict_[t];
+  t = 0;
+  while(t < _PB_TMAX)
+  {
+    j = 0;
+    while (j < _PB_NY){
+	   ey[0][j] = _fict_[t];
+	   j++;
+	}
 
-      for (i = 1; i < _PB_NX; i++)
-	    for (j = 0; j < _PB_NY; j++)
-	        ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
+	i = 0;
+    while (i < _PB_NX){
+       j = 0;
+	   while (j < _PB_NY){
+	     ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
+	     j++;
+	   }
+	   i++;
     }
 
-    #pragma omp for
-    for(t = 0; t < _PB_TMAX; t++)
-    {
-      for (i = 0; i < _PB_NX; i++)
-        for (j = 1; j < _PB_NY; j++)
-	        ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
+    i = 0;
+    while (i < _PB_NX){
+       j = 1;
+	   while (j < _PB_NY){
+	     ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
+	     j++;
+	   }
+	   i++;
     }
-}
 
-#pragma omp parallel for private(t, i, j)
-for(t = 0; t < _PB_TMAX; t++)
-{
-  for (i = 0; i < _PB_NX - 1; i++)
-    for (j = 0; j < _PB_NY - 1; j++)
-        hz[i][j] = hz[i][j] - SCALAR_VAL(0.7)*  (ex[i][j+1] - ex[i][j] +
-                   ey[i+1][j] - ey[i][j]);
-}
+    i = 0;
+    while(i < _PB_NX - 1){
+      j = 0;
+	  while(j < _PB_NY - 1){
+	     hz[i][j] = hz[i][j] - SCALAR_VAL(0.7) * (ex[i][j+1] - ex[i][j] + ey[i+1][j] - ey[i][j]);
+	     j++;
+      }
+      i++;
+    }
+
+    t++;
+  }
 
 #pragma endscop
 }
