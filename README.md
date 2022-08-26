@@ -51,10 +51,9 @@ The folders `results` and `plots` are discussed below.
 
 ## Running the benchmarks
 
-Running benchmarks will compile and time the execution of specified programs.
-The results will be written into `results/` directory. 
+Compiles and times the execution of programs.  The results will be written into `results/` directory. 
 
-Run all benchmarks:
+**Run all benchmarks**
 
 ```text
 make all
@@ -62,9 +61,9 @@ make all
 
 - Compatible with Linux/OS X hosts.
 - System should include a C compiler that supports OpenMP pragmas (assumes GCC).
-- You may specify an alternative compiler, using `make all CC=compiler_here`.
+- You may specify an alternative compiler using `make all CC=compiler_here`.
 
-For more customizable execution options, call the `run.sh` script directly, with choice of arguments: 
+For more customizable execution options, call the `run.sh` script directly: 
        
 ```text
 ./run.sh 
