@@ -1,6 +1,4 @@
 /**
- * lufac.C - from ROSE compiler LoopProcessing test suite
- * <https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tests/roseTests/loopProcessingTests/lufac.C>
  */
 #include <stdio.h>
 #include <unistd.h>
@@ -49,30 +47,30 @@ static
 void kernel_template(int n, DATA_TYPE POLYBENCH_2D(C,N,N,n,n))
 {
     int p[n], i, j, k;
-    double a[n][n], mu, t;
+    double mu, t;
 
 #pragma scop
     for (k = 0; k<=n-2; k+=1) {
         p[k] = k;
-        mu =  (a[k][k] < 0 ? -1 : 1) * a[k][k];
+        mu = C[k][k] < 0 ? -C[k][k] : C[k][k];
 
         for (i = k+1; i <= n-1; i+=1) {
-          if (mu < (a[i][k] < 0 ? -1 : 1) * a[i][k] ) {
-            mu = (a[i][k] < 0 ? -1 : 1) * a[i][k];
+          if (mu < C[i][k] < 0 ? -C[i][k] : C[i][k] ) {
+            mu = C[i][k] < 0 ? -C[i][k] : C[i][k];
             p[k] = i;
           }
         }
         for (j = k; j <= n-1; j+=1) {
-           t = a[k][j];
-           a[k][j] = a[p[k]][j];
-           a[p[k]][j] = t;
+           t = C[k][j];
+           C[k][j] = C[p[k]][j];
+           C[p[k]][j] = t;
         }
         for (i = k+1; i <= n-1; i+=1) {
-            a[i][k] = a[i][k]/a[k][k];
+            C[i][k] = C[i][k]/C[k][k];
         }
         for (j = k+1; j <=n-1; j+=1) {
            for (i = k+1; i <=n-1; i+=1) {
-                a[i][j] = a[i][j] - a[i][k]*a[k][j];
+                C[i][j] = C[i][j] - C[i][k]*C[k][j];
            }
         }
     }
