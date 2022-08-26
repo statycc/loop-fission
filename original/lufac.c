@@ -52,30 +52,29 @@ void kernel_template(int n, DATA_TYPE POLYBENCH_2D(C,N,N,n,n))
     double a[n][n], mu, t;
 
 #pragma scop
-for (k = 0; k<=n-2; k+=1) {
-    p[k] = k;
-    mu =  (a[k][k] < 0 ? -1 : 1) * a[k][k];
-    for (i = k+1; i <= n-1; i+=1) {
-      if (mu < (a[i][k] < 0 ? -1 : 1) * a[i][k] ) {
-        mu = (a[i][k] < 0 ? -1 : 1) * a[i][k];
-        p[k] = i;
-      }
-    }
+    for (k = 0; k<=n-2; k+=1) {
+        p[k] = k;
+        mu =  (a[k][k] < 0 ? -1 : 1) * a[k][k];
 
-    for (j = k; j <= n-1; j+=1) {
-       t = a[k][j];
-       a[k][j] = a[p[k]][j];
-       a[p[k]][j] = t;
-    }
-
-    for (i = k+1; i <= n-1; i+=1) {
-        a[i][k] = a[i][k]/a[k][k];
-    }
-
-    for (j = k+1; j <=n-1; j+=1) {
-       for (i = k+1; i <=n-1; i+=1) {
-            a[i][j] = a[i][j] - a[i][k]*a[k][j];
-       }
+        for (i = k+1; i <= n-1; i+=1) {
+          if (mu < (a[i][k] < 0 ? -1 : 1) * a[i][k] ) {
+            mu = (a[i][k] < 0 ? -1 : 1) * a[i][k];
+            p[k] = i;
+          }
+        }
+        for (j = k; j <= n-1; j+=1) {
+           t = a[k][j];
+           a[k][j] = a[p[k]][j];
+           a[p[k]][j] = t;
+        }
+        for (i = k+1; i <= n-1; i+=1) {
+            a[i][k] = a[i][k]/a[k][k];
+        }
+        for (j = k+1; j <=n-1; j+=1) {
+           for (i = k+1; i <=n-1; i+=1) {
+                a[i][j] = a[i][j] - a[i][k]*a[k][j];
+           }
+        }
     }
 
 #pragma endscop
