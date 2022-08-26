@@ -22,14 +22,14 @@ We also compare our technique to an alternative loop fission technique used in t
 
 All programs are written in C language. We include programs with both `for` and `while` loops. 
 
-| Benchmark | Description                                                 | for | while |
-|-----------|-------------------------------------------------------------|:---:|:-----:|
-| `3mm`     | 3D matrix multiplication, from PolyBench/C                  |     |   ✔   | 
-| `bicg`    | BiCG sub kernel of BiCGStab linear solver, from PolyBench/C |     |   ✔   | 
-| `deriche` | Edge detection filter, from PolyBench/C                     |     |   ✔   | 
-| `fdtd-2d` | 2-D finite different time domain kernel, from PolyBench/C   |     |   ✔   | 
-| `gesummv` | Scalar, vector and matrix multiplication, from PolyBench/C  |     |   ✔   | 
-| `mvt`     | Matrix vector product and transpose, from PolyBench/C       |     |   ✔   | 
+| Benchmark | Description                               | Origin      | for | while |
+|-----------|-------------------------------------------|-------------|:---:|:-----:|
+| `3mm`     | 3D matrix multiplication                  | PolyBench/C |     |   ✔   | 
+| `bicg`    | BiCG sub kernel of BiCGStab linear solver | PolyBench/C |     |   ✔   | 
+| `deriche` | Edge detection filter                     | PolyBench/C |     |   ✔   | 
+| `fdtd-2d` | 2-D finite different time domain kernel   | PolyBench/C |     |   ✔   | 
+| `gesummv` | Scalar, vector and matrix multiplication  | PolyBench/C |     |   ✔   | 
+| `mvt`     | Matrix vector product and transpose       | PolyBench/C |     |   ✔   | 
 
 ## Other directories and files
 
