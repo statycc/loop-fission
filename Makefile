@@ -64,8 +64,8 @@ PROGS = 3mm bicg deriche fdtd-2d getsummv mvt
 
 rose:
 	 $(foreach p, $(PROGS), \
-	 $(ROSE)/tutorial/loopProcessor --edg:no_warnings -w -c -fs0 -cp 0 -I$(ICCF)/headers -I$(ICCF)/utilities \
-	 $(ICCF)/original/$(p).c $(ICCF)/alt/$(p).c; )
+	 $(ROSE)/build/tutorial/loopProcessor --edg:no_warnings -w -c -fs0 -cp 0 \
+	 -I$(ICCF)/headers -I$(ICCF)/utilities $(ICCF)/original/$(p).c $(ICCF)/alt/$(p).c; )
 
 .PHONY: plots
 plots:
