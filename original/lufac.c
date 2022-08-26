@@ -69,14 +69,14 @@ for (k = 0; k<=n-2; k+=1) {
     }
 
     for (i = k+1; i <= n-1; i+=1) {
-          a[i][k] = a[i][k]/a[k][k];
+        a[i][k] = a[i][k]/a[k][k];
     }
+
     for (j = k+1; j <=n-1; j+=1) {
        for (i = k+1; i <=n-1; i+=1) {
             a[i][j] = a[i][j] - a[i][k]*a[k][j];
        }
     }
- }
 
 #pragma endscop
 }
