@@ -85,25 +85,36 @@ void kernel_mvt(int n,
   int i, j;
 
 #pragma scop
-  i = 0;
-  while (i < _PB_N){
-    j = 0;
-    while (j < _PB_N){
-      x1[i] = x1[i] + A[i][j] * y_1[j];
-      j++;
-    }
-    i++;
+
+#pragma omp parallel private(i, j)
+{
+  #pragma omp single nowait
+  {
+      i = 0;
+      while (i < _PB_N){
+        j = 0;
+        while (j < _PB_N){
+          x1[i] = x1[i] + A[i][j] * y_1[j];
+          j++;
+        }
+        i++;
+      }
   }
 
-  i = 0;
-  while (i < _PB_N){
-    j = 0;
-    while (j < _PB_N){
-       x2[i] = x2[i] + A[j][i] * y_2[j];
-       j++;
-    }
-    i++;
+  #pragma omp single nowait
+  {
+      i = 0;
+      while (i < _PB_N){
+        j = 0;
+        while (j < _PB_N){
+           x2[i] = x2[i] + A[j][i] * y_2[j];
+           j++;
+        }
+        i++;
+      }
   }
+}
+
 #pragma endscop
 
 }

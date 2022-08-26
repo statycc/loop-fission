@@ -99,42 +99,50 @@ void kernel_fdtd_2d(int tmax,
 
 #pragma scop
 
-  t = 0;
-  while(t < _PB_TMAX)
-  {
-    j = 0;
-    while (j < _PB_NY){
-	   ey[0][j] = _fict_[t];
-	   j++;
-	}
+#pragma omp parallel private(i, t, j)
+{
+    #pragma omp single nowait
+    {
+      t = 0;
+      while(t < _PB_TMAX)
+      {
+        j = 0;
+        while (j < _PB_NY){
+           ey[0][j] = _fict_[t];
+           j++;
+        }
 
-	i = 0;
-    while (i < _PB_NX){
-       j = 0;
-	   while (j < _PB_NY){
-	     ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
-	     j++;
-	   }
-	   i++;
+        i = 0;
+        while (i < _PB_NX){
+           j = 0;
+           while (j < _PB_NY){
+             ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
+             j++;
+           }
+           i++;
+        }
+        t++;
+      }
     }
-    t++;
-  }
 
-  t = 0;
-  while(t < _PB_TMAX)
-  {
-    i = 0;
-    while (i < _PB_NX){
-       j = 1;
-	   while (j < _PB_NY){
-	     ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
-	     j++;
-	   }
-	   i++;
+    #pragma omp single nowait
+    {
+      t = 0;
+      while(t < _PB_TMAX)
+      {
+        i = 0;
+        while (i < _PB_NX){
+           j = 1;
+           while (j < _PB_NY){
+             ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
+             j++;
+           }
+           i++;
+        }
+        t++;
+      }
     }
-    t++;
-  }
-
+}
 
   t = 0;
   while(t < _PB_TMAX)

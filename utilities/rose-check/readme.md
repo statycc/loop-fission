@@ -1,6 +1,10 @@
 # LoopProcessor check 
 
-Simple sanity check to ensure ROSE compiler's [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C) is producing expected results.
+Running the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C) 
+requires building the [ROSE compiler](https://github.com/rose-compiler/rose) from source.
+Build instructions are in the [wiki](https://github.com/rose-compiler/rose/wiki). 
+
+After building, perform this simple sanity check to ensure ROSE compiler's LoopProcessor is producing expected results.
 
 **Test program**: [dgemvT.C](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tests/roseTests/loopProcessingTests/dgemvT.C)
 

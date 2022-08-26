@@ -103,7 +103,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
     }
 
     /* F := C*D */
-    #pragma omp single nowait
+    #pragma omp single
     {
         i = 0;
         while(i < _PB_NJ){
@@ -120,26 +120,24 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
         i++;
         }
     }
-
-    /* G := E*F */
-    #pragma omp single
-    {
-        i = 0;
-        while (i < _PB_NI){
-        j = 0;
-        while (j < _PB_NL){
-          G[i][j] = SCALAR_VAL(0.0);
-          k = 0;
-          while(k < _PB_NJ){
-            G[i][j] += E[i][k] * F[k][j];
-            k++;
-          }
-          j++;
-        }
-        i++;
-        }
-    }
 }
+
+/* G := E*F */
+i = 0;
+while (i < _PB_NI){
+    j = 0;
+    while (j < _PB_NL){
+      G[i][j] = SCALAR_VAL(0.0);
+      k = 0;
+      while(k < _PB_NJ){
+        G[i][j] += E[i][k] * F[k][j];
+        k++;
+      }
+      j++;
+    }
+    i++;
+}
+
 
 #pragma endscop
 

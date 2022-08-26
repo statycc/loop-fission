@@ -82,7 +82,7 @@ void kernel_bicg(int m, int n,
 #pragma scop
 #pragma omp parallel private(i, j)
 {
-    #pragma omp single nowait
+    #pragma omp single
     {
         i = 0;
         while(i < _PB_M){
