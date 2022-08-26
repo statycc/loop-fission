@@ -81,54 +81,65 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
   int i, j, k;
 
 #pragma scop
-
-  /* E := A*B */
-  i = 0;
-  while(i < _PB_NI){
-    j = 0;
-    while(j < _PB_NJ){
-      E[i][j] = SCALAR_VAL(0.0);
-      k = 0;
-	  while (k < _PB_NK){
-	    E[i][j] += A[i][k] * B[k][j];
-	    k++;
-      }
-      j++;
+#pragma omp parallel private(i, j, k)
+{
+    /* E := A*B */
+    #pragma omp single nowait
+    {
+        i = 0;
+        while(i < _PB_NI){
+        j = 0;
+        while(j < _PB_NJ){
+          E[i][j] = SCALAR_VAL(0.0);
+          k = 0;
+          while (k < _PB_NK){
+            E[i][j] += A[i][k] * B[k][j];
+            k++;
+          }
+          j++;
+        }
+        i++;
+        }
     }
-    i++;
-  }
 
-  /* F := C*D */
-  i = 0;
-  while(i < _PB_NJ){
-    j = 0;
-    while(j < _PB_NL){
-      F[i][j] = SCALAR_VAL(0.0);
-      k = 0;
-	  while(k < _PB_NM){
-	    F[i][j] += C[i][k] * D[k][j];
-	    k++;
-      }
-      j++;
+    /* F := C*D */
+    #pragma omp single nowait
+    {
+        i = 0;
+        while(i < _PB_NJ){
+        j = 0;
+        while(j < _PB_NL){
+          F[i][j] = SCALAR_VAL(0.0);
+          k = 0;
+          while(k < _PB_NM){
+            F[i][j] += C[i][k] * D[k][j];
+            k++;
+          }
+          j++;
+        }
+        i++;
+        }
     }
-    i++;
-  }
 
-  /* G := E*F */
-  i = 0;
-  while (i < _PB_NI){
-    j = 0;
-    while (j < _PB_NL){
-      G[i][j] = SCALAR_VAL(0.0);
-      k = 0;
-	  while(k < _PB_NJ){
-	    G[i][j] += E[i][k] * F[k][j];
-	    k++;
-      }
-      j++;
+    /* G := E*F */
+    #pragma omp single
+    {
+        i = 0;
+        while (i < _PB_NI){
+        j = 0;
+        while (j < _PB_NL){
+          G[i][j] = SCALAR_VAL(0.0);
+          k = 0;
+          while(k < _PB_NJ){
+            G[i][j] += E[i][k] * F[k][j];
+            k++;
+          }
+          j++;
+        }
+        i++;
+        }
     }
-    i++;
-  }
+}
 
 #pragma endscop
 

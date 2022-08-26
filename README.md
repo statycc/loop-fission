@@ -22,21 +22,21 @@ We also compare our technique to an alternative loop fission technique used in t
 
 All programs are written in C language. We include programs with both `for` and `while` loops. 
 
-| Benchmark | Description                               | Origin      | for | while |
-|-----------|-------------------------------------------|-------------|:---:|:-----:|
-| `3mm`     | 3D matrix multiplication                  | PolyBench/C |     |   ✔   | 
-| `bicg`    | BiCG sub kernel of BiCGStab linear solver | PolyBench/C |     |   ✔   | 
-| `deriche` | Edge detection filter                     | PolyBench/C |     |   ✔   | 
-| `fdtd-2d` | 2-D finite different time domain kernel   | PolyBench/C |     |   ✔   | 
-| `gesummv` | Scalar, vector and matrix multiplication  | PolyBench/C |     |   ✔   | 
-| `mvt`     | Matrix vector product and transpose       | PolyBench/C |     |   ✔   | 
+| Benchmark | Description                               | Origin            | for | while |
+|-----------|-------------------------------------------|-------------------|:---:|:-----:|
+| `3mm`     | 3D matrix multiplication                  | [PolyBench/C][PB] |     |   ✔   | 
+| `bicg`    | BiCG sub kernel of BiCGStab linear solver | [PolyBench/C][PB] |     |   ✔   | 
+| `deriche` | Edge detection filter                     | [PolyBench/C][PB] |     |   ✔   | 
+| `fdtd-2d` | 2-D finite different time domain kernel   | [PolyBench/C][PB] |     |   ✔   | 
+| `gesummv` | Scalar, vector and matrix multiplication  | [PolyBench/C][PB] |     |   ✔   | 
+| `mvt`     | Matrix vector product and transpose       | [PolyBench/C][PB] |     |   ✔   | 
 
 ## Other directories and files
 
 * `headers/` header files for benchmark programs.
 
 * `utilities/` e.g. the benchmarking timing script. These utilities are directly extended from
-   [PolyBench/C benchmark suite](http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/), 
+   [PolyBench/C benchmark suite][PB], 
    [version 4.2](https://sourceforge.net/projects/polybench/files/).
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
@@ -81,4 +81,4 @@ For more customizable execution options, call the `run.sh` script directly:
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
-
+[PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
