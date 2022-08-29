@@ -22,14 +22,15 @@ We also compare our technique to an alternative loop fission technique used in t
 
 All programs are written in C language. We include programs with both `for` and `while` loops. 
 
-| Benchmark | Description                               | Origin            | for | while |
-|-----------|-------------------------------------------|-------------------|:---:|:-----:|
-| `3mm`     | 3D matrix multiplication                  | [PolyBench/C][PB] |     |   ✔   | 
-| `bicg`    | BiCG sub kernel of BiCGStab linear solver | [PolyBench/C][PB] |     |   ✔   | 
-| `deriche` | Edge detection filter                     | [PolyBench/C][PB] |     |   ✔   | 
-| `fdtd-2d` | 2-D finite different time domain kernel   | [PolyBench/C][PB] |     |   ✔   | 
-| `gesummv` | Scalar, vector and matrix multiplication  | [PolyBench/C][PB] |     |   ✔   | 
-| `mvt`     | Matrix vector product and transpose       | [PolyBench/C][PB] |     |   ✔   | 
+| Benchmark  | Description                               | Origin            | for | while |
+|------------|-------------------------------------------|-------------------|:---:|:-----:|
+| `3mm`      | 3D matrix multiplication                  | [PolyBench/C][PB] |     |   ✔   | 
+| `bicg`     | BiCG sub kernel of BiCGStab linear solver | [PolyBench/C][PB] |     |   ✔   | 
+| `colormap` | Type conversion of photometric palette    | [MiBench][MB]     |  ✔  |       | 
+| `deriche`  | Edge detection filter                     | [PolyBench/C][PB] |     |   ✔   | 
+| `fdtd-2d`  | 2-D finite different time domain kernel   | [PolyBench/C][PB] |     |   ✔   | 
+| `gesummv`  | Scalar, vector and matrix multiplication  | [PolyBench/C][PB] |     |   ✔   | 
+| `mvt`      | Matrix vector product and transpose       | [PolyBench/C][PB] |     |   ✔   | 
 
 ## Other directories and files
 
@@ -82,3 +83,4 @@ For more customizable execution options, call the `run.sh` script directly:
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
+[MB]: https://vhosts.eecs.umich.edu/mibench

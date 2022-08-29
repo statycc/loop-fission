@@ -59,6 +59,10 @@ getsummv:
 mvt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p mvt -s $(size) -o $(opt); ))
 
+colormap:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p colormap -s $(size) -o $(opt); ))
+
+
 # transform all using rose
 PROGS = 3mm bicg deriche fdtd-2d gesummv lufac mvt
 
