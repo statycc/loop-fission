@@ -38,10 +38,9 @@ SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
 COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
 # directory sorting in tables left -> right
-SOURCES = ['original', "original_autopar", "fission_autopar",
-           "fission_par", "case_study-a", "case_study-b"]
-COMPACT_SRC = ['og', "o.a", "f.a", "f.m", "a", "b"]
-DIR_FILTER = ",".join(SOURCES[0:4])
+SOURCES = ['original', "fission", "alt"]
+COMPACT_SRC = ['org', "fis", "alt"]
+DIR_FILTER = ",".join(SOURCES)
 
 # Configs for fixed plot/charts properties
 BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#ff1744']

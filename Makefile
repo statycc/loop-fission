@@ -74,6 +74,7 @@ plots:
 	python3 plot.py -d time -f plot
 	python3 plot.py -d speedup -f md --digits 2
 	python3 plot.py -d speedup -f tex --digits 2
+	python3 plot.py -d speedup -f tex --ss original --st fission
 	python3 plot.py -d speedup -f plot
 
 # Cleaning command
