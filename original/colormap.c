@@ -19,7 +19,7 @@
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
-#include "colormap.h"
+#include <colormap.h>
 
 /* Array initialization. */
 static

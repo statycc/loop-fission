@@ -18,15 +18,15 @@
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define N 16384
-#  endif
-
-#  ifdef LARGE_DATASET
 #   define N 32768
 #  endif
 
-#  ifdef EXTRALARGE_DATASET
+#  ifdef LARGE_DATASET
 #   define N 65535
+#  endif
+
+#  ifdef EXTRALARGE_DATASET
+#   define N 16777216
 #  endif
 
 
