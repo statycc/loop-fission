@@ -22,17 +22,18 @@ We also compare our technique to an alternative loop fission technique used in t
 
 All programs are written in C language. We include programs with both `for` and `while` loops. 
 
-| Benchmark  | Description                                    | for | while | Origin            |
-|:-----------|:-----------------------------------------------|:---:|:-----:|:------------------|
-| `3mm`      | 3D matrix multiplication                       |     |   ✔   | [PolyBench/C][PB] | 
-| `bicg`     | BiCG sub kernel of BiCGStab linear solver      |     |   ✔   | [PolyBench/C][PB] | 
-| `colormap` | TIFF image conversion of photometric palette   |  ✔  |       | [MiBench][MB]     | 
-| `cp50`     | Ghostscript/CP50 color print routine           |     |   ✔   | [MiBench][MB]     | 
-| `deriche`  | Edge detection filter                          |     |   ✔   | [PolyBench/C][PB] | 
-| `fdtd-2d`  | 2-D finite different time domain kernel        |     |   ✔   | [PolyBench/C][PB] | 
-| `gesummv`  | Scalar, vector and matrix multiplication       |     |   ✔   | [PolyBench/C][PB] | 
-| `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB] | 
-| `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]     | 
+| Benchmark  | Description                                    | for | while | Origin                |
+|:-----------|:-----------------------------------------------|:---:|:-----:|:----------------------|
+| `3mm`      | 3D matrix multiplication                       |     |   ✔   | [PolyBench/C][PB]     | 
+| `bicg`     | BiCG sub kernel of BiCGStab linear solver      |     |   ✔   | [PolyBench/C][PB]     | 
+| `colormap` | TIFF image conversion of photometric palette   |  ✔  |       | [MiBench][MB]         | 
+| `cp50`     | Ghostscript/CP50 color print routine           |  ✔  |   ✔   | [MiBench][MB]         | 
+| `deriche`  | Edge detection filter                          |     |   ✔   | [PolyBench/C][PB]     | 
+| `dgemvt`   | Vector multiplication                          |  ✔  |       | [ROSE Test Suite][RT] |
+| `fdtd-2d`  | 2-D finite different time domain kernel        |     |   ✔   | [PolyBench/C][PB]     | 
+| `gesummv`  | Scalar, vector and matrix multiplication       |     |   ✔   | [PolyBench/C][PB]     | 
+| `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB]     | 
+| `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]         | 
 
 ## Other directories and files
 
@@ -93,3 +94,4 @@ We recommend clearing results directory between multiple runs.
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
 [MB]: https://vhosts.eecs.umich.edu/mibench
+[RT]: https://github.com/rose-compiler/rose/tree/b5a170b408bf25c9fdb7170a5de0cb39c6ff0542/tests/roseTests/loopProcessingTests 

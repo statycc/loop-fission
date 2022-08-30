@@ -68,10 +68,12 @@ tblshft:
 cp50:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p cp50 -s $(size) -o $(opt); ))
 
+dgemvt:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p dgemvt -s $(size) -o $(opt); ))
 
 
 # transform all using rose
-PROGS = 3mm bicg deriche fdtd-2d gesummv mvt colormap tblshft cp50
+PROGS = 3mm bicg deriche fdtd-2d gesummv mvt colormap tblshft cp50 dgemvt
 
 rose:
 	 $(foreach p, $(PROGS), \
