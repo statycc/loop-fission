@@ -12,7 +12,7 @@ We also compare our technique to an alternative loop fission technique used in t
 
 ## Files and organization
 
-### Benchmark directory organization
+### Benchmark directories
 
 | Directory  | Description                                                     |
 |:-----------|:----------------------------------------------------------------|
@@ -46,7 +46,7 @@ All programs are written in C language. We include programs with both `for` and 
 * `headers/` header files for benchmark programs.
 
 * `utilities/` e.g. the timing script, obtained from
-   [PolyBench/C][PB] benchmark suite, [v4.2](https://sourceforge.net/projects/polybench/files/).
+   [PolyBench/C][PB] benchmark suite [version 4.2](https://sourceforge.net/projects/polybench/files/).
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
 
@@ -58,36 +58,31 @@ The folders `results` and `plots` are discussed below.
 
 ## Reproducing results
 
-This section describes how to measure transformation performance on the described benchmarks.
-
-**System requirements:** Linux/OSX operating system, C compiler with OpenMP support, 
-Python 3+ for plotting. The system should have multiple cores for parallelization, but 
-this number does not need to be high (4 cores is sufficient).
+**System requirements:** Linux/OSX host, C compiler with OpenMP support, 
+Python 3+ for plotting. The system should have multiple cores for parallelism:
+but 4 cores is sufficient for this experiment.
 
 Benchmarking proceeds in two phases: first capture the timing results, then generate
 plots and tables from those results. Details of these steps follow next.
 
 ### Running the benchmarks
 
-Compiles and times the execution of programs.  
-
-**Run all benchmarks**
+**Run all benchmarks** — compiles and times the execution of all benchmarks.
 
 ```text
 make all
 ```
 
-- Compatible with Linux/OS X hosts.
-- System should include a C compiler that supports OpenMP pragmas (assumes GCC).
-- You may specify an alternative compiler using `make all CC=compiler_here`.
+System should include a C compiler that supports OpenMP pragmas (assumes GCC).
+You may specify an alternative compiler using `make all CC=compiler_here`.
 
-For more customizable execution options, call the `run.sh` script directly: 
+**Custom execution** — call the `run.sh` script directly: 
        
 ```text
 ./run.sh 
 ```
 
-**Available arguments**
+**Available arguments for timing**
 
 | FLAG | DESCRIPTION: options                                                      | DEFAULT     |
 |:----:|:--------------------------------------------------------------------------|:------------|
@@ -100,7 +95,7 @@ For more customizable execution options, call the `run.sh` script directly:
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
-### Timing results
+### Locating and interpreting results
 
 The results can be found in `results/` directory, categorized by source directory name and data size. 
 Two files will be generated for each category, for each run:
@@ -143,7 +138,7 @@ After capturing results, use the plotting script to generate tables or graphs. T
 
 To customize plot options, call the `plot.py` directly with selected arguments.
 
-**Available arguments**
+**Available arguments for plotting**
 
 ```text
 python plot.py --help
