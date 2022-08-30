@@ -23,7 +23,7 @@
 
 /* Array initialization. */
 static
-void init_array(int n) { }
+void init_array() { }
 
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
   POLYBENCH_1D_ARRAY_DECL(B,DATA_TYPE,N,n);
 
   /* Initialize array(s). */
-  // init_array (n, POLYBENCH_ARRAY(R), POLYBENCH_ARRAY(G), POLYBENCH_ARRAY(B));
+  init_array ();
 
   /* Start timer. */
   polybench_start_instruments;
