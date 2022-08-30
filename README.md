@@ -22,23 +22,23 @@ We also compare our technique to an alternative loop fission technique used in t
 
 All programs are written in C language. We include programs with both `for` and `while` loops. 
 
-| Benchmark  | Description                               | Origin            | for | while |
-|------------|-------------------------------------------|-------------------|:---:|:-----:|
-| `3mm`      | 3D matrix multiplication                  | [PolyBench/C][PB] |     |   ✔   | 
-| `bicg`     | BiCG sub kernel of BiCGStab linear solver | [PolyBench/C][PB] |     |   ✔   | 
-| `colormap` | Type conversion of photometric palette    | [MiBench][MB]     |  ✔  |       | 
-| `deriche`  | Edge detection filter                     | [PolyBench/C][PB] |     |   ✔   | 
-| `fdtd-2d`  | 2-D finite different time domain kernel   | [PolyBench/C][PB] |     |   ✔   | 
-| `gesummv`  | Scalar, vector and matrix multiplication  | [PolyBench/C][PB] |     |   ✔   | 
-| `mvt`      | Matrix vector product and transpose       | [PolyBench/C][PB] |     |   ✔   | 
+| Benchmark  | Description                                    | for | while | Origin            |
+|:-----------|:-----------------------------------------------|:---:|:-----:|:------------------|
+| `3mm`      | 3D matrix multiplication                       |     |   ✔   | [PolyBench/C][PB] | 
+| `bicg`     | BiCG sub kernel of BiCGStab linear solver      |     |   ✔   | [PolyBench/C][PB] | 
+| `colormap` | Type conversion of photometric palette         |  ✔  |       | [MiBench][MB]     | 
+| `deriche`  | Edge detection filter                          |     |   ✔   | [PolyBench/C][PB] | 
+| `fdtd-2d`  | 2-D finite different time domain kernel        |     |   ✔   | [PolyBench/C][PB] | 
+| `gesummv`  | Scalar, vector and matrix multiplication       |     |   ✔   | [PolyBench/C][PB] | 
+| `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB] | 
+| `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]     | 
 
 ## Other directories and files
 
 * `headers/` header files for benchmark programs.
 
 * `utilities/` e.g. the benchmarking timing script. These utilities are directly extended from
-   [PolyBench/C benchmark suite][PB], 
-   [version 4.2](https://sourceforge.net/projects/polybench/files/).
+   [PolyBench/C benchmark suite][PB], [version 4.2](https://sourceforge.net/projects/polybench/files/).
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
 
@@ -81,6 +81,14 @@ For more customizable execution options, call the `run.sh` script directly:
 | `-p` | benchmark specific program: `3mm`, `bicg`, `deriche` ...                  | _not set_   |
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
+
+**clear results**
+
+```text
+make clean
+```
+
+We recommend clearing results directory between multiple runs.
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
 [MB]: https://vhosts.eecs.umich.edu/mibench
