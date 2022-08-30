@@ -110,8 +110,10 @@ int main(int argc, char** argv)
 
   /* Run kernel. */
   kernel_cp50(x, fc, fl, ll,
-              POLYBENCH_ARRAY(out), POLYBENCH_ARRAY(RPLANE),
-              POLYBENCH_ARRAY(GPLANE), POLYBENCH_ARRAY(BPLANE));
+              POLYBENCH_ARRAY(out),
+              POLYBENCH_ARRAY(RPLANE),
+              POLYBENCH_ARRAY(GPLANE),
+              POLYBENCH_ARRAY(BPLANE));
 
   /* Stop and print timer. */
   polybench_stop_instruments;
@@ -120,7 +122,9 @@ int main(int argc, char** argv)
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
   polybench_prevent_dce(print_array(xy,
-              POLYBENCH_ARRAY(RPLANE), POLYBENCH_ARRAY(GPLANE), POLYBENCH_ARRAY(BPLANE)));
+              POLYBENCH_ARRAY(RPLANE),
+              POLYBENCH_ARRAY(GPLANE),
+              POLYBENCH_ARRAY(BPLANE)));
 
   /* Be clean. */
   POLYBENCH_FREE_ARRAY(out);

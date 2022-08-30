@@ -35,6 +35,10 @@ All programs are written in C language. We include programs with both `for` and 
 | `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB]     | 
 | `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]         | 
 
+[PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
+[MB]: https://vhosts.eecs.umich.edu/mibench
+[RT]: https://github.com/rose-compiler/rose/tree/b5a170b408bf25c9fdb7170a5de0cb39c6ff0542/tests/roseTests/loopProcessingTests
+
 ## Other directories and files
 
 * `headers/` header files for benchmark programs.
@@ -53,7 +57,7 @@ The folders `results` and `plots` are discussed below.
 
 ## Running the benchmarks
 
-Compiles and times the execution of programs. The results will be written into `results/` directory. 
+Compiles and times the execution of programs.  
 
 **Run all benchmarks**
 
@@ -84,14 +88,65 @@ For more customizable execution options, call the `run.sh` script directly:
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
-**clear results**
+### Benchmark results
+
+The results can be found in `results/` directory. Two files will be generated for each run:
+
+1. `[args]_model.txt` - machine + processor snapshot, meta data
+
+2. `[args].txt` - actual results of timing; these are organized by source directory name and data size.
+
+Data labels, in order:
+
+- `program`: name of evaluated program
+- `variance (%)`: variance of recorded execution times
+- `time (s)`: average runtime (clock time), in seconds
+
+Labels are always the same and not included in timing results file.
+
+Timing options are same as default:
+
+- perform 5 executions/program
+- take average of 3 runs (min and max time are excluded)
+- max variance controls the (%) allowed between the 3 remaining runs
+
+We recommend clearing results directory between multiple runs using `make clean` command.
+
+### Plotting
+
+After capturing results, use the plotting script to generate tables or graphs. This step requires Python version 3.+
+
+1. Install dependencies
+
+    ```text
+    python -m pip install -q -r requirements.txt
+    ```
+
+2. Generate tables or plots
+
+    ```text
+    make plots
+    ```
+
+To customize plot options, call the `plot.py` directly with selected arguments.
+
+**Available arguments**
 
 ```text
-make clean
+python plot.py --help
 ```
 
-We recommend clearing results directory between multiple runs.
+| ARGUMENT        | DESCRIPTION : options                                                                 | DEFAULT    |
+|:----------------|:--------------------------------------------------------------------------------------|------------|
+| `-d`, `--data`  | data choice: `time`, `speedup`                                                        | `time`     |
+| `-o`, `--out`   | path to output directory                                                              | `plots`    |
+| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                                    | `md`       |
+| `--ss`          | source directory for calculating speedup                                              | `original` |
+| `--st`          | target directory for calculating speedup (all when not set)                           | _not set_  |
+| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                        | _not set_  |
+| `--digits`      | number of digits for tabular values: `0`...`15`                                       | `6`        |
+| `--show`        | show generated plot or table                                                          | _not set_  |
+| `--dir_filter`  | comma-separated list of directories to consider:<br/>`original`, `fission`,...        | (see note) |
+| `--prog_filter` | comma-separated list of programs to consider:<br/>`3mm`, `bicg`, `deriche` ...        | _not set_  |
+| `-h`, `--help`  | show help message and exit                                                            | _not set_  |
 
-[PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
-[MB]: https://vhosts.eecs.umich.edu/mibench
-[RT]: https://github.com/rose-compiler/rose/tree/b5a170b408bf25c9fdb7170a5de0cb39c6ff0542/tests/roseTests/loopProcessingTests 
