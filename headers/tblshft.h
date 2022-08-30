@@ -7,44 +7,43 @@
 #  define LARGE_DATASET
 # endif
 
-# if !defined(NI) && !defined(NJ) && !defined(NK)
+# if !defined(F8SZ) && !defined(F14SZ) && !defined(TSZ)
 /* Define sample dataset sizes. */
 #  ifdef MINI_DATASET
-#   define NI 256
-#   define NJ 16384
-#   define NK 2049
+#   define F8SZ 256      /* 2^8 */
+#   define F14SZ 16384   /* 2^14 */
+#   define TSZ 2049
 #  endif
 
 #  ifdef SMALL_DATASET
-#   define NI 256
-#   define NJ 16384
-#   define NK 4098
+#   define F8SZ 1024     /* 2^10 */
+#   define F14SZ 65536   /* 2^16 */
+#   define TSZ 2049
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define NI 4096
-#   define NJ 65535
-#   define NK 2049
+#   define F8SZ 4096     /* 2^12 */
+#   define F14SZ 262144  /* 2^18 */
+#   define TSZ 2049
 #  endif
 
 #  ifdef LARGE_DATASET
-#   define NI 8192
-#   define NJ 262144
-#   define NK 2049
+#   define F8SZ 65536     /* 2^16 */
+#   define F14SZ 4194304  /* 2^22 */
+#   define TSZ 2049
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
-#   define NI 16384
-#   define NJ 1048576
-#   define NK 2049
+#   define F8SZ 4194304     /* 2^22 */
+#   define F14SZ 268435456  /* 2^28 */
+#   define TSZ 2049
 #  endif
 
 
-#endif /* !(NI NJ NK) */
+#endif /* !(F8SZ F14SZ TSZ) */
 
-# define _PB_NI POLYBENCH_LOOP_BOUND(NI,ni)
-# define _PB_NJ POLYBENCH_LOOP_BOUND(NJ,nj)
-# define _PB_NK POLYBENCH_LOOP_BOUND(NK,nk)
+# define _PB_F8 POLYBENCH_LOOP_BOUND(F8SZ,f8sz)
+# define _PB_F14 POLYBENCH_LOOP_BOUND(F14SZ,f14sz)
 
 /* Default data type */
 # if !defined(DATA_TYPE_IS_INT) && !defined(DATA_TYPE_IS_FLOAT) && !defined(DATA_TYPE_IS_DOUBLE)

@@ -62,9 +62,12 @@ mvt:
 colormap:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p colormap -s $(size) -o $(opt); ))
 
+tblshft:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p tblshft -s $(size) -o $(opt); ))
+
 
 # transform all using rose
-PROGS = 3mm bicg deriche fdtd-2d gesummv lufac mvt
+PROGS = 3mm bicg deriche fdtd-2d gesummv mvt colormap tblshft
 
 rose:
 	 $(foreach p, $(PROGS), \

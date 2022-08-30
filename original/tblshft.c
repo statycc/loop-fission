@@ -2,9 +2,8 @@
  * This benchmark created on August 29, 2022.
  *
  * The table shift kernel appeared in MiBench Version 1.0,
- * consumer/tiff-v3.5.4/libtiff/tif_pixarlog.c, LOC 565-576.
- * The code block includes the following explanation:
- *
+ * consumer/tiff-v3.5.4/libtiff/tif_pixarlog.c, LOC 565-576,
+ * with following explanation:
  * > Since we lose info anyway on 16-bit data, we set up a 14-bit
  * > table and shift 16-bit values down two bits on input.
  * > saves a little table space.
@@ -16,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 
 /* Include polybench common header. */
@@ -25,53 +25,56 @@
 /* Default data type is double, default size is N=1024. */
 #include <tblshft.h>
 
+#define ONE      1250       /* token value of 1.0 exactly */
+#define RATIO	 1.004		/* nominal ratio for log part */
 
 /* Array initialization. */
 static
-void init_array(int ni, int nj, int nk,
-    DATA_TYPE POLYBENCH_1D(TLF,NK,nk))
+void init_array(int tsz,
+    DATA_TYPE POLYBENCH_1D(TLF,TSZ,tsz))
 {
 
-  int i, j=0;
-  int c = log(1.004);
-  int nlin = 1./c;
-  c = 1./nlin;
-  int  b = exp(-c * 1250);
-  int linstep = b * c * exp(1.);
+    int i, j, nlin;
+    double b, c, linstep, v;
+    int TSIZE = tsz - 1;
 
-  for (i = 0; i < nlin; i++)
-	TLF[j++] = i * linstep;
+    j = 0;
+    c = log(RATIO);
+    nlin = 1. / c;
+    c = 1. / nlin;
+    b = exp(-c * ONE);
+    linstep = b * c * exp(1.);
 
-  for (i = nlin; i < nk; i++)
-	TLF[j++] = b * exp(c * i);
+    for (i = 0; i < nlin; i++) {
+        v = i * linstep;
+        TLF[j++] = (float) v;
+    }
 
-  TLF[nk-1] = TLF[nk-2];
+    for (i = nlin; i < TSIZE; i++)
+        TLF[j++] = b * exp(c * i);
+
+    TLF[TSIZE] = TLF[TSIZE - 1];
 }
 
 
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
 static
-void print_array(int ni, int nj,
-    DATA_TYPE POLYBENCH_1D(F8,NI,ni),
-    DATA_TYPE POLYBENCH_1D(F14,NJ,nj))
+void print_array(int f8sz, int f14sz,
+    DATA_TYPE POLYBENCH_1D(F8,F8SZ,f8sz),
+    DATA_TYPE POLYBENCH_1D(F14,F14SZ,f14sz))
 {
   int i, j;
 
   POLYBENCH_DUMP_START;
-  POLYBENCH_DUMP_BEGIN("F8");
-  for (i = 0; i < ni; i++) {
+  for (i = 0; i < f8sz; i++) {
 	fprintf (stderr, DATA_PRINTF_MODIFIER, F8[i]);
 	if (i % 20 == 0) fprintf (stderr, "\n");
   }
-  POLYBENCH_DUMP_END("F8");
-
-  POLYBENCH_DUMP_BEGIN("F14");
-  for (j = 0; j < nj; j++) {
+  for (j = 0; j < f14sz; j++) {
 	fprintf (stderr, DATA_PRINTF_MODIFIER, F14[j]);
 	if (j % 20 == 0) fprintf (stderr, "\n");
   }
-  POLYBENCH_DUMP_END("F14");
   POLYBENCH_DUMP_FINISH;
 }
 
@@ -79,27 +82,29 @@ void print_array(int ni, int nj,
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
 static
-void kernel_tblshft(int ni, int nj, int nk,
-    DATA_TYPE POLYBENCH_1D(F8,NI,ni),
-    DATA_TYPE POLYBENCH_1D(F14,NJ,nj),
-    DATA_TYPE POLYBENCH_1D(TLF,NK,nk))
+void kernel_tblshft(int f8sz, int f14sz, int tsz,
+        DATA_TYPE POLYBENCH_1D(F8,F8SZ,f8sz),
+        DATA_TYPE POLYBENCH_1D(F14,F14SZ,f14sz),
+        DATA_TYPE POLYBENCH_1D(TLF,TSZ,tsz))
 {
   int i, j;
+  DATA_TYPE F14SZM1 = (DATA_TYPE)(f14sz - 1);
+  DATA_TYPE F8SZM1 = (DATA_TYPE)(f8sz-1);
 
 #pragma scop
 
     j = 0;
-    for (i = 0; i < _PB_NJ; i++)  {
-	while ((i/(nj-1.))*(i/(nj-1.)) > TLF[j]*TLF[j+1])
-	    j++;
- 	F14[i] = j;
+    for (i = 0; i < f14sz; i++) {
+        while (((DATA_TYPE) i / F14SZM1) * ((DATA_TYPE) i / F14SZM1) > TLF[j] * TLF[j + 1])
+            j++;
+        F14[i] = (DATA_TYPE) j;
     }
 
     j = 0;
-    for (i = 0; i < _PB_NI; i++)  {
-	while ((i/(ni-1.))*(i/(ni-1.)) > TLF[j]*TLF[j+1])
-	    j++;
-	F8[i] = j;
+    for (i = 0; i < f8sz; i++) {
+        while (((DATA_TYPE) i / F8SZM1) * ((DATA_TYPE) i / F8SZM1) > TLF[j] * TLF[j + 1])
+            j++;
+        F8[i] = (DATA_TYPE) j;
     }
 
 #pragma endscop
@@ -109,24 +114,25 @@ void kernel_tblshft(int ni, int nj, int nk,
 
 int main(int argc, char** argv)
 {
+
   /* Retrieve problem size. */
-  int ni = NI;
-  int nj = NJ;
-  int nk = NK;
+  int f8sz = F8SZ;
+  int f14sz = F14SZ;
+  int tsz = TSZ;
 
   /* Variable declaration/allocation. */
-  POLYBENCH_1D_ARRAY_DECL(F8,DATA_TYPE,NI,ni);
-  POLYBENCH_1D_ARRAY_DECL(F14,DATA_TYPE,NJ,nj);
-  POLYBENCH_1D_ARRAY_DECL(TLF,DATA_TYPE,NK,nk);
+  POLYBENCH_1D_ARRAY_DECL(F8,DATA_TYPE,F8SZ,f8sz);
+  POLYBENCH_1D_ARRAY_DECL(F14,DATA_TYPE,F14SZ,f14sz);
+  POLYBENCH_1D_ARRAY_DECL(TLF,DATA_TYPE,TSZ,tsz);
 
   /* Initialize array(s). */
-  init_array (ni, nj, nk, POLYBENCH_ARRAY(TLF));
+  init_array (tsz, POLYBENCH_ARRAY(TLF));
 
   /* Start timer. */
   polybench_start_instruments;
 
   /* Run kernel. */
-  //kernel_tblshft (ni, nj, nk, POLYBENCH_ARRAY(F8), POLYBENCH_ARRAY(F14), POLYBENCH_ARRAY(TLF));
+  kernel_tblshft (f8sz, f14sz, tsz, POLYBENCH_ARRAY(F8), POLYBENCH_ARRAY(F14), POLYBENCH_ARRAY(TLF));
 
   /* Stop and print timer. */
   polybench_stop_instruments;
@@ -134,7 +140,7 @@ int main(int argc, char** argv)
 
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
-  polybench_prevent_dce(print_array(ni, nj, POLYBENCH_ARRAY(F8), POLYBENCH_ARRAY(F14)));
+  polybench_prevent_dce(print_array(f8sz, f14sz, POLYBENCH_ARRAY(F8), POLYBENCH_ARRAY(F14)));
 
   /* Be clean. */
   POLYBENCH_FREE_ARRAY(TLF);
