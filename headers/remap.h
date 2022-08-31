@@ -10,23 +10,23 @@
 # if !defined(LX)
 /* Define sample dataset sizes. */
 #  ifdef MINI_DATASET
-#   define LX 2
+#   define LX 5
 #  endif
 
 #  ifdef SMALL_DATASET
-#   define LX 4
+#   define LX 10
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define LX 8
+#   define LX 32
 #  endif
 
 #  ifdef LARGE_DATASET
-#   define LX 16
+#   define LX 44
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
-#   define LX 32
+#   define LX 52
 #  endif
 
 #endif /* !(LX) */
