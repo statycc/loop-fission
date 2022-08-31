@@ -97,8 +97,8 @@ If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
 ### Locating and interpreting results
 
-The results can be found in `results/` directory, categorized by source directory name and data size. 
-Two files will be generated for each category, for each run:
+The results can be found in `results/` directory, categorized by source directory name, 
+optimization level and data size. Two files will be generated for each category, for each run:
 
 1. `[args]_model.txt` - machine + processor snapshot, meta data
 
@@ -144,17 +144,17 @@ To customize plot options, call the `plot.py` directly with selected arguments.
 python plot.py --help
 ```
 
-| ARGUMENT        | DESCRIPTION : options                                                                 | DEFAULT    |
-|:----------------|:--------------------------------------------------------------------------------------|------------|
-| `-d`, `--data`  | data choice: `time`, `speedup`                                                        | `time`     |
-| `-o`, `--out`   | path to output directory                                                              | `plots`    |
-| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                                    | `md`       |
-| `--ss`          | source directory for calculating speedup                                              | `original` |
-| `--st`          | target directory for calculating speedup (all when not set)                           | _not set_  |
-| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                        | _not set_  |
-| `--digits`      | number of digits for tabular values: `0`...`15`                                       | `6`        |
-| `--show`        | show generated plot or table                                                          | _not set_  |
-| `--dir_filter`  | comma-separated list of directories to consider:<br/>`original`, `fission`,...        | (see note) |
-| `--prog_filter` | comma-separated list of programs to consider:<br/>`3mm`, `bicg`, `deriche` ...        | _not set_  |
-| `-h`, `--help`  | show help message and exit                                                            | _not set_  |
+| ARGUMENT        | DESCRIPTION : options                                                            | DEFAULT    |
+|:----------------|:---------------------------------------------------------------------------------|------------|
+| `-d`, `--data`  | data choice: `time`, `speedup`                                                   | `time`     |
+| `-o`, `--out`   | path to output directory                                                         | `plots`    |
+| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                               | `md`       |
+| `--ss`          | source directory for calculating speedup                                         | `original` |
+| `--st`          | target directory for calculating speedup (all when not set)                      | _not set_  |
+| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                   | _not set_  |
+| `--digits`      | number of digits for tabular values: `0`...`15`                                  | `6`        |
+| `--show`        | show generated plot or table                                                     | _not set_  |
+| `--dir_filter`  | comma-separated list of directories to include:<br/>`original`, `fission`, `alt` | _not set_  |
+| `--prog_filter` | comma-separated list of benchmarks to include:<br/>`3mm`, `bicg`, `deriche` ...  | _not set_  |
+| `-h`, `--help`  | show help message and exit                                                       | _not set_  |
 
