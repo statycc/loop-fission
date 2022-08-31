@@ -35,7 +35,7 @@ All programs are written in C language. We include programs with both `for` and 
 | `gemm`     | Matrix-multiply C=alpha.A.B+beta.C             |  ✔  |       | [PolyBench/C][PB] |
 | `gesummv`  | Scalar, vector and matrix multiplication       |     |   ✔   | [PolyBench/C][PB] | 
 | `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB] | 
-| `remap`    | 4D matrix memory rema pping                    | ✔   |       | [NAS-UA][NAS]     |
+| `remap`    | 4D matrix memory remapping                     |  ✔  |       | [NAS-UA][NAS]     |
 | `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]     | 
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
