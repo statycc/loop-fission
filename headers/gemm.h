@@ -1,54 +1,58 @@
-#ifndef _DGEMVT_H
-# define _DGEMVT_H
+/**
+ * This version is stamped on May 10, 2016
+ *
+ * Contact:
+ *   Louis-Noel Pouchet <pouchet.ohio-state.edu>
+ *   Tomofumi Yuki <tomofumi.yuki.fr>
+ *
+ * Web address: http://polybench.sourceforge.net
+ */
+#ifndef _GEMM_H
+# define _GEMM_H
 
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
 #  define LARGE_DATASET
-#  define LARGE_DATASET
 # endif
 
-# if !defined(M) && !defined(N) && !defined(L) && !defined(P)
+# if !defined(NI) && !defined(NJ) && !defined(NK)
 /* Define sample dataset sizes. */
 #  ifdef MINI_DATASET
-#   define M 256
-#   define N 256
-#   define L 128
-#   define P (M*L+N)
+#   define NI 20
+#   define NJ 25
+#   define NK 30
 #  endif
 
 #  ifdef SMALL_DATASET
-#   define M 512
-#   define N 256
-#   define L 128
-#   define P (M*L+N)
+#   define NI 60
+#   define NJ 70
+#   define NK 80
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define M 1024
-#   define N 512
-#   define L 256
-#   define P (M*L+N)
+#   define NI 200
+#   define NJ 220
+#   define NK 240
 #  endif
 
 #  ifdef LARGE_DATASET
-#   define M 4096
-#   define N 4096
-#   define L 512
-#   define P (M*L+N)
+#   define NI 1000
+#   define NJ 1100
+#   define NK 1200
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
-#   define M 16384
-#   define N 16384
-#   define L 1024
-#   define P (M*L+N)
+#   define NI 2000
+#   define NJ 2300
+#   define NK 2600
 #  endif
 
 
-#endif /* !(M N L P) */
+#endif /* !(NI NJ NK) */
 
-# define _PB_M POLYBENCH_LOOP_BOUND(M,m)
-# define _PB_N POLYBENCH_LOOP_BOUND(N,n)
+# define _PB_NI POLYBENCH_LOOP_BOUND(NI,ni)
+# define _PB_NJ POLYBENCH_LOOP_BOUND(NJ,nj)
+# define _PB_NK POLYBENCH_LOOP_BOUND(NK,nk)
 
 
 /* Default data type */
@@ -79,4 +83,4 @@
 #  define POW_FUN(x,y) pow(x,y)
 # endif
 
-#endif /* !_DGEMVT_H */
+#endif /* !_GEMM_H */
