@@ -380,8 +380,6 @@ class ResultPresenter:
         rows, cols = min(-(-self.prog_count//3), 5), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
-        # plt.rc('font', **{'size': 8})
-        # plt.rc('legend', fontsize=6)
         ymin, ymax = 0, self.max_value(data)
 
         # draw a figure for each program directory
