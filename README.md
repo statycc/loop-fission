@@ -152,9 +152,9 @@ python plot.py --help
 | `-d`, `--data`  | data choice: `time`, `speedup`                                                   | `time`     |
 | `-o`, `--out`   | path to output directory                                                         | `plots`    |
 | `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                               | `md`       |
+| `--digits`      | number of digits for tabular values: `0`...`15`                                  | `6`        |
 | `--ss`          | source directory for calculating speedup                                         | `original` |
 | `--st`          | target directory for calculating speedup (all when not set)                      | _not set_  |
-| `--digits`      | number of digits for tabular values: `0`...`15`                                  | `6`        |
 | `--millis`      | display table of times in milliseconds  (otherwise in seconds)                   | _not set_  |
 | `--show`        | show generated plot or table                                                     | _not set_  |
 | `--dir_filter`  | comma-separated list of directories to include:<br/>`original`, `fission`, `alt` | _not set_  |
