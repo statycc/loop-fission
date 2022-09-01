@@ -68,17 +68,44 @@ void kernel_cp50(
 #pragma scop
 
     /* Print lines of graphics */
-    while (lnum <= last) {
-
-        for (i = 0; i < X_PIXEL; i++) {
-            col = (lnum - FIRST_LINE) * X_PIXEL + i;
-            RPLANE[col] = out[lnum][i * 3 + FIRST_COLUMN];
-            GPLANE[col] = out[lnum][i * 3 + 1 + FIRST_COLUMN];
-            BPLANE[col] = out[lnum][i * 3 + 2 + FIRST_COLUMN];
+#pragma omp parallel private(lnum,i)
+{
+    #pragma omp single nowait
+    {
+        lnum = FIRST_LINE;
+        while (lnum <= last) {
+            for (i = 0; i < X_PIXEL; i++) {
+                col = (lnum - FIRST_LINE) * X_PIXEL + i;
+                RPLANE[col] = out[lnum][i * 3 + FIRST_COLUMN];
+            }
+            lnum++;
         }
-        lnum++;
     }
 
+    #pragma omp single nowait
+    {
+        lnum = FIRST_LINE;
+        while (lnum <= last) {
+            for (i = 0; i < X_PIXEL; i++) {
+                col = (lnum - FIRST_LINE) * X_PIXEL + i;
+                GPLANE[col] = out[lnum][i * 3 + 1 + FIRST_COLUMN];
+            }
+            lnum++;
+        }
+    }
+
+    #pragma omp single nowait
+    {
+        lnum = FIRST_LINE;
+        while (lnum <= last) {
+            for (i = 0; i < X_PIXEL; i++) {
+                col = (lnum - FIRST_LINE) * X_PIXEL + i;
+                BPLANE[col] = out[lnum][i * 3 + 2 + FIRST_COLUMN];
+            }
+            lnum++;
+        }
+    }
+}
 #pragma endscop
 
 }

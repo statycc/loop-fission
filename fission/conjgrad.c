@@ -77,19 +77,33 @@ void kernel_conjgrad(int na, int niter,
   double rho, d, alpha;
 
 #pragma scop
-for (i = 1; i <= _PB_NITER; i++) {
-  for (j = 0; j < _PB_NA; j++){
-    rho = rho + r[j] * r[j];
-  }
-  for (j = 0; j < _PB_NA; j++){
-    d = d + p[j] * q[j];
-  }
-  alpha = rho / d;
-  for (j = 0; j < _PB_NA; j++) {
-    z[j] = z[j] + alpha * p[j];
-    r[j] = r[j] - alpha * q[j];
-  }
+
+#pragma omp parallel private(i, j)
+{
+    #pragma omp for nowait lastprivate(rho)
+    for (i = 1; i <= _PB_NITER; i++) {
+      for (j = 0; j < _PB_NA; j++){
+        rho = rho + r[j] * r[j];
+      }
+    }
+    #pragma omp for lastprivate(d)
+    for (i = 1; i <= _PB_NITER; i++) {
+      for (j = 0; j < _PB_NA; j++){
+        d = d + p[j] * q[j];
+      }
+    }
 }
+alpha = rho / d;
+
+#pragma omp for nowait
+for (j = 0; j < _PB_NA; j++)
+    z[j] = z[j] + alpha * p[j];
+
+#pragma omp for
+for (j = 0; j < _PB_NA; j++)
+    r[j] = r[j] - alpha * q[j];
+
+
 #pragma endscop
 
 }

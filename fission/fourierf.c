@@ -108,8 +108,8 @@ void kernel_fourierf(int m,
 
 #pragma scop
 
-    for ( BlockSize = 2; BlockSize <= m; BlockSize <<= 1 )
-    {
+      for ( BlockSize = 2; BlockSize <= m; BlockSize <<= 1 )
+      {
         double delta_angle = angle_numerator / (double)BlockSize;
         double sm2 = sin ( -2 * delta_angle );
         double sm1 = sin ( -delta_angle );
@@ -149,12 +149,17 @@ void kernel_fourierf(int m,
         }
 
         BlockEnd = BlockSize;
-    }
+      }
 
     // normalize if inverse transform
+    #pragma omp parallel for private(i)
     for ( i=0; i < m; i++ )
     {
         RealOut[i] /= (DATA_TYPE)(denom);
+    }
+    #pragma omp parallel for private(i)
+    for ( i=0; i < m; i++ )
+    {
         ImagOut[i] /= (DATA_TYPE)(denom);
     }
 

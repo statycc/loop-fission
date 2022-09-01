@@ -145,67 +145,112 @@ void kernel_remap(int lx,
 
 #pragma scop
 
+#pragma omp parallel private(i,kk,jj,ii)
+{
+    #pragma omp for nowait
     for (i = 0; i < _PB_LX; i++)
-    {
         for (kk = 0; kk < _PB_LX; kk++)
-        {
             for (jj = 0; jj < _PB_LX; jj++)
-            {
                 for (ii = 0; ii < _PB_LX; ii++)
-                {
                     YONE[0][i][jj][ii] = YONE[0][i][jj][ii] + ixmc1[kk][ii] * X[i][jj][kk];
+
+    #pragma omp for
+    for (i = 0; i < _PB_LX; i++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
                     YONE[1][i][jj][ii] = YONE[1][i][jj][ii] + ixmc2[kk][ii] * X[i][jj][kk];
-                }
-            }
-        }
+}
 
+#pragma omp parallel private(i,kk,jj,ii)
+{
+    #pragma omp for nowait
+    for (i = 0; i < _PB_LX; i++)
         for (kk = 0; kk < _PB_LX; kk++)
-        {
             for (jj = 0; jj < _PB_LX; jj++)
-            {
                 for (ii = 0; ii < _PB_LX; ii++)
-                {
-                    YTWO[0][jj][i][ii] = YTWO[0][jj][i][ii] +
-                                         YONE[0][i][kk][ii] * ixtmc1[jj][kk];
-                    YTWO[1][jj][i][ii] = YTWO[1][jj][i][ii] +
-                                         YONE[0][i][kk][ii] * ixtmc2[jj][kk];
-                    YTWO[2][jj][i][ii] = YTWO[2][jj][i][ii] +
-                                         YONE[1][i][kk][ii] * ixtmc1[jj][kk];
-                    YTWO[3][jj][i][ii] = YTWO[3][jj][i][ii] +
-                                         YONE[1][i][kk][ii] * ixtmc2[jj][kk];
-                }
-            }
-        }
-    }
+                    YTWO[0][jj][i][ii] = YTWO[0][jj][i][ii] + YONE[0][i][kk][ii] * ixtmc1[jj][kk];
 
+    #pragma omp for nowait
+    for (i = 0; i < _PB_LX; i++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    YTWO[1][jj][i][ii] = YTWO[1][jj][i][ii] + YONE[0][i][kk][ii] * ixtmc2[jj][kk];
+
+    #pragma omp for nowait
+    for (i = 0; i < _PB_LX; i++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    YTWO[2][jj][i][ii] = YTWO[2][jj][i][ii] + YONE[1][i][kk][ii] * ixtmc1[jj][kk];
+
+    #pragma omp for nowait
+    for (i = 0; i < _PB_LX; i++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    YTWO[3][jj][i][ii] = YTWO[3][jj][i][ii] + YONE[1][i][kk][ii] * ixtmc2[jj][kk];
+}
+
+#pragma omp parallel private(iz,kk,jj,ii)
+{
+    #pragma omp for nowait
     for (iz = 0; iz < _PB_LX; iz++)
-    {
         for (kk = 0; kk < _PB_LX; kk++)
-        {
             for (jj = 0; jj < _PB_LX; jj++)
-            {
                 for (ii = 0; ii < _PB_LX; ii++)
-                {
-                    Y[jj][iz][ii] = Y[jj][iz][ii] +
-                                    YTWO[0][iz][kk][ii] * ixtmc1[jj][kk];
-                    Y1[0][jj][iz][ii] = Y1[0][jj][iz][ii] +
-                                        YTWO[2][iz][kk][ii] * ixtmc1[jj][kk];
-                    Y1[1][jj][iz][ii] = Y1[1][jj][iz][ii] +
-                                        YTWO[1][iz][kk][ii] * ixtmc1[jj][kk];
-                    Y1[2][jj][iz][ii] = Y1[2][jj][iz][ii] +
-                                        YTWO[3][iz][kk][ii] * ixtmc1[jj][kk];
-                    Y1[3][jj][iz][ii] = Y1[3][jj][iz][ii] +
-                                        YTWO[0][iz][kk][ii] * ixtmc2[jj][kk];
-                    Y1[4][jj][iz][ii] = Y1[4][jj][iz][ii] +
-                                        YTWO[2][iz][kk][ii] * ixtmc2[jj][kk];
-                    Y1[5][jj][iz][ii] = Y1[5][jj][iz][ii] +
-                                        YTWO[1][iz][kk][ii] * ixtmc2[jj][kk];
-                    Y1[6][jj][iz][ii] = Y1[6][jj][iz][ii] +
-                                        YTWO[3][iz][kk][ii] * ixtmc2[jj][kk];
-                }
-            }
-        }
-    }
+                    Y[jj][iz][ii] = Y[jj][iz][ii] + YTWO[0][iz][kk][ii] * ixtmc1[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[0][jj][iz][ii] = Y1[0][jj][iz][ii] + YTWO[2][iz][kk][ii] * ixtmc1[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[1][jj][iz][ii] = Y1[1][jj][iz][ii] + YTWO[1][iz][kk][ii] * ixtmc1[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[2][jj][iz][ii] = Y1[2][jj][iz][ii] + YTWO[3][iz][kk][ii] * ixtmc1[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[3][jj][iz][ii] = Y1[3][jj][iz][ii] + YTWO[0][iz][kk][ii] * ixtmc2[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[4][jj][iz][ii] = Y1[4][jj][iz][ii] + YTWO[2][iz][kk][ii] * ixtmc2[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[5][jj][iz][ii] = Y1[5][jj][iz][ii] + YTWO[1][iz][kk][ii] * ixtmc2[jj][kk];
+
+    #pragma omp for nowait
+    for (iz = 0; iz < _PB_LX; iz++)
+        for (kk = 0; kk < _PB_LX; kk++)
+            for (jj = 0; jj < _PB_LX; jj++)
+                for (ii = 0; ii < _PB_LX; ii++)
+                    Y1[6][jj][iz][ii] = Y1[6][jj][iz][ii] + YTWO[3][iz][kk][ii] * ixtmc2[jj][kk];
+}
 
 #pragma endscop
 

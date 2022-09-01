@@ -47,7 +47,7 @@ void init_array(int tsz,
 
     for (i = 0; i < nlin; i++) {
         v = i * linstep;
-        TLF[j++] = (float) v;
+        TLF[j++] = (DATA_TYPE) v;
     }
 
     for (i = nlin; i < TSIZE; i++)
