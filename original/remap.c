@@ -1,7 +1,7 @@
 /**
  * This benchmark created on August 31, 2022.
  *
- * The remap procedure appeared in NAS UA benchmark.
+ * The remap procedure from NAS UA benchmark.
  * UA = Unstructured Adaptive mesh, dynamic and irregular memory access.
  *
  * Description of remap:
