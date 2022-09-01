@@ -40,7 +40,7 @@ alt:
 
 # Benchmark specific programs
 # Specify DIR argument otherwise it defaults to original
-PROGS = 3mm bicg colormap cp50 deriche fdtd-2d gemm gesummv mvt remap tblshft
+PROGS = 3mm bicg colormap conjgrad cp50 deriche fdtd-2d gemm gesummv mvt remap tblshft
 
 3mm:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p 3mm -s $(size) -o $(opt); ))
@@ -50,6 +50,9 @@ bicg:
 
 colormap:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p colormap -s $(size) -o $(opt); ))
+
+conjgrad:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p conjgrad -s $(size) -o $(opt); ))
 
 cp50:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p cp50 -s $(size) -o $(opt); ))

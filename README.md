@@ -29,6 +29,7 @@ All programs are written in C language. We include programs with both `for` and 
 | `3mm`      | 3D matrix multiplication                       |     |   ✔   | [PolyBench/C][PB] | 
 | `bicg`     | BiCG sub kernel of BiCGStab linear solver      |     |   ✔   | [PolyBench/C][PB] | 
 | `colormap` | TIFF image conversion of photometric palette   |  ✔  |       | [MiBench][MB]     | 
+| `conjgrad` | Conjugate gradient routine                     |  ✔  |       | [NAS-CG][NAS]     |
 | `cp50`     | Ghostscript/CP50 color print routine           |  ✔  |   ✔   | [MiBench][MB]     | 
 | `deriche`  | Edge detection filter                          |     |   ✔   | [PolyBench/C][PB] | 
 | `fdtd-2d`  | 2-D finite different time domain kernel        |     |   ✔   | [PolyBench/C][PB] | 
@@ -152,8 +153,8 @@ python plot.py --help
 | `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                               | `md`       |
 | `--ss`          | source directory for calculating speedup                                         | `original` |
 | `--st`          | target directory for calculating speedup (all when not set)                      | _not set_  |
-| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                   | _not set_  |
 | `--digits`      | number of digits for tabular values: `0`...`15`                                  | `6`        |
+| `--millis`      | display table of times in milliseconds  (otherwise in seconds)                   | _not set_  |
 | `--show`        | show generated plot or table                                                     | _not set_  |
 | `--dir_filter`  | comma-separated list of directories to include:<br/>`original`, `fission`, `alt` | _not set_  |
 | `--prog_filter` | comma-separated list of benchmarks to include:<br/>`3mm`, `bicg`, `deriche` ...  | _not set_  |
