@@ -112,7 +112,7 @@ def setup_args():
         "--dir_filter",
         action='store',
         help="Comma separated list of directories to consider "
-        f'[default: {DIR_FILTER}]'
+             f'[default: {DIR_FILTER}]'
     )
     parser.add_argument(
         "--prog_filter",
@@ -349,7 +349,7 @@ class ResultPresenter:
     def speedup(self, fmt, baseline, target):
         src_len, r = len(self.sources), RESULTS_DIR
         src_error = f'speedup requires timing at least two groups of ' \
-            f'programs, found {src_len} matching plot criteria'
+                    f'programs, found {src_len} matching plot criteria'
         bl_error = f'timing results not found for {baseline} in {r} '
 
         if src_len < 2:
@@ -377,16 +377,16 @@ class ResultPresenter:
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def plot(self, data, fn, prog_dir, ylabel, log):
-        rows, cols = min(self.prog_count, 2), min(self.prog_count, 3)
+        rows, cols = min(-(-self.prog_count//3), 5), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
-        plt.rc('font', **{'size': 8 if self.prog_count == 1 else 8})
-        plt.rc('legend', fontsize=6 if self.prog_count == 1 else 6)
+        # plt.rc('font', **{'size': 8})
+        # plt.rc('legend', fontsize=6)
         ymin, ymax = 0, self.max_value(data)
 
         # draw a figure for each program directory
         for ci, target_name in enumerate(prog_dir):
-            fig, axs = plt.subplots(**SPLOT, nrows=rows, ncols=cols)
+            fig, axs = plt.subplots(rows, cols, **SPLOT, figsize=(cols * 3, rows * 3))
             axs = axs.flatten() if self.prog_count > 1 else [axs]
 
             # draw a sub plot for each program
@@ -429,7 +429,8 @@ class ResultPresenter:
                 fig.delaxes(axs[idx])
 
             fig.tight_layout()
-            fig.subplots_adjust(wspace=.4 if log else .25, hspace=.3)
+            fig.subplots_adjust(wspace=.4 if log else .1
+                if self.prog_count == 1 else .3, hspace=.3)
             fig_name = f'{fn(target_name) or "plot"}.pdf'
             f_path = path.join(self.out_dir, fig_name)
             plt.savefig(f_path)
