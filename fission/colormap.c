@@ -57,11 +57,35 @@ void kernel_colormap(int n,
 
 #pragma scop
 
-    for (i = 0; i < _PB_N; i++) {
-      R[i] = (DATA_TYPE) (((i) * 65535L) / (n-1));
-      G[i] = (DATA_TYPE) (((i) * 65535L) / (n-1));
-      B[i] = (DATA_TYPE) (((i) * 65535L) / (n-1));
+#pragma omp parallel private(i)
+{
+    #pragma omp single nowait
+    {
+        i = 0;
+        while (i < _PB_N) {
+            R[i] = (DATA_TYPE) (((i) * 65535L) / (n-1));
+            i++;
+        }
     }
+
+    #pragma omp single nowait
+    {
+        i = 0;
+        while (i < _PB_N) {
+            G[i] = (DATA_TYPE) (((i) * 65535L) / (n-1));
+            i++;
+        }
+    }
+
+    #pragma omp single nowait
+    {
+        i = 0;
+        while (i < _PB_N) {
+            B[i] = (DATA_TYPE) (((i) * 65535L) / (n-1));
+            i++;
+        }
+    }
+}
 
 #pragma endscop
 

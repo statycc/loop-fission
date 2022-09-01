@@ -93,19 +93,27 @@ void kernel_tblshft(int f8sz, int f14sz, int tsz,
 
 #pragma scop
 
-    j = 0;
-    for (i = 0; i < f14sz; i++) {
-        while (((DATA_TYPE) i / F14SZM1) * ((DATA_TYPE) i / F14SZM1) > TLF[j] * TLF[j + 1])
-            j++;
-        F14[i] = (DATA_TYPE) j;
+#pragma omp parallel private(i,j)
+{
+    #pragma omp single nowait
+    {
+        j = 0;
+        for (i = 0; i < f14sz; i++) {
+            while (((DATA_TYPE) i / F14SZM1) * ((DATA_TYPE) i / F14SZM1) > TLF[j] * TLF[j + 1])
+                j++;
+            F14[i] = (DATA_TYPE) j;
+        }
     }
-
-    j = 0;
-    for (i = 0; i < f8sz; i++) {
-        while (((DATA_TYPE) i / F8SZM1) * ((DATA_TYPE) i / F8SZM1) > TLF[j] * TLF[j + 1])
-            j++;
-        F8[i] = (DATA_TYPE) j;
+    #pragma omp single nowait
+    {
+        j = 0;
+        for (i = 0; i < f8sz; i++) {
+            while (((DATA_TYPE) i / F8SZM1) * ((DATA_TYPE) i / F8SZM1) > TLF[j] * TLF[j + 1])
+                j++;
+            F8[i] = (DATA_TYPE) j;
+        }
     }
+}
 
 #pragma endscop
 

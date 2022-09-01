@@ -28,7 +28,7 @@ All programs are written in C language. We include programs with both `for` and 
 |:-----------|:-----------------------------------------------|:---:|:-----:|:------------------|
 | `3mm`      | 3D matrix multiplication                       |     |   ✔   | [PolyBench/C][PB] | 
 | `bicg`     | BiCG sub kernel of BiCGStab linear solver      |     |   ✔   | [PolyBench/C][PB] | 
-| `colormap` | TIFF image conversion of photometric palette   |  ✔  |       | [MiBench][MB]     | 
+| `colormap` | TIFF image conversion of photometric palette   |     |   ✔   | [MiBench][MB]     | 
 | `conjgrad` | Conjugate gradient routine                     |  ✔  |       | [NAS-CG][NAS]     |
 | `cp50`     | Ghostscript/CP50 color print routine           |  ✔  |   ✔   | [MiBench][MB]     | 
 | `deriche`  | Edge detection filter                          |     |   ✔   | [PolyBench/C][PB] | 
