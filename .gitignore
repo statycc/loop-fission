@@ -4,3 +4,4 @@ env
 *.pdf
 results
 plots
+____tempfile.data.polybench
