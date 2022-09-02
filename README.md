@@ -32,7 +32,7 @@ All programs are written in C language. We include programs with both `for` and 
 | `conjgrad` | Conjugate gradient routine                     |  ✔  |       | [NAS-CG][NAS]     |
 | `cp50`     | Ghostscript/CP50 color print routine           |  ✔  |   ✔   | [MiBench][MB]     | 
 | `deriche`  | Edge detection filter                          |     |   ✔   | [PolyBench/C][PB] | 
-| `fdtd-2d`  | 2-D finite different time domain kernel        |     |   ✔   | [PolyBench/C][PB] |
+| `fdtd-2d`  | 2-D finite different time domain kernel        |  ✔  |       | [PolyBench/C][PB] |
 | `gemm`     | Matrix-multiply C=alpha.A.B+beta.C             |  ✔  |       | [PolyBench/C][PB] |
 | `gesummv`  | Scalar, vector and matrix multiplication       |     |   ✔   | [PolyBench/C][PB] | 
 | `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB] | 
