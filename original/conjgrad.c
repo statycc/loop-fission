@@ -76,9 +76,11 @@ void kernel_conjgrad(int na, int niter,
      DATA_TYPE POLYBENCH_1D(r,NA,na))
 {
   int i, j;
-  double rho, d, alpha;
+  DATA_TYPE rho, d, alpha;
 
 #pragma scop
+rho = 0;
+d = 0;
 for (i = 1; i <= _PB_NITER; i++) {
   for (j = 0; j < _PB_NA; j++){
     rho = rho + r[j] * r[j];

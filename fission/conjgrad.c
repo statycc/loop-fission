@@ -76,18 +76,22 @@ void kernel_conjgrad(int na, int niter,
      DATA_TYPE POLYBENCH_1D(r,NA,na))
 {
   int i, j;
-  double rho, d, alpha;
+  DATA_TYPE rho, d, alpha;
 
 #pragma scop
 
+rho = 0;
+d = 0;
+
 #pragma omp parallel private(i, j)
 {
-    #pragma omp for nowait lastprivate(rho)
+    #pragma omp for lastprivate(rho) nowait
     for (i = 1; i <= _PB_NITER; i++) {
       for (j = 0; j < _PB_NA; j++){
         rho = rho + r[j] * r[j];
       }
     }
+
     #pragma omp for lastprivate(d)
     for (i = 1; i <= _PB_NITER; i++) {
       for (j = 0; j < _PB_NA; j++){
@@ -97,11 +101,11 @@ void kernel_conjgrad(int na, int niter,
 }
 alpha = rho / d;
 
-#pragma omp for nowait
+#pragma omp parallel for
 for (j = 0; j < _PB_NA; j++)
     z[j] = z[j] + alpha * p[j];
 
-#pragma omp for
+#pragma omp parallel for
 for (j = 0; j < _PB_NA; j++)
     r[j] = r[j] - alpha * q[j];
 

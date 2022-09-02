@@ -13,22 +13,16 @@
 #   define X 237           /* paper X pixels */
 #   define Y 400           /* paper Y pixels */
 #   define FC 90           /* first column */
-#   define FL 70           /* first line */
+#   define FL 80           /* first line */
 #   define LL 472          /* last line; LL-FL+1 should be close to Y */
-#   define LS (X*3+FC*2)   /* line size */
-#   define XY (X*Y)
-#   define OL (LL-FL)      /* printer data Y */
 #  endif
 
 #  ifdef SMALL_DATASET
-#   define X 330
+#   define X 310
 #   define Y 560
 #   define FC 126
-#   define FL 98
+#   define FL 108
 #   define LL 661
-#   define LS (X*3+FC*2)
-#   define XY (X*Y)
-#   define OL (LL-FL)
 #  endif
 
 #  ifdef MEDIUM_DATASET
@@ -37,34 +31,29 @@
 #   define FC 180
 #   define FL 140
 #   define LL 933
-#   define LS (X*3+FC*2)
-#   define XY (X*Y)
-#   define OL (LL-FL)
 #  endif
 
 #  ifdef LARGE_DATASET
 #   define X 592
 #   define Y 1000
 #   define FC 225
-#   define FL 175
+#   define FL 179
 #   define LL 1175
-#   define LS (X*3+FC*2)
-#   define XY (X*Y)
-#   define OL (LL-FL)
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
 #   define X 1184
 #   define Y 2000
 #   define FC 450
-#   define FL 350
+#   define FL 360
 #   define LL 2350
-#   define LS (X*3+FC*2)
-#   define XY (X*Y)
-#   define OL (LL-FL)
 #  endif
+#endif /* !(X Y FC FL LL) */
 
-#endif /* !(X Y XY FC LS FL LL OL) */
+#   define LS (X*3+FC*2)   /* line size */
+#   define XY (X*Y)
+#   define OL (LL-FL)      /* data Y height */
+
 
 /* Default data type */
 # if !defined(DATA_TYPE_IS_INT) && !defined(DATA_TYPE_IS_FLOAT) && !defined(DATA_TYPE_IS_DOUBLE)

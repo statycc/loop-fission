@@ -28,8 +28,8 @@ void init_array(int ls, int ol,
     int i, j;
 
     // simulate gdev_prn_copy_scan_lines procedure
-    for (i = 0; i < ol; i++)
-        for (j = 0; j < ls; j++)
+    for (i = 0; i < ls; i++)
+        for (j = 0; j < ol; j++)
             out[i][j] = (DATA_TYPE) ((i*j+1));
 }
 
@@ -78,7 +78,7 @@ void kernel_cp50(
         DATA_TYPE POLYBENCH_1D(BPLANE,XY,xy))
 {
     int lnum = FIRST_LINE, last = LAST_LINE;
-    int i, col, l;
+    int i, col;
 
 #pragma scop
 
