@@ -24,8 +24,6 @@ from pathlib import Path
 from re import match
 from typing import List
 
-from matplotlib import pyplot as plt
-from matplotlib.lines import Line2D
 from pytablewriter import MarkdownTableWriter, LatexTableWriter
 
 warnings.filterwarnings("ignore")
@@ -380,6 +378,9 @@ class ResultPresenter:
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def plot(self, data, fn, prog_dir, ylabel, log):
+        from matplotlib import pyplot as plt
+        from matplotlib.lines import Line2D
+
         rows, cols = min(-(-self.prog_count//3), 5), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
