@@ -87,7 +87,7 @@ void kernel_gemm(int ni, int nj, int nk,
 //C is NIxNJ
 #pragma scop
 
-  #pragma omp parallel for
+  #pragma omp parallel for private(i,j,k)
   for (i = 0; i < _PB_NI; i++) {
     for (j = 0; j < _PB_NJ; j++)
 	C[i][j] *= beta;
