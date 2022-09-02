@@ -1,7 +1,7 @@
 /**
  * This benchmark created on September 1, 2022.
  *
- * The (partial) the conjugate gradient routine iteration loop
+ * The (partial) conjugate gradient routine iteration loop
  * from NAS CG benchmark.
  * CG = Conjugate Gradient, irregular memory access and communication.
  *
