@@ -351,6 +351,7 @@ class ResultPresenter:
         src_error = f'speedup requires timing at least two groups of ' \
                     f'programs, found {src_len} matching plot criteria'
         bl_error = f'timing results not found for {baseline} in {r} '
+        pl_error = f'no results match plot criteria'
 
         if src_len < 2:
             return print(src_error)
@@ -361,6 +362,8 @@ class ResultPresenter:
         s1 = self.sources[bi]
         sp = [n for i, n in enumerate(self.sources) if
               (i != bi and (not target or target == n))]
+        if len(self.programs) == 0:
+            return print(pl_error)
 
         def value_func(p, d, o, s2):
             ts = self.query(o, d, s1).get_time(p)  # sequential
