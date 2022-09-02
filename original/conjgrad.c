@@ -19,7 +19,7 @@
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
-#include "conjgrad.h"
+#include <conjgrad.h>
 
 
 /* Array initialization. */
@@ -49,16 +49,18 @@ void print_array(int na,
     DATA_TYPE POLYBENCH_1D(r,NA,na))
 {
   int i;
-
   POLYBENCH_DUMP_START;
   POLYBENCH_DUMP_BEGIN("z");
-  POLYBENCH_DUMP_BEGIN("r");
   for (i = 0; i < na; i++) {
-	fprintf (stderr, DATA_PRINTF_MODIFIER, z[i]);
-    fprintf (stderr, DATA_PRINTF_MODIFIER, r[i]);
-	if (i % 20 == 0) fprintf (stderr, "\n");
+      fprintf (stderr, DATA_PRINTF_MODIFIER, z[i]);
+      if (i % 20 == 0) fprintf (stderr, "\n");
   }
   POLYBENCH_DUMP_END("z");
+  POLYBENCH_DUMP_BEGIN("r");
+  for (i = 0; i < na; i++) {
+      fprintf (stderr, DATA_PRINTF_MODIFIER, r[i]);
+      if (i % 20 == 0) fprintf (stderr, "\n");
+  }
   POLYBENCH_DUMP_END("r");
   POLYBENCH_DUMP_FINISH;
 }
@@ -130,8 +132,7 @@ int main(int argc, char** argv)
 
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
-  polybench_prevent_dce(
-          print_array(na, POLYBENCH_ARRAY(z), POLYBENCH_ARRAY(r)));
+  polybench_prevent_dce(print_array(na, POLYBENCH_ARRAY(z), POLYBENCH_ARRAY(r)));
 
   /* Be clean. */
   POLYBENCH_FREE_ARRAY(p);

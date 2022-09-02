@@ -19,7 +19,7 @@
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
-#include "cp50.h"
+#include <cp50.h>
 
 /* Array initialization. */
 static
@@ -44,13 +44,28 @@ void print_array(int xy,
 {
     int i, j;
 
+    POLYBENCH_DUMP_START;
+    POLYBENCH_DUMP_BEGIN("RPLANE");
     for (i = 0; i < xy; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, RPLANE[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
+    }
+    POLYBENCH_DUMP_END("RPLANE");
+
+    POLYBENCH_DUMP_BEGIN("GPLANE");
+    for (i = 0; i < xy; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, GPLANE[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
+    }
+    POLYBENCH_DUMP_END("GPLANE");
+
+    POLYBENCH_DUMP_BEGIN("BPLANE");
+    for (i = 0; i < xy; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, BPLANE[i]);
         if (i % 20 == 0) fprintf (stderr, "\n");
     }
-    fprintf (stderr, "\n");
+    POLYBENCH_DUMP_END("BPLANE");
+    POLYBENCH_DUMP_FINISH;
 }
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */

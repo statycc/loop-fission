@@ -18,7 +18,7 @@
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
-#include "fourierf.h"
+#include <fourierf.h>
 
 
 /* Array initialization. */
@@ -78,14 +78,17 @@ void print_array(int m,
 
     POLYBENCH_DUMP_START;
     POLYBENCH_DUMP_BEGIN("RealOut");
-    POLYBENCH_DUMP_BEGIN("ImagOut");
     for (i = 0; i < m; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, RealOut[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
+    }
+    POLYBENCH_DUMP_END("RealOut");
+    POLYBENCH_DUMP_BEGIN("ImagOut");
+    for (i = 0; i < m; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, ImagOut[i]);
         if (i % 20 == 0) fprintf (stderr, "\n");
     }
     POLYBENCH_DUMP_END("ImagOut");
-    POLYBENCH_DUMP_END("RealOut");
     POLYBENCH_DUMP_FINISH;
 }
 
@@ -108,8 +111,8 @@ void kernel_fourierf(int m,
 
 #pragma scop
 
-      for ( BlockSize = 2; BlockSize <= m; BlockSize <<= 1 )
-      {
+    for ( BlockSize = 2; BlockSize <= m; BlockSize <<= 1 )
+    {
         double delta_angle = angle_numerator / (double)BlockSize;
         double sm2 = sin ( -2 * delta_angle );
         double sm1 = sin ( -delta_angle );
@@ -149,7 +152,7 @@ void kernel_fourierf(int m,
         }
 
         BlockEnd = BlockSize;
-      }
+    }
 
     // normalize if inverse transform
     #pragma omp parallel for private(i)

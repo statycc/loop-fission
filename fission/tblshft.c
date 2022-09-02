@@ -67,14 +67,18 @@ void print_array(int f8sz, int f14sz,
   int i, j;
 
   POLYBENCH_DUMP_START;
+  POLYBENCH_DUMP_BEGIN("F8");
   for (i = 0; i < f8sz; i++) {
 	fprintf (stderr, DATA_PRINTF_MODIFIER, F8[i]);
 	if (i % 20 == 0) fprintf (stderr, "\n");
   }
+  POLYBENCH_DUMP_END("F8");
+  POLYBENCH_DUMP_BEGIN("F14");
   for (j = 0; j < f14sz; j++) {
 	fprintf (stderr, DATA_PRINTF_MODIFIER, F14[j]);
 	if (j % 20 == 0) fprintf (stderr, "\n");
   }
+  POLYBENCH_DUMP_END("F14");
   POLYBENCH_DUMP_FINISH;
 }
 

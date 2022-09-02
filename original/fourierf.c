@@ -18,7 +18,7 @@
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
-#include "fourierf.h"
+#include <fourierf.h>
 
 
 /* Array initialization. */
@@ -78,14 +78,17 @@ void print_array(int m,
 
     POLYBENCH_DUMP_START;
     POLYBENCH_DUMP_BEGIN("RealOut");
-    POLYBENCH_DUMP_BEGIN("ImagOut");
     for (i = 0; i < m; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, RealOut[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
+    }
+    POLYBENCH_DUMP_END("RealOut");
+    POLYBENCH_DUMP_BEGIN("ImagOut");
+    for (i = 0; i < m; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, ImagOut[i]);
         if (i % 20 == 0) fprintf (stderr, "\n");
     }
     POLYBENCH_DUMP_END("ImagOut");
-    POLYBENCH_DUMP_END("RealOut");
     POLYBENCH_DUMP_FINISH;
 }
 

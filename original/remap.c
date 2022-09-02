@@ -24,7 +24,7 @@
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
-#include "remap.h"
+#include <remap.h>
 
 /* these dimensions are fixed for all problem sizes */
 #define YONE_SZ 2
@@ -116,6 +116,8 @@ void print_array(int lx, DATA_TYPE POLYBENCH_4D(Y1,Y1_SIZE,LX,LX,LX,Y1_SIZE,lx,l
 {
   int i, j, k, l;
 
+  POLYBENCH_DUMP_START;
+  POLYBENCH_DUMP_BEGIN("Y1");
   for (i = 0; i < Y1_SIZE; i++)
     for (j = 0; j < lx; j++)
       for (k = 0; k < lx; k++)
@@ -123,7 +125,8 @@ void print_array(int lx, DATA_TYPE POLYBENCH_4D(Y1,Y1_SIZE,LX,LX,LX,Y1_SIZE,lx,l
           fprintf (stderr, DATA_PRINTF_MODIFIER, Y1[i][j][k][l]);
           if (i % 20 == 0) fprintf (stderr, "\n");
         }
-  fprintf (stderr, "\n");
+  POLYBENCH_DUMP_END("Y1");
+  POLYBENCH_DUMP_FINISH;
 }
 
 

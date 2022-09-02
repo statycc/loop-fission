@@ -35,13 +35,26 @@ void print_array(int n,
 {
   int i, j;
 
+  POLYBENCH_DUMP_START;
+  POLYBENCH_DUMP_BEGIN("R");
   for (i = 0; i < n; i++) {
     fprintf (stderr, DATA_PRINTF_MODIFIER, R[i]);
+    if (i % 20 == 0) fprintf (stderr, "\n");
+  }
+  POLYBENCH_DUMP_END("R");
+  POLYBENCH_DUMP_BEGIN("G");
+  for (i = 0; i < n; i++) {
     fprintf (stderr, DATA_PRINTF_MODIFIER, G[i]);
+    if (i % 20 == 0) fprintf (stderr, "\n");
+  }
+  POLYBENCH_DUMP_END("G");
+  POLYBENCH_DUMP_BEGIN("B");
+  for (i = 0; i < n; i++) {
     fprintf (stderr, DATA_PRINTF_MODIFIER, B[i]);
     if (i % 20 == 0) fprintf (stderr, "\n");
   }
-  fprintf (stderr, "\n");
+  POLYBENCH_DUMP_END("B");
+  POLYBENCH_DUMP_FINISH;
 }
 
 
