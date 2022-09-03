@@ -58,6 +58,14 @@ All programs are written in C language. We include programs with both `for` and 
 
 The folders `results` and `plots` are discussed below.
 
+**Example provided**
+
+The files in results and plots are provided for convenience, as an example of the results we have obtained, 
+and can safely be deleted or overwritten. They were obtained on a Linux 4.19.0-20-amd64 #1 SMP Debian 
+4.19.235-1 (2022-03-17) x86_64 GNU/Linux machine, with 4 Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz processors.
+
+Add plot/table
+
 ## Reproducing results
 
 **System requirements:** Linux/OSX host, C compiler with OpenMP support, 
@@ -162,18 +170,19 @@ python plot.py --help
 
 ## About benchmark transformations
 
-In this repository, transformations of benchmarks have already been applied in the appropriate directories 
-(`fission` and `alt`) and our results measure differences between these transformations and `original`. 
-This section will discuss briefly how these transformed versions are generated in the first place.
+In this repository, transformations of benchmarks have already been applied in the appropriate directories,
+`fission` and `alt`, and we measure differences between those transformations and `original`.
+This section explains briefly how the transformations are generated in the first place.
 
-**Fission** benchmarks have been transformed manually following our loop fission algorithm. These transformations
-are not reproducible mechanically. The programs have been parallelized by hand. We prefer the manual approach here 
-since automatic parallelization of `while` loops is not supported natively by any tool we are aware of. 
-Programs with `for` loops could be parallelized automatically, and as shown in the next case. 
+[**Fission**](./fission) benchmarks have been transformed manually following our loop fission algorithm. These
+transformations are not reproducible mechanically. The programs have been parallelized by hand. We use manual
+approach here because automatic parallelization of `while` loops is not supported by any tool we are aware of.
+Programs with `for` loops could be parallelized automatically, and as shown in the next case.
 
-**Alt** benchmarks are the results of applying automatic transformation using [ROSE compiler](http://rosecompiler.org/).
-They are also automatically parallelized using the same tool. Benchmark `remap` fails during transformation,
-and we measure no difference between the original. Because the tool transforms all code, including the timing code 
-of the benchmark template, as last step we restore the original benchmark template. Detailed steps for re-generating 
-the `alt` benchmarks are [here](/utilities/rose-check/readme.md).
+[**Alt**](./alt) benchmarks are the results of applying automatic transformation using
+[ROSE compiler](http://rosecompiler.org/). They are also automatically parallelized using the same tool.
+Benchmark `remap` fails during transformation, and we measure no difference between the original version. 
+Because the tool transforms all code, including the timing code of the benchmark template, as last step we 
+restore the original benchmark template. Detailed steps for re-generating the `alt` benchmarks are 
+[here](/utilities/rose-check/readme.md).
 
