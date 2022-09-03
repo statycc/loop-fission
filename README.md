@@ -51,8 +51,6 @@ All programs are written in C language. We include programs with both `for` and 
    [PolyBench/C][PB] benchmark suite [version 4.2](https://sourceforge.net/projects/polybench/files/).
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
-
-* `script_autopar.sh` is used for inserting automatic parallelization directives. 
   
 * `plot.py` is used for generating tables and plots from results.
 
