@@ -24,73 +24,61 @@
 #define ONE      1250       /* token value of 1.0 exactly */
 #define RATIO	 1.004		/* nominal ratio for log part */
 /* Array initialization. */
-#include <omp.h> 
-
-static void init_array(int tsz,double TLF[2049])
+static
+void init_array(int tsz,
+    DATA_TYPE POLYBENCH_1D(TLF,TSZ,tsz))
 {
-  int i;
-  int j;
-  int nlin;
-  double b;
-  double c;
-  double linstep;
-  double v;
-  int TSIZE = tsz - 1;
-  j = 0;
-  c = log(1.004);
-  nlin = (1. / c);
-  c = 1. / nlin;
-  b = exp(-c * 1250);
-  linstep = b * c * exp(1.);
-  for (i = 0; i <= -1 + nlin; i += 1) {
-    v = i * linstep;
-    TLF[j++] = ((double )v);
-  }
-  for (i = nlin; i <= -1 + TSIZE; i += 1) {
-    TLF[j++] = b * exp(c * i);
-  }
-  TLF[TSIZE] = TLF[TSIZE - 1];
+    int i, j, nlin;
+    double b, c, linstep, v;
+    int TSIZE = tsz - 1;
+    j = 0;
+    c = log(RATIO);
+    nlin = 1. / c;
+    c = 1. / nlin;
+    b = exp(-c * ONE);
+    linstep = b * c * exp(1.);
+    for (i = 0; i < nlin; i++) {
+        v = i * linstep;
+        TLF[j++] = (DATA_TYPE) v;
+    }
+    for (i = nlin; i < TSIZE; i++)
+        TLF[j++] = b * exp(c * i);
+    TLF[TSIZE] = TLF[TSIZE - 1];
 }
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
-
-static void print_array(int f8sz,int f14sz,double F8[65536],double F14[4194304])
+static
+void print_array(int f8sz, int f14sz,
+    DATA_TYPE POLYBENCH_1D(F8,F8SZ,f8sz),
+    DATA_TYPE POLYBENCH_1D(F14,F14SZ,f14sz))
 {
-  int i;
-  int j;
-  fprintf(stderr,"==BEGIN DUMP_ARRAYS==\n");
-  fprintf(stderr,"begin dump: %s","F8");
-  for (i = 0; i <= -1 + f8sz; i += 1) {
-    fprintf(stderr,"%0.2lf ",F8[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
-    }
-     else {
-    }
+  int i, j;
+  POLYBENCH_DUMP_START;
+  POLYBENCH_DUMP_BEGIN("F8");
+  for (i = 0; i < f8sz; i++) {
+	fprintf (stderr, DATA_PRINTF_MODIFIER, F8[i]);
+	if (i % 20 == 0) fprintf (stderr, "\n");
   }
-  fprintf(stderr,"\nend   dump: %s\n","F8");
-  fprintf(stderr,"begin dump: %s","F14");
-  for (j = 0; j <= -1 + f14sz; j += 1) {
-    fprintf(stderr,"%0.2lf ",F14[j]);
-    if (j % 20 == 0) {
-      fprintf(stderr,"\n");
-    }
-     else {
-    }
+  POLYBENCH_DUMP_END("F8");
+  POLYBENCH_DUMP_BEGIN("F14");
+  for (j = 0; j < f14sz; j++) {
+	fprintf (stderr, DATA_PRINTF_MODIFIER, F14[j]);
+	if (j % 20 == 0) fprintf (stderr, "\n");
   }
-  fprintf(stderr,"\nend   dump: %s\n","F14");
-  fprintf(stderr,"==END   DUMP_ARRAYS==\n");
+  POLYBENCH_DUMP_END("F14");
+  POLYBENCH_DUMP_FINISH;
 }
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
-
-static void kernel_tblshft(int f8sz,int f14sz,int tsz,double F8[65536],double F14[4194304],double TLF[2049])
+static
+void kernel_tblshft(int f8sz, int f14sz, int tsz,
+        DATA_TYPE POLYBENCH_1D(F8,F8SZ,f8sz),
+        DATA_TYPE POLYBENCH_1D(F14,F14SZ,f14sz),
+        DATA_TYPE POLYBENCH_1D(TLF,TSZ,tsz))
 {
-  int i;
-  int j;
-  double F14SZM1 = (double )(f14sz - 1);
-  double F8SZM1 = (double )(f8sz - 1);
-  
+  int i, j;
+  DATA_TYPE F14SZM1 = (DATA_TYPE)(f14sz - 1);
+  DATA_TYPE F8SZM1 = (DATA_TYPE)(f8sz-1);
 #pragma scop
   j = 0;
   
@@ -111,42 +99,31 @@ static void kernel_tblshft(int f8sz,int f14sz,int tsz,double F8[65536],double F1
   
 #pragma endscop
 }
-
-int main(int argc,char **argv)
+int main(int argc, char** argv)
 {
-/* Retrieve problem size. */
-  int f8sz = 65536;
-  int f14sz = 4194304;
-  int tsz = 2049;
-/* Variable declaration/allocation. */
-  double (*F8)[65536];
-  F8 = ((double (*)[65536])(polybench_alloc_data((65536 + 0),(sizeof(double )))));
-  ;
-  double (*F14)[4194304];
-  F14 = ((double (*)[4194304])(polybench_alloc_data((4194304 + 0),(sizeof(double )))));
-  ;
-  double (*TLF)[2049];
-  TLF = ((double (*)[2049])(polybench_alloc_data((2049 + 0),(sizeof(double )))));
-  ;
-/* Initialize array(s). */
-  init_array(tsz, *TLF);
-/* Start timer. */
-  ;
-/* Run kernel. */
-  kernel_tblshft(f8sz,f14sz,tsz, *F8, *F14, *TLF);
-/* Stop and print timer. */
-  ;
-  ;
-/* Prevent dead-code elimination. All live-out data must be printed
+  /* Retrieve problem size. */
+  int f8sz = F8SZ;
+  int f14sz = F14SZ;
+  int tsz = TSZ;
+  /* Variable declaration/allocation. */
+  POLYBENCH_1D_ARRAY_DECL(F8,DATA_TYPE,F8SZ,f8sz);
+  POLYBENCH_1D_ARRAY_DECL(F14,DATA_TYPE,F14SZ,f14sz);
+  POLYBENCH_1D_ARRAY_DECL(TLF,DATA_TYPE,TSZ,tsz);
+  /* Initialize array(s). */
+  init_array (tsz, POLYBENCH_ARRAY(TLF));
+  /* Start timer. */
+  polybench_start_instruments;
+  /* Run kernel. */
+  kernel_tblshft (f8sz, f14sz, tsz, POLYBENCH_ARRAY(F8), POLYBENCH_ARRAY(F14), POLYBENCH_ARRAY(TLF));
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+  /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
-  if (argc > 42 && !strcmp(argv[0],"")) 
-    print_array(f8sz,f14sz, *F8, *F14);
-/* Be clean. */
-  free((void *)TLF);
-  ;
-  free((void *)F14);
-  ;
-  free((void *)F8);
-  ;
+  polybench_prevent_dce(print_array(f8sz, f14sz, POLYBENCH_ARRAY(F8), POLYBENCH_ARRAY(F14)));
+  /* Be clean. */
+  POLYBENCH_FREE_ARRAY(TLF);
+  POLYBENCH_FREE_ARRAY(F14);
+  POLYBENCH_FREE_ARRAY(F8);
   return 0;
 }

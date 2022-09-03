@@ -18,72 +18,57 @@
 /* Default data type is double, default size is N=1024. */
 #include <cp50.h>
 /* Array initialization. */
-#include <omp.h> 
-
-static void init_array(int ls,int ol,double out[2226][996])
-{
-  int i;
-  int j;
-  
-#pragma omp parallel for private (i,j) firstprivate (ls,ol)
-  for (i = 0; i <= -1 + ls; i += 1) {
-    
-#pragma omp parallel for private (j)
-    for (j = 0; j <= -1 + ol; j += 1) {
-      out[i][j] = ((double )(i * j + 1));
-    }
-  }
+static
+void init_array(int ls, int ol,
+                DATA_TYPE POLYBENCH_2D(out,LS,OL,ls,ol)) {
+    int i, j;
+    // simulate gdev_prn_copy_scan_lines procedure
+    for (i = 0; i < ls; i++)
+        for (j = 0; j < ol; j++)
+            out[i][j] = (DATA_TYPE) ((i*j+1));
 }
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
-
-static void print_array(int xy,double RPLANE[592000],double GPLANE[592000],double BPLANE[592000])
+static
+void print_array(int xy,
+            DATA_TYPE POLYBENCH_1D(RPLANE,XY,xy),
+            DATA_TYPE POLYBENCH_1D(GPLANE,XY,xy),
+            DATA_TYPE POLYBENCH_1D(BPLANE,XY,xy))
 {
-  int i;
-  int j;
-  fprintf(stderr,"==BEGIN DUMP_ARRAYS==\n");
-  fprintf(stderr,"begin dump: %s","RPLANE");
-  for (i = 0; i <= -1 + xy; i += 1) {
-    fprintf(stderr,"%0.2lf ",RPLANE[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
+    int i, j;
+    POLYBENCH_DUMP_START;
+    POLYBENCH_DUMP_BEGIN("RPLANE");
+    for (i = 0; i < xy; i++) {
+        fprintf (stderr, DATA_PRINTF_MODIFIER, RPLANE[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
     }
-     else {
+    POLYBENCH_DUMP_END("RPLANE");
+    POLYBENCH_DUMP_BEGIN("GPLANE");
+    for (i = 0; i < xy; i++) {
+        fprintf (stderr, DATA_PRINTF_MODIFIER, GPLANE[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
     }
-  }
-  fprintf(stderr,"\nend   dump: %s\n","RPLANE");
-  fprintf(stderr,"begin dump: %s","GPLANE");
-  for (i = 0; i <= -1 + xy; i += 1) {
-    fprintf(stderr,"%0.2lf ",GPLANE[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
+    POLYBENCH_DUMP_END("GPLANE");
+    POLYBENCH_DUMP_BEGIN("BPLANE");
+    for (i = 0; i < xy; i++) {
+        fprintf (stderr, DATA_PRINTF_MODIFIER, BPLANE[i]);
+        if (i % 20 == 0) fprintf (stderr, "\n");
     }
-     else {
-    }
-  }
-  fprintf(stderr,"\nend   dump: %s\n","GPLANE");
-  fprintf(stderr,"begin dump: %s","BPLANE");
-  for (i = 0; i <= -1 + xy; i += 1) {
-    fprintf(stderr,"%0.2lf ",BPLANE[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
-    }
-     else {
-    }
-  }
-  fprintf(stderr,"\nend   dump: %s\n","BPLANE");
-  fprintf(stderr,"==END   DUMP_ARRAYS==\n");
+    POLYBENCH_DUMP_END("BPLANE");
+    POLYBENCH_DUMP_FINISH;
 }
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
-
-static void kernel_cp50(int X_PIXEL,int FIRST_COLUMN,int FIRST_LINE,int LAST_LINE,double out[2226][996],double RPLANE[592000],double GPLANE[592000],double BPLANE[592000])
+static
+void kernel_cp50(
+        int X_PIXEL, int FIRST_COLUMN, int FIRST_LINE, int LAST_LINE,
+        DATA_TYPE POLYBENCH_2D(out,LS,OL,ls,ol),
+        DATA_TYPE POLYBENCH_1D(RPLANE,XY,xy),
+        DATA_TYPE POLYBENCH_1D(GPLANE,XY,xy),
+        DATA_TYPE POLYBENCH_1D(BPLANE,XY,xy))
 {
-  int lnum = FIRST_LINE;
-  int last = LAST_LINE;
-  int i;
-  int col;
-  
+    int lnum = FIRST_LINE, last = LAST_LINE;
+    int i, col;
 #pragma scop
 /* Print lines of graphics */
   while(lnum <= last){
@@ -98,52 +83,45 @@ static void kernel_cp50(int X_PIXEL,int FIRST_COLUMN,int FIRST_LINE,int LAST_LIN
   
 #pragma endscop
 }
-
-int main(int argc,char **argv)
+int main(int argc, char** argv)
 {
-/* Retrieve problem size. */
-  int x = 592;
-  int y = 1000;
-  int xy = 592 * 1000;
-  int fc = 225;
-  int ls = 592 * 3 + 225 * 2;
-  int fl = 179;
-  int ll = 1175;
-  int ol = 1175 - 179;
-/* Variable declaration/allocation. */
-  double (*out)[2226][996];
-  out = ((double (*)[2226][996])(polybench_alloc_data(((592 * 3 + 225 * 2 + 0) * (1175 - 179 + 0)),(sizeof(double )))));
-  ;
-  double (*RPLANE)[592000];
-  RPLANE = ((double (*)[592000])(polybench_alloc_data((592 * 1000 + 0),(sizeof(double )))));
-  ;
-  double (*GPLANE)[592000];
-  GPLANE = ((double (*)[592000])(polybench_alloc_data((592 * 1000 + 0),(sizeof(double )))));
-  ;
-  double (*BPLANE)[592000];
-  BPLANE = ((double (*)[592000])(polybench_alloc_data((592 * 1000 + 0),(sizeof(double )))));
-  ;
-/* Initialize array(s). */
-  init_array(ls,ol, *out);
-/* Start timer. */
-  ;
-/* Run kernel. */
-  kernel_cp50(x,fc,fl,ll, *out, *RPLANE, *GPLANE, *BPLANE);
-/* Stop and print timer. */
-  ;
-  ;
-/* Prevent dead-code elimination. All live-out data must be printed
+  /* Retrieve problem size. */
+  int x = X;
+  int y = Y;
+  int xy = XY;
+  int fc = FC;
+  int ls = LS;
+  int fl = FL;
+  int ll = LL;
+  int ol = OL;
+  /* Variable declaration/allocation. */
+    POLYBENCH_2D_ARRAY_DECL(out, DATA_TYPE,LS,OL,ls,ol);
+    POLYBENCH_1D_ARRAY_DECL(RPLANE,DATA_TYPE,XY,xy);
+    POLYBENCH_1D_ARRAY_DECL(GPLANE,DATA_TYPE,XY,xy);
+    POLYBENCH_1D_ARRAY_DECL(BPLANE,DATA_TYPE,XY,xy);
+  /* Initialize array(s). */
+  init_array (ls, ol, POLYBENCH_ARRAY(out));
+  /* Start timer. */
+  polybench_start_instruments;
+  /* Run kernel. */
+  kernel_cp50(x, fc, fl, ll,
+              POLYBENCH_ARRAY(out),
+              POLYBENCH_ARRAY(RPLANE),
+              POLYBENCH_ARRAY(GPLANE),
+              POLYBENCH_ARRAY(BPLANE));
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+  /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
-  if (argc > 42 && !strcmp(argv[0],"")) 
-    print_array(xy, *RPLANE, *GPLANE, *BPLANE);
-/* Be clean. */
-  free((void *)out);
-  ;
-  free((void *)RPLANE);
-  ;
-  free((void *)GPLANE);
-  ;
-  free((void *)BPLANE);
-  ;
+  polybench_prevent_dce(print_array(xy,
+              POLYBENCH_ARRAY(RPLANE),
+              POLYBENCH_ARRAY(GPLANE),
+              POLYBENCH_ARRAY(BPLANE)));
+  /* Be clean. */
+  POLYBENCH_FREE_ARRAY(out);
+  POLYBENCH_FREE_ARRAY(RPLANE);
+  POLYBENCH_FREE_ARRAY(GPLANE);
+  POLYBENCH_FREE_ARRAY(BPLANE);
   return 0;
 }

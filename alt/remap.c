@@ -12,25 +12,19 @@
  * Web address: https://www.nas.nasa.gov/software/npb.html
  */
 /* remap.c */
-
-
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-
 /* Include polybench common header. */
 #include <polybench.h>
-
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
 #include <remap.h>
-
 /* these dimensions are fixed for all problem sizes */
 #define YONE_SZ 2
 #define YTWO_SZ 4
 #define Y1_SIZE 7
-
 /* Array initialization. */
 static
 void init_array(int lx,
@@ -44,12 +38,10 @@ void init_array(int lx,
         DATA_TYPE POLYBENCH_2D(ixtmc2,LX,LX,lx,lx))
 {
     int i, j, k, h;
-
     for (i = 0; i < lx; i++)
         ixtmc1[0][i] = ixtmc1[lx-1][i] = 0.0;
     ixtmc1[0][0] = 1.0;
     ixtmc1[lx-1][lx/2] = 1.0;
-
     for(i = 1; i < ((lx-2)/3); i += 3){
         for(j = 0; j < lx/5; j += 5){
             ixtmc1[1+i][(j+0) % lx] = j + i *  0.3385078435248143;
@@ -76,46 +68,37 @@ void init_array(int lx,
     for (j = 0; j < lx; j++)
         for (i = 0; i < lx; i++)
             ixtmc2[j][i] = ixtmc1[lx - 1 - j][lx - 1 - i];
-
     for (i = 0; i < lx; i++)
         for (j = 0; j < lx; j++)
             ixmc1[j][i] = ixtmc1[i][j];
-
     for (i = 0; i < lx; i++)
         for (j = 0; j < lx; j++)
             ixmc2[j][i] = ixtmc2[i][j];
-
     for (i = 0; i < lx; i++)
         for (j = 0; j < lx; j++)
             for (k = 0; k < lx; k++)
                 X[i][j][k] = sin(i+j+k);
-
     for (i = 0; i < lx; i++)
         for (j = 0; j < lx; j++)
             for (k = 0; k < lx; k++)
                 Y[i][j][k] = cos(i+j+k);
-
     for (i = 0; i < YONE_SZ; i++)
         for (j = 0; j < lx; j++)
             for (k = 0; k < lx; k++)
                 for (h = 0; h < lx; h++)
                     YONE[i][j][k][h] = 0;
-
     for (i = 0; i < YTWO_SZ; i++)
         for (j = 0; j < lx; j++)
             for (k = 0; k < lx; k++)
                 for (h = 0; h < lx; h++)
                     YTWO[i][j][k][h] = 0;
 }
-
-
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
 static
 void print_array(int lx, DATA_TYPE POLYBENCH_4D(Y1,Y1_SIZE,LX,LX,LX,Y1_SIZE,lx,lx,lx))
 {
   int i, j, k, l;
-
   POLYBENCH_DUMP_START;
   POLYBENCH_DUMP_BEGIN("Y1");
   for (i = 0; i < Y1_SIZE; i++)
@@ -128,8 +111,6 @@ void print_array(int lx, DATA_TYPE POLYBENCH_4D(Y1,Y1_SIZE,LX,LX,LX,Y1_SIZE,lx,l
   POLYBENCH_DUMP_END("Y1");
   POLYBENCH_DUMP_FINISH;
 }
-
-
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
 static
@@ -145,9 +126,7 @@ void kernel_remap(int lx,
         DATA_TYPE POLYBENCH_2D(ixtmc2,LX,LX,lx,lx))
 {
    int i, iz, ii, jj, kk;;
-
 #pragma scop
-
     for (i = 0; i < _PB_LX; i++)
     {
         for (kk = 0; kk < _PB_LX; kk++)
@@ -161,7 +140,6 @@ void kernel_remap(int lx,
                 }
             }
         }
-
         for (kk = 0; kk < _PB_LX; kk++)
         {
             for (jj = 0; jj < _PB_LX; jj++)
@@ -180,7 +158,6 @@ void kernel_remap(int lx,
             }
         }
     }
-
     for (iz = 0; iz < _PB_LX; iz++)
     {
         for (kk = 0; kk < _PB_LX; kk++)
@@ -209,17 +186,12 @@ void kernel_remap(int lx,
             }
         }
     }
-
 #pragma endscop
-
 }
-
-
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
   int lx = LX;
-
   /* Variable declaration/allocation. */
   POLYBENCH_4D_ARRAY_DECL(YONE,DATA_TYPE,YONE_SZ,LX,LX,LX,YONE_SZ,lx,lx,lx);
   POLYBENCH_4D_ARRAY_DECL(YTWO,DATA_TYPE,YTWO_SZ,LX,LX,LX,YTWO_SZ,lx,lx,lx);
@@ -230,7 +202,6 @@ int main(int argc, char** argv)
   POLYBENCH_2D_ARRAY_DECL(ixmc2,DATA_TYPE,LX,LX,lx,lx);
   POLYBENCH_2D_ARRAY_DECL(ixtmc1,DATA_TYPE,LX,LX,lx,lx);
   POLYBENCH_2D_ARRAY_DECL(ixtmc2,DATA_TYPE,LX,LX,lx,lx);
-
   /* Initialize array(s). */
   init_array (lx,
               POLYBENCH_ARRAY(YONE),
@@ -241,10 +212,8 @@ int main(int argc, char** argv)
               POLYBENCH_ARRAY(ixmc2),
               POLYBENCH_ARRAY(ixtmc1),
               POLYBENCH_ARRAY(ixtmc2));
-
   /* Start timer. */
   polybench_start_instruments;
-
   /* Run kernel. */
   kernel_remap (lx,
                   POLYBENCH_ARRAY(YONE),
@@ -256,15 +225,12 @@ int main(int argc, char** argv)
                   POLYBENCH_ARRAY(ixmc2),
                   POLYBENCH_ARRAY(ixtmc1),
                   POLYBENCH_ARRAY(ixtmc2));
-
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
   polybench_prevent_dce(print_array(lx,  POLYBENCH_ARRAY(Y1)));
-
   /* Be clean. */
   POLYBENCH_FREE_ARRAY(YONE);
   POLYBENCH_FREE_ARRAY(YTWO);
@@ -275,6 +241,5 @@ int main(int argc, char** argv)
   POLYBENCH_FREE_ARRAY(ixmc2);
   POLYBENCH_FREE_ARRAY(ixtmc1);
   POLYBENCH_FREE_ARRAY(ixtmc2);
-
   return 0;
 }

@@ -18,57 +18,47 @@
 /* Default data type is double, default size is N=1024. */
 #include <colormap.h>
 /* Array initialization. */
-
-static void init_array()
-{
-}
+static
+void init_array() { }
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
-
-static void print_array(int n,double R[16777216],double G[16777216],double B[16777216])
+static
+void print_array(int n,
+     DATA_TYPE POLYBENCH_1D(R,N,n),
+     DATA_TYPE POLYBENCH_1D(G,N,n),
+     DATA_TYPE POLYBENCH_1D(B,N,n))
 {
-  int i;
-  int j;
-  fprintf(stderr,"==BEGIN DUMP_ARRAYS==\n");
-  fprintf(stderr,"begin dump: %s","R");
-  for (i = 0; i <= -1 + n; i += 1) {
-    fprintf(stderr,"%0.2lf ",R[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
-    }
-     else {
-    }
+  int i, j;
+  POLYBENCH_DUMP_START;
+  POLYBENCH_DUMP_BEGIN("R");
+  for (i = 0; i < n; i++) {
+    fprintf (stderr, DATA_PRINTF_MODIFIER, R[i]);
+    if (i % 20 == 0) fprintf (stderr, "\n");
   }
-  fprintf(stderr,"\nend   dump: %s\n","R");
-  fprintf(stderr,"begin dump: %s","G");
-  for (i = 0; i <= -1 + n; i += 1) {
-    fprintf(stderr,"%0.2lf ",G[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
-    }
-     else {
-    }
+  POLYBENCH_DUMP_END("R");
+  POLYBENCH_DUMP_BEGIN("G");
+  for (i = 0; i < n; i++) {
+    fprintf (stderr, DATA_PRINTF_MODIFIER, G[i]);
+    if (i % 20 == 0) fprintf (stderr, "\n");
   }
-  fprintf(stderr,"\nend   dump: %s\n","G");
-  fprintf(stderr,"begin dump: %s","B");
-  for (i = 0; i <= -1 + n; i += 1) {
-    fprintf(stderr,"%0.2lf ",B[i]);
-    if (i % 20 == 0) {
-      fprintf(stderr,"\n");
-    }
-     else {
-    }
+  POLYBENCH_DUMP_END("G");
+  POLYBENCH_DUMP_BEGIN("B");
+  for (i = 0; i < n; i++) {
+    fprintf (stderr, DATA_PRINTF_MODIFIER, B[i]);
+    if (i % 20 == 0) fprintf (stderr, "\n");
   }
-  fprintf(stderr,"\nend   dump: %s\n","B");
-  fprintf(stderr,"==END   DUMP_ARRAYS==\n");
+  POLYBENCH_DUMP_END("B");
+  POLYBENCH_DUMP_FINISH;
 }
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
-
-static void kernel_colormap(int n,double R[16777216],double G[16777216],double B[16777216])
+static
+void kernel_colormap(int n,
+    DATA_TYPE POLYBENCH_1D(R,N,n),
+    DATA_TYPE POLYBENCH_1D(G,N,n),
+    DATA_TYPE POLYBENCH_1D(B,N,n))
 {
   int i;
-  
 #pragma scop
   i = 0;
   while(i < n){
@@ -80,40 +70,29 @@ static void kernel_colormap(int n,double R[16777216],double G[16777216],double B
   
 #pragma endscop
 }
-
-int main(int argc,char **argv)
+int main(int argc, char** argv)
 {
-/* Retrieve problem size. */
-  int n = 16777216;
-/* Variable declaration/allocation. */
-  double (*R)[16777216];
-  R = ((double (*)[16777216])(polybench_alloc_data((16777216 + 0),(sizeof(double )))));
-  ;
-  double (*G)[16777216];
-  G = ((double (*)[16777216])(polybench_alloc_data((16777216 + 0),(sizeof(double )))));
-  ;
-  double (*B)[16777216];
-  B = ((double (*)[16777216])(polybench_alloc_data((16777216 + 0),(sizeof(double )))));
-  ;
-/* Initialize array(s). */
-  init_array();
-/* Start timer. */
-  ;
-/* Run kernel. */
-  kernel_colormap(n, *R, *G, *B);
-/* Stop and print timer. */
-  ;
-  ;
-/* Prevent dead-code elimination. All live-out data must be printed
+  /* Retrieve problem size. */
+  int n = N;
+  /* Variable declaration/allocation. */
+  POLYBENCH_1D_ARRAY_DECL(R,DATA_TYPE,N,n);
+  POLYBENCH_1D_ARRAY_DECL(G,DATA_TYPE,N,n);
+  POLYBENCH_1D_ARRAY_DECL(B,DATA_TYPE,N,n);
+  /* Initialize array(s). */
+  init_array ();
+  /* Start timer. */
+  polybench_start_instruments;
+  /* Run kernel. */
+  kernel_colormap (n, POLYBENCH_ARRAY(R), POLYBENCH_ARRAY(G), POLYBENCH_ARRAY(B));
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+  /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
-  if (argc > 42 && !strcmp(argv[0],"")) 
-    print_array(n, *R, *G, *B);
-/* Be clean. */
-  free((void *)R);
-  ;
-  free((void *)G);
-  ;
-  free((void *)B);
-  ;
+  polybench_prevent_dce(print_array(n, POLYBENCH_ARRAY(R), POLYBENCH_ARRAY(G), POLYBENCH_ARRAY(B)));
+  /* Be clean. */
+  POLYBENCH_FREE_ARRAY(R);
+  POLYBENCH_FREE_ARRAY(G);
+  POLYBENCH_FREE_ARRAY(B);
   return 0;
 }

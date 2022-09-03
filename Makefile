@@ -81,13 +81,7 @@ tblshft:
 
 # transform all using rose
 rose:
-	 cd alt ; \
-	 $(foreach p, $(PROGS), \
-		  $(ROSE)/build/tutorial/loopProcessor --edg:no_warnings -w -c -fs0 -cp 0 -I../headers -I../utilities \
-		  ../original/$(p).c && mv rose_$(p).c $(p).c || cp ../original/$(p).c $(p).c ; \
-		  $(ROSE)/build/projects/autoParallelization/autoPar --edg:no_warnings -I../headers -I../utilities \
-		  -c $(p).c && mv rose_$(p).c $(p).c ; ) \
-	 rm -rf *.o ; cd .. ;
+	./rose.sh -r $(ROSE)
 
 .PHONY: plots
 plots:

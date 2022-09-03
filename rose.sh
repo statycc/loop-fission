@@ -23,7 +23,7 @@ OUT="alt"                                   # path to output directory
 BEG="#pragma scop"                          # kernel start delimiter
 END="#pragma endscop"                       # kernel end delimiter
 
-ROSE_ARGS=" --edg:no_warnings -I headers -I utilities "    # common ROSE args
+ROSE_ARGS=" --edg:no_warnings -I../headers -I../utilities "    # common ROSE args
 
 # silenced the output of pushd popd
 
@@ -75,19 +75,34 @@ do
     tmpl_end=("${lines[@]:$ei}")
 
     # loop transform
-    if( "$ROSE"/tutorial/loopProcessor "$ROSE_ARGS" -w -c -fs0 -cp 0 "$file" ); then
-       mv rose_"$pf" "$pf"   # rose will add prefix rose_, remove it
-    else
+    {
+       cmd="${ROSE}/tutorial/loopProcessor ${ROSE_ARGS} -w -c -fs0 -cp 0 ${file}"
+       command $cmd > /dev/null 2>&1
+       if test -f "rose_${pf}"; then
+         mv rose_${pf} ${pf}
+         echo "✓ transformed $p"
+       else
+         cp  "$file" "$pf"
+         echo "⚠ cannot transform $p"
+       fi
+    } || {
        echo "⚠ cannot transform $p"
        cp "$file" "$pf"   # if transform fails we copy original as-is
-    fi
+    }
 
     # AutoPar
-    if( "$ROSE"/projects/autoParallelization/autoPar "$ROSE_ARGS" "$p".c ); then
-       mv rose_"$p".c "$p".c   # rose will add prefix rose_, remove it
-    else
+    {
+        cmd="${ROSE}/projects/autoParallelization/autoPar ${ROSE_ARGS} -c ${pf}"
+        command $cmd > /dev/null 2>&1
+        if test -f "rose_${pf}"; then
+         mv rose_${pf} ${pf}
+         echo "✓ parallelized $p"
+       else
+        echo "⚠ cannot parallelize $p"
+       fi
+    } || {
        echo "⚠ cannot parallelize $p"
-    fi
+    }
 
     # read all lines
     IFS=$'\n' read -d '' -r -a kernel_lines < "$pf"
@@ -103,14 +118,23 @@ do
           break;
        fi
     done
-    kernel=("${kernel_lines[@]:$kb:$ke}")
 
-    # now piece it together and write to file
-    printf "%s\n" "${tmpl_beg[@]}" > "$pf"
-    printf "%s\n" "${kernel[@]}" >> "$pf"
-    printf "%s\n" "${tmpl_end[@]}" >> "$pf"
+    # substitute kernel inside template if found
+    if (( $kb > 0 )); then
+      kernel=("${kernel_lines[@]:$kb:$ke}")
+
+      printf "%s\n" "${tmpl_beg[@]}" > "$pf"
+      printf "%s\n" "${kernel[@]}" >> "$pf"
+      printf "%s\n" "${tmpl_end[@]}" >> "$pf"
+    else
+      echo "⚠ cannot find kernel in ${p}, check template manually"
+    fi
 
 done
 
 popd   # exit output directory
 
+for file in ./"$OUT"/*.o
+do
+    rm -rf "$file"
+done

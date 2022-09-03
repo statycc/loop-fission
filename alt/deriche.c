@@ -17,77 +17,52 @@
 /* Include benchmark-specific header. */
 #include <deriche.h>
 /* Array initialization. */
-#include <omp.h> 
-
-static void init_array(int w,int h,float *alpha,float imgIn[4096][2160],float imgOut[4096][2160])
+static
+void init_array (int w, int h, DATA_TYPE* alpha,
+		 DATA_TYPE POLYBENCH_2D(imgIn,W,H,w,h),
+		 DATA_TYPE POLYBENCH_2D(imgOut,W,H,w,h))
 {
-  int i;
-  int j;
-   *alpha = 0.25;
-  
-#pragma omp parallel for private (i,j) firstprivate (w,h)
-  for (i = 0; i <= -1 + w; i += 1) {
-    
-#pragma omp parallel for private (j)
-    for (j = 0; j <= -1 + h; j += 1) {
-      imgIn[i][j] = ((float )((313 * i + 991 * j) % 65536)) / 65535.0f;
-    }
-  }
+  int i, j;
+  *alpha=0.25; //parameter of the filter
+  //input should be between 0 and 1 (grayscale image pixel)
+  for (i = 0; i < w; i++)
+     for (j = 0; j < h; j++)
+	imgIn[i][j] = (DATA_TYPE) ((313*i+991*j)%65536) / 65535.0f;
 }
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
-
-static void print_array(int w,int h,float imgOut[4096][2160])
+static
+void print_array(int w, int h,
+		 DATA_TYPE POLYBENCH_2D(imgOut,W,H,w,h))
 {
-  int i;
-  int j;
-  fprintf(stderr,"==BEGIN DUMP_ARRAYS==\n");
-  fprintf(stderr,"begin dump: %s","imgOut");
-  for (i = 0; i <= -1 + w; i += 1) {
-    for (j = 0; j <= -1 + h; j += 1) {
-      if ((i * h + j) % 20 == 0) {
-        fprintf(stderr,"\n");
-      }
-       else {
-      }
-      fprintf(stderr,"%0.2f ",imgOut[i][j]);
+  int i, j;
+  POLYBENCH_DUMP_START;
+  POLYBENCH_DUMP_BEGIN("imgOut");
+  for (i = 0; i < w; i++)
+    for (j = 0; j < h; j++) {
+      if ((i * h + j) % 20 == 0) fprintf(POLYBENCH_DUMP_TARGET, "\n");
+      fprintf(POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, imgOut[i][j]);
     }
-  }
-  fprintf(stderr,"\nend   dump: %s\n","imgOut");
-  fprintf(stderr,"==END   DUMP_ARRAYS==\n");
+  POLYBENCH_DUMP_END("imgOut");
+  POLYBENCH_DUMP_FINISH;
 }
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
 /* Original code provided by Gael Deest */
-
-static void kernel_deriche(int w,int h,float alpha,float imgIn[4096][2160],float imgOut[4096][2160],float y1[4096][2160],float y2[4096][2160])
-{
-  int i;
-  int j;
-  float xm1;
-  float tm1;
-  float ym1;
-  float ym2;
-  float xp1;
-  float xp2;
-  float tp1;
-  float tp2;
-  float yp1;
-  float yp2;
-  float k;
-  float a1;
-  float a2;
-  float a3;
-  float a4;
-  float a5;
-  float a6;
-  float a7;
-  float a8;
-  float b1;
-  float b2;
-  float c1;
-  float c2;
-  
+static
+void kernel_deriche(int w, int h, DATA_TYPE alpha,
+       DATA_TYPE POLYBENCH_2D(imgIn, W, H, w, h),
+       DATA_TYPE POLYBENCH_2D(imgOut, W, H, w, h),
+       DATA_TYPE POLYBENCH_2D(y1, W, H, w, h),
+       DATA_TYPE POLYBENCH_2D(y2, W, H, w, h)) {
+    int i,j;
+    DATA_TYPE xm1, tm1, ym1, ym2;
+    DATA_TYPE xp1, xp2;
+    DATA_TYPE tp1, tp2;
+    DATA_TYPE yp1, yp2;
+    DATA_TYPE k;
+    DATA_TYPE a1, a2, a3, a4, a5, a6, a7, a8;
+    DATA_TYPE b1, b2, c1, c2;
 #pragma scop
   k = (1.0f - expf(-alpha)) * (1.0f - expf(-alpha)) / (1.0f + 2.0f * alpha * expf(-alpha) - expf(2.0f * alpha));
   a1 = a5 = k;
@@ -182,47 +157,33 @@ static void kernel_deriche(int w,int h,float alpha,float imgIn[4096][2160],float
   
 #pragma endscop
 }
-
-int main(int argc,char **argv)
+int main(int argc, char** argv)
 {
-/* Retrieve problem size. */
-  int w = 4096;
-  int h = 2160;
-/* Variable declaration/allocation. */
-  float alpha;
-  float (*imgIn)[4096][2160];
-  imgIn = ((float (*)[4096][2160])(polybench_alloc_data(((4096 + 0) * (2160 + 0)),(sizeof(float )))));
-  ;
-  float (*imgOut)[4096][2160];
-  imgOut = ((float (*)[4096][2160])(polybench_alloc_data(((4096 + 0) * (2160 + 0)),(sizeof(float )))));
-  ;
-  float (*y1)[4096][2160];
-  y1 = ((float (*)[4096][2160])(polybench_alloc_data(((4096 + 0) * (2160 + 0)),(sizeof(float )))));
-  ;
-  float (*y2)[4096][2160];
-  y2 = ((float (*)[4096][2160])(polybench_alloc_data(((4096 + 0) * (2160 + 0)),(sizeof(float )))));
-  ;
-/* Initialize array(s). */
-  init_array(w,h,&alpha, *imgIn, *imgOut);
-/* Start timer. */
-  ;
-/* Run kernel. */
-  kernel_deriche(w,h,alpha, *imgIn, *imgOut, *y1, *y2);
-/* Stop and print timer. */
-  ;
-  ;
-/* Prevent dead-code elimination. All live-out data must be printed
+  /* Retrieve problem size. */
+  int w = W;
+  int h = H;
+  /* Variable declaration/allocation. */
+  DATA_TYPE alpha;
+  POLYBENCH_2D_ARRAY_DECL(imgIn, DATA_TYPE, W, H, w, h);
+  POLYBENCH_2D_ARRAY_DECL(imgOut, DATA_TYPE, W, H, w, h);
+  POLYBENCH_2D_ARRAY_DECL(y1, DATA_TYPE, W, H, w, h);
+  POLYBENCH_2D_ARRAY_DECL(y2, DATA_TYPE, W, H, w, h);
+  /* Initialize array(s). */
+  init_array (w, h, &alpha, POLYBENCH_ARRAY(imgIn), POLYBENCH_ARRAY(imgOut));
+  /* Start timer. */
+  polybench_start_instruments;
+  /* Run kernel. */
+  kernel_deriche (w, h, alpha, POLYBENCH_ARRAY(imgIn), POLYBENCH_ARRAY(imgOut), POLYBENCH_ARRAY(y1), POLYBENCH_ARRAY(y2));
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+  /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
-  if (argc > 42 && !strcmp(argv[0],"")) 
-    print_array(w,h, *imgOut);
-/* Be clean. */
-  free((void *)imgIn);
-  ;
-  free((void *)imgOut);
-  ;
-  free((void *)y1);
-  ;
-  free((void *)y2);
-  ;
+  polybench_prevent_dce(print_array(w, h, POLYBENCH_ARRAY(imgOut)));
+  /* Be clean. */
+  POLYBENCH_FREE_ARRAY(imgIn);
+  POLYBENCH_FREE_ARRAY(imgOut);
+  POLYBENCH_FREE_ARRAY(y1);
+  POLYBENCH_FREE_ARRAY(y2);
   return 0;
 }
