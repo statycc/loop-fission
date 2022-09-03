@@ -76,12 +76,13 @@ void kernel_conjgrad(int na, int niter,
      DATA_TYPE POLYBENCH_1D(r,NA,na))
 {
   int i, j;
-  DATA_TYPE rho, d, alpha;
 
 #pragma scop
 
-rho = 0;
-d = 0;
+  DATA_TYPE rho, d, alpha;
+
+    rho = 0;
+    d = 0;
 
 #pragma omp parallel private(i, j)
 {

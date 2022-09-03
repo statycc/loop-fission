@@ -76,25 +76,27 @@ void kernel_conjgrad(int na, int niter,
      DATA_TYPE POLYBENCH_1D(r,NA,na))
 {
   int i, j;
-  DATA_TYPE rho, d, alpha;
 
 #pragma scop
 
-rho = 0;
-d = 0;
-for (i = 1; i <= _PB_NITER; i++) {
-  for (j = 0; j < _PB_NA; j++){
-    rho = rho + r[j] * r[j];
-  }
-  for (j = 0; j < _PB_NA; j++){
-    d = d + p[j] * q[j];
-  }
-  alpha = rho / d;
-  for (j = 0; j < _PB_NA; j++) {
-    z[j] = z[j] + alpha * p[j];
-    r[j] = r[j] - alpha * q[j];
-  }
-}
+  DATA_TYPE rho, d, alpha;
+
+  rho = 0;
+  d = 0;
+
+    for (i = 1; i <= _PB_NITER; i++) {
+      for (j = 0; j < _PB_NA; j++){
+        rho = rho + r[j] * r[j];
+      }
+      for (j = 0; j < _PB_NA; j++){
+        d = d + p[j] * q[j];
+      }
+      alpha = rho / d;
+      for (j = 0; j < _PB_NA; j++) {
+        z[j] = z[j] + alpha * p[j];
+        r[j] = r[j] - alpha * q[j];
+      }
+    }
 
 #pragma endscop
 

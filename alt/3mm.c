@@ -8,14 +8,19 @@
  * Web address: http://polybench.sourceforge.net
  */
 /* 3mm.c: this file is part of PolyBench/C */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+
 /* Include polybench common header. */
 #include <polybench.h>
+
 /* Include benchmark-specific header. */
 #include <3mm.h>
+
+
 /* Array initialization. */
 static
 void init_array(int ni, int nj, int nk, int nl, int nm,
@@ -25,6 +30,7 @@ void init_array(int ni, int nj, int nk, int nl, int nm,
 		DATA_TYPE POLYBENCH_2D(D,NM,NL,nm,nl))
 {
   int i, j;
+
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = (DATA_TYPE) ((i*j+1) % ni) / (5*ni);
@@ -38,6 +44,8 @@ void init_array(int ni, int nj, int nk, int nl, int nm,
     for (j = 0; j < nl; j++)
       D[i][j] = (DATA_TYPE) ((i*(j+2)+2) % nk) / (5*nk);
 }
+
+
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
 static
@@ -45,6 +53,7 @@ void print_array(int ni, int nl,
 		 DATA_TYPE POLYBENCH_2D(G,NI,NL,ni,nl))
 {
   int i, j;
+
   POLYBENCH_DUMP_START;
   POLYBENCH_DUMP_BEGIN("G");
   for (i = 0; i < ni; i++)
@@ -55,6 +64,8 @@ void print_array(int ni, int nl,
   POLYBENCH_DUMP_END("G");
   POLYBENCH_DUMP_FINISH;
 }
+
+
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
 static
@@ -68,6 +79,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 		DATA_TYPE POLYBENCH_2D(G,NI,NL,ni,nl))
 {
   int i, j, k;
+
 #pragma scop
 /* E := A*B */
   i = 0;
@@ -114,9 +126,12 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
     }
     i++;
   }
-  
+
 #pragma endscop
+
 }
+
+
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
@@ -125,6 +140,7 @@ int main(int argc, char** argv)
   int nk = NK;
   int nl = NL;
   int nm = NM;
+
   /* Variable declaration/allocation. */
   POLYBENCH_2D_ARRAY_DECL(E, DATA_TYPE, NI, NJ, ni, nj);
   POLYBENCH_2D_ARRAY_DECL(A, DATA_TYPE, NI, NK, ni, nk);
@@ -133,14 +149,17 @@ int main(int argc, char** argv)
   POLYBENCH_2D_ARRAY_DECL(C, DATA_TYPE, NJ, NM, nj, nm);
   POLYBENCH_2D_ARRAY_DECL(D, DATA_TYPE, NM, NL, nm, nl);
   POLYBENCH_2D_ARRAY_DECL(G, DATA_TYPE, NI, NL, ni, nl);
+
   /* Initialize array(s). */
   init_array (ni, nj, nk, nl, nm,
 	      POLYBENCH_ARRAY(A),
 	      POLYBENCH_ARRAY(B),
 	      POLYBENCH_ARRAY(C),
 	      POLYBENCH_ARRAY(D));
+
   /* Start timer. */
   polybench_start_instruments;
+
   /* Run kernel. */
   kernel_3mm (ni, nj, nk, nl, nm,
 	      POLYBENCH_ARRAY(E),
@@ -150,12 +169,15 @@ int main(int argc, char** argv)
 	      POLYBENCH_ARRAY(C),
 	      POLYBENCH_ARRAY(D),
 	      POLYBENCH_ARRAY(G));
+
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
+
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
   polybench_prevent_dce(print_array(ni, nl,  POLYBENCH_ARRAY(G)));
+
   /* Be clean. */
   POLYBENCH_FREE_ARRAY(E);
   POLYBENCH_FREE_ARRAY(A);
@@ -164,5 +186,6 @@ int main(int argc, char** argv)
   POLYBENCH_FREE_ARRAY(C);
   POLYBENCH_FREE_ARRAY(D);
   POLYBENCH_FREE_ARRAY(G);
+
   return 0;
 } 

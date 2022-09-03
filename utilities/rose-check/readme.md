@@ -8,9 +8,11 @@ After that we apply the [LoopProcessor](https://github.com/rose-compiler/rose/bl
 tool to transform loops and [AutoPar](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/projects/autoParallelization/autoPar.C)
 to parallelize them. 
 
-Note that loop and parallelization transformations are applied to the entire file[^1]. 
-To reverse the transformations applied to the templating code around benchmark kernel (the specific region of interest).
-As the last step we need to extract the kernel transformed by ROSE, and substitute it back in the original benchmark template.
+Note that loop and parallelization transformations are applied to the entire file[^1]. This tends to break the
+structure expected by the timing utilities, and prevents benchmarking the transformed file, unless the original template
+is restored. Therefore we must reverse the transformations applied to the templating code around benchmark kernel 
+(the specific region of interest). As the last step we need to extract the kernel transformed by ROSE, and substitute 
+it back in the original benchmark template.
 
 The rest of this guide details the ROSE compiler operations. It includes examples to help verify the
 expected behavior in each step.
@@ -72,7 +74,14 @@ Expected output (some programs fail)
 bicg         transformed: ✓   parallel: ✓   restored: ✓
 colormap     transformed: ✓   parallel: ✓   restored: ✓
 conjgrad     transformed: ✓   parallel: ✓   restored: 🗙
-...
+cp50         transformed: ✓   parallel: ✓   restored: ✓
+deriche      transformed: ✓   parallel: ✓   restored: ✓
+fdtd-2d      transformed: ✓   parallel: ✓   restored: 🗙
+gemm         transformed: ✓   parallel: ✓   restored: 🗙
+gesummv      transformed: ✓   parallel: ✓   restored: ✓
+mvt          transformed: ✓   parallel: ✓   restored: ✓
+remap        transformed: 🗙   parallel: 🗙   restored: ✓
+tblshft      transformed: ✓   parallel: ✓   restored: ✓
 ```
 
 [^1]: [Rose User Manual](http://rosecompiler.org/uploads/ROSE-UserManual.pdf),
