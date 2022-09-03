@@ -18,8 +18,8 @@ done
 ROSE="${rose_build:-/home/rose}/build"      # path to rose compiler (from source), default: /home/rose
 
 # setup other variables
-SRC="original"                              # path to benchmark programs, default: ./original
-OUT="alt"                                   # path to output directory, default: ./alt
+SRC="original"                              # path to benchmark programs
+OUT="alt"                                   # path to output directory
 BEG="#pragma scop"                          # kernel start delimiter
 END="#pragma endscop"                       # kernel end delimiter
 
