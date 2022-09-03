@@ -1,22 +1,31 @@
-# About ROSE Compiler
+# Utilities
+
+This directory contains helper files for timing (`polybench-*`, `time_benchmark.sh`, `template-for-new-benchmark.c`).
+These are obtained from [PolyBench/C](http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/).
+
+This directory also contains instructions and utilities (`rose.sh`, `dgemvT.C`, `rose_dgemvT.C`) for working with ROSE compiler.
+
+## About ROSE Compiler
 
 We use [ROSE compiler](http://rosecompiler.org/) to automatically transform and parallelize benchmarks, for comparison.
 Performing any of these steps requires building the compiler [from source](https://github.com/rose-compiler/rose).
 Build instructions are in the [ROSE wiki](https://github.com/rose-compiler/rose/wiki).
 
-After that we apply the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C)
-tool to transform loops and [AutoPar](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/projects/autoParallelization/autoPar.C)
-to parallelize them. 
+After that we apply
+the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C)
+tool to transform loops,
+and [AutoPar](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/projects/autoParallelization/autoPar.C)
+tool to parallelize them.
 
 Note that loop and parallelization transformations are applied to the entire file[^1]. This breaks the
 structure expected by the timing utilities and prevents benchmarking the transformed file, unless the original template
-code is restored. Therefore we must reverse the transformations applied to the templating code around benchmark kernel. 
-As the last step we extract the kernel transformed by ROSE, and substitute it back into the original benchmark template.
+code around benchmark kernel is restored. As the last step we extract the kernel transformed by ROSE, and substitute it
+back into the original benchmark template.
 
 The rest of this guide details the ROSE compiler operations. It includes examples to help verify the
 expected behavior in each step.
 
-## Loop Transformation
+### Loop Transformation
 
 **Test program**: [dgemvT.C](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tests/roseTests/loopProcessingTests/dgemvT.C)
 
@@ -39,10 +48,9 @@ opt level=0
 * [LoopProcessor tests](https://github.com/rose-compiler/rose/tree/b5a170b408bf25c9fdb7170a5de0cb39c6ff0542/tests/roseTests/loopProcessingTests)
 
 
-## Automatic parallelization
+### Automatic parallelization
 
-The auto-parallelization tool is in `rose/build/projects/autoParallelization`.
-Build it using `make check`. Then it can be used to automatically parallelize programs, e.g.:
+Build the auto-parallelization tool `AutoPar`. Then it can be used to automatically parallelize programs, e.g.:
 
 ```
 ../autoPar --edg:no_warnings -I../headers -c /path_to/program.c
@@ -52,16 +60,17 @@ There is no expected output for this command.
 
 * [ROSE AutoPar Guide](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar)
 
-## Transform all original benchmarks
+### Transform all original benchmarks
 
-The following command performs these steps---transformation, parallelization and template restore---on all 
-original benchmarks automatically, with best effort. If it reports errors, you will need to check the output manually.
+The following command performs these steps--transformation, parallelization and template restore--on all 
+original benchmarks automatically, with the best effort. If it reports errors, you will need to check the output manually.
+Under the hood, it runs [`rose.sh`](rose.sh).
 
 ```
 make rose
 ```
 
-Expected output
+**Expected output**
 
 ```
 3mm          transformed: ✓   parallel: ✓   restored: ✓
