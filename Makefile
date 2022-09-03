@@ -81,7 +81,7 @@ tblshft:
 
 # transform all using rose
 rose:
-	./rose.sh -r $(ROSE)
+	./utilities/rose.sh
 
 .PHONY: plots
 plots:

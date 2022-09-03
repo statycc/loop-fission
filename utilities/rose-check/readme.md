@@ -60,14 +60,14 @@ There is no expected output for this command.
 
 ### Transform all original benchmarks
 
-The following command performs these steps---transformation, parallelization and template restore---
-on all original benchmarks automatically, with best effort. If it reports errors, you will need to check the output manually.
+The following command performs these steps---transformation, parallelization and template restore---on all 
+original benchmarks automatically, with best effort. If it reports errors, you will need to check the output manually.
 
 ```
 make rose
 ```
 
-Expected output (some programs fail)
+Expected output
 
 ```
 3mm          transformed: ✓   parallel: ✓   restored: ✓
@@ -84,11 +84,12 @@ remap        transformed: 🗙   parallel: 🗙   restored: ✓
 tblshft      transformed: ✓   parallel: ✓   restored: ✓
 ```
 
-The benchmarks with indicated error in last column are caused by removed `scop/endscop`. This is not an error to process
-the file, rather just for restoring the templating code. It can be resolved by manually inspecting and replacing the templating code.
+The benchmarks with indicated error in last column are caused by removed `scop/endscop` pragma. 
+This is not an error in transforming the file, but prevents restoring the templating code. 
+It can be resolved by manually by inspecting and replacing the templating code.
 
-Example `remap` fails to transform with following error. This is significant and prevents measuring this example
-in the alternative case. The error message is:
+Example `remap` fails to transform with following error. This is significant error and prevents measuring this example
+in the alternate case. The error message is:
 
 ```
 array-copy dimension is 0
