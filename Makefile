@@ -81,9 +81,9 @@ tblshft:
 
 # transform all using rose
 rose:
-	 $(foreach p, $(PROGS), \
+	 cd alt && $(foreach p, $(PROGS), \
 	 $(ROSE)/build/tutorial/loopProcessor --edg:no_warnings -w -c -fs0 -cp 0 \
-	 -I$(ICCF)/headers -I$(ICCF)/utilities $(ICCF)/original/$(p).c $(ICCF)/alt/$(p).c; )
+	 -I../headers -I../utilities ../original/$(p).c ; )  
 
 .PHONY: plots
 plots:
@@ -101,4 +101,6 @@ clean:
 	rm -rf results/
 	rm -rf plots/
 	rm -rf _*_autopar/
-	rm -rf ____tempfile.data.polybench 
+	rm -rf ____tempfile.data.polybench
+
+
