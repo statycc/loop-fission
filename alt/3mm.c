@@ -17,27 +17,44 @@
 /* Include benchmark-specific header. */
 #include <3mm.h>
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int ni,int nj,int nk,int nl,int nm,double A[800][1000],double B[1000][900],double C[900][1200],double D[1200][1100])
 {
   int i;
   int j;
+  
+#pragma omp parallel for private (i,j) firstprivate (ni)
   for (i = 0; i <= -1 + ni; i += 1) {
+    
+#pragma omp parallel for private (j)
     for (j = 0; j <= -1 + nk; j += 1) {
       A[i][j] = ((double )((i * j + 1) % ni)) / (5 * ni);
     }
   }
+  
+#pragma omp parallel for private (i,j) firstprivate (nk)
   for (i = 0; i <= -1 + nk; i += 1) {
+    
+#pragma omp parallel for private (j)
     for (j = 0; j <= -1 + nj; j += 1) {
       B[i][j] = ((double )((i * (j + 1) + 2) % nj)) / (5 * nj);
     }
   }
+  
+#pragma omp parallel for private (i,j) firstprivate (nj)
   for (i = 0; i <= -1 + nj; i += 1) {
+    
+#pragma omp parallel for private (j)
     for (j = 0; j <= -1 + nm; j += 1) {
       C[i][j] = ((double )(i * (j + 3) % nl)) / (5 * nl);
     }
   }
+  
+#pragma omp parallel for private (i,j) firstprivate (nl,nm)
   for (i = 0; i <= -1 + nm; i += 1) {
+    
+#pragma omp parallel for private (j) firstprivate (nk)
     for (j = 0; j <= -1 + nl; j += 1) {
       D[i][j] = ((double )((i * (j + 2) + 2) % nk)) / (5 * nk);
     }

@@ -24,6 +24,7 @@
 #define ONE      1250       /* token value of 1.0 exactly */
 #define RATIO	 1.004		/* nominal ratio for log part */
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int tsz,double TLF[2049])
 {
@@ -92,12 +93,16 @@ static void kernel_tblshft(int f8sz,int f14sz,int tsz,double F8[65536],double F1
   
 #pragma scop
   j = 0;
+  
+#pragma omp parallel for private (i) firstprivate (f14sz,j,F14SZM1)
   for (i = 0; i <= f14sz - 1; i += 1) {
     while(((double )i) / F14SZM1 * (((double )i) / F14SZM1) > TLF[j] * TLF[j + 1])
       j++;
     F14[i] = ((double )j);
   }
   j = 0;
+  
+#pragma omp parallel for private (i) firstprivate (f8sz,j,F8SZM1)
   for (i = 0; i <= f8sz - 1; i += 1) {
     while(((double )i) / F8SZM1 * (((double )i) / F8SZM1) > TLF[j] * TLF[j + 1])
       j++;

@@ -17,13 +17,18 @@
 /* Include benchmark-specific header. */
 #include <deriche.h>
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int w,int h,float *alpha,float imgIn[4096][2160],float imgOut[4096][2160])
 {
   int i;
   int j;
    *alpha = 0.25;
+  
+#pragma omp parallel for private (i,j) firstprivate (w,h)
   for (i = 0; i <= -1 + w; i += 1) {
+    
+#pragma omp parallel for private (j)
     for (j = 0; j <= -1 + h; j += 1) {
       imgIn[i][j] = ((float )((313 * i + 991 * j) % 65536)) / 65535.0f;
     }

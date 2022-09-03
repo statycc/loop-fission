@@ -17,6 +17,7 @@
 /* Include benchmark-specific header. */
 #include "gemm.h"
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int ni,int nj,int nk,double *alpha,double *beta,double C[1000][1100],double A[1000][1200],double B[1200][1100])
 {
@@ -71,7 +72,11 @@ static void kernel_gemm(int ni,int nj,int nk,double alpha,double beta,double C[1
   int j;
   int k;
   double A_buf0;
+  
+#pragma omp parallel for private (i,j) firstprivate (nj)
   for (i = 0; i <= -1 + ni; i += 1) {
+    
+#pragma omp parallel for private (j) firstprivate (beta)
     for (j = 0; j <= -1 + nj; j += 1) {
       C[i][j] *= beta;
     }
@@ -79,6 +84,8 @@ static void kernel_gemm(int ni,int nj,int nk,double alpha,double beta,double C[1
   for (i = 0; i <= -1 + ni; i += 1) {
     for (k = 0; k <= -1 + nk; k += 1) {
       A_buf0 = A[i][k];
+      
+#pragma omp parallel for private (j) firstprivate (alpha,A_buf0)
       for (j = 0; j <= -1 + nj; j += 1) {
         C[i][j] += alpha * A_buf0 * B[k][j];
       }

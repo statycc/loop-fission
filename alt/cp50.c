@@ -18,12 +18,17 @@
 /* Default data type is double, default size is N=1024. */
 #include <cp50.h>
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int ls,int ol,double out[2226][996])
 {
   int i;
   int j;
+  
+#pragma omp parallel for private (i,j) firstprivate (ls,ol)
   for (i = 0; i <= -1 + ls; i += 1) {
+    
+#pragma omp parallel for private (j)
     for (j = 0; j <= -1 + ol; j += 1) {
       out[i][j] = ((double )(i * j + 1));
     }

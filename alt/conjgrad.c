@@ -18,19 +18,28 @@
 /* Default data type is double, default size is N=1024. */
 #include <conjgrad.h>
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int na,double p[75000],double q[75000],double z[75000],double r[75000])
 {
   int j;
+  
+#pragma omp parallel for private (j)
   for (j = 0; j <= -1 + na; j += 1) {
     q[j] = 0.00001 * j;
   }
+  
+#pragma omp parallel for private (j)
   for (j = 0; j <= -1 + na; j += 1) {
     z[j] = 0.00002 * j;
   }
+  
+#pragma omp parallel for private (j)
   for (j = 0; j <= -1 + na; j += 1) {
     r[j] = 0.00003 * j;
   }
+  
+#pragma omp parallel for private (j) firstprivate (na)
   for (j = 0; j <= -1 + na; j += 1) {
     p[j] = r[j];
   }
@@ -77,16 +86,24 @@ static void kernel_conjgrad(int na,int niter,double p[75000],double q[75000],dou
   rho = 0;
   d = 0;
   for (i = 1; i <= niter; i += 1) {
+    
+#pragma omp parallel for private (j) reduction (+:rho)
     for (j = 0; j <= -1 + na; j += 1) {
       rho = rho + r[j] * r[j];
     }
+    
+#pragma omp parallel for private (j) reduction (+:d)
     for (j = 0; j <= -1 + na; j += 1) {
       d = d + p[j] * q[j];
     }
     alpha = rho / d;
+    
+#pragma omp parallel for private (j)
     for (j = 0; j <= -1 + na; j += 1) {
       z[j] = z[j] + alpha * p[j];
     }
+    
+#pragma omp parallel for private (j) firstprivate (alpha)
     for (j = 0; j <= -1 + na; j += 1) {
       r[j] = r[j] - alpha * q[j];
     }

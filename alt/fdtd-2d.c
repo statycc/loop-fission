@@ -17,11 +17,14 @@
 /* Include benchmark-specific header. */
 #include <fdtd-2d.h>
 /* Array initialization. */
+#include <omp.h> 
 
 static void init_array(int tmax,int nx,int ny,double ex[1000][1200],double ey[1000][1200],double hz[1000][1200],double _fict_[500])
 {
   int i;
   int j;
+  
+#pragma omp parallel for private (i) firstprivate (tmax)
   for (i = 0; i <= -1 + tmax; i += 1) {
     _fict_[i] = ((double )i);
   }
@@ -98,14 +101,20 @@ static void kernel_fdtd_2d(int tmax,int nx,int ny,double ex[1000][1200],double e
   double _fict__buf0;
   for (t = 0; t <= -1 + tmax; t += 1) {
     _fict__buf0 = _fict_[t];
+    
+#pragma omp parallel for private (j) firstprivate (_fict__buf0)
     for (j = 0; j <= -1 + ny; j += 1) {
       ey[0][j] = _fict__buf0;
     }
     for (i = 1; i <= -1 + nx; i += 1) {
+      
+#pragma omp parallel for private (j)
       for (j = 0; j <= -1 + ny; j += 1) {
         ey[i][j] = ey[i][j] - 0.5 * (hz[i][j] - hz[i - 1][j]);
       }
     }
+    
+#pragma omp parallel for private (i,j)
     for (i = 0; i <= -1 + nx; i += 1) {
       for (j = 1; j <= -1 + ny; j += 1) {
         ex[i][j] = ex[i][j] - 0.5 * (hz[i][j] - hz[i][j - 1]);
