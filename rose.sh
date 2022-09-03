@@ -53,9 +53,9 @@ echo "Using ROSE at: $ROSE"
 for file in ../"$SRC"/*.c
 do
 
-    trans="⚠"
-    paral="⚠"
-    resto="⚠"
+    trans="\033[0;31m⚠\033[0m"
+    paral="\033[0;31m⚠\033[0m"
+    resto="\033[0;31m⚠\033[0m"
 
     # extract benchmark name
     f=$(basename -- "$file")
