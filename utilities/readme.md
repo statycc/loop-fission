@@ -11,7 +11,7 @@ to parallelize them.
 Note that loop and parallelization transformations are applied to the entire file[^1]. This breaks the
 structure expected by the timing utilities and prevents benchmarking the transformed file, unless the original template
 code is restored. Therefore we must reverse the transformations applied to the templating code around benchmark kernel. 
-As the last step we need to extract the kernel transformed by ROSE, and substitute it back into the original benchmark template.
+As the last step we extract the kernel transformed by ROSE, and substitute it back into the original benchmark template.
 
 The rest of this guide details the ROSE compiler operations. It includes examples to help verify the
 expected behavior in each step.

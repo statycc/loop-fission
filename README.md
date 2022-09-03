@@ -94,14 +94,14 @@ You may specify an alternative compiler using `make all CC=compiler_here`.
 
 **Available arguments for timing**
 
-| FLAG | DESCRIPTION: options                                                      | DEFAULT     |
-|:----:|:--------------------------------------------------------------------------|:------------|
-| `-c` | system compiler to use                                                    | `gcc`       |
-| `-d` | which directory:  `original`, `fission`, `alt`                            | `original`  | 
-| `-o` | optimization level: `O0`, `O1`, `O2`, `O3`, ...                           | `O0`        |
-| `-v` | max. variance (%) when timing results: > `0.0`                            | `5.0`       |
-| `-s` | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD`   | `STANDARD`  |
-| `-p` | benchmark specific program: `3mm`, `bicg`, `deriche` ...                  | _not set_   |
+| ARGUMENT | DESCRIPTION: options                                                    | DEFAULT    |
+|:--------:|:------------------------------------------------------------------------|:-----------|
+|   `-c`   | system compiler to use                                                  | `gcc`      |
+|   `-d`   | which directory:  `original`, `fission`, `alt`                          | `original` | 
+|   `-o`   | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`       |
+|   `-v`   | max. variance (%) when timing results: > `0.0`                          | `5.0`      |
+|   `-s`   | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD` |
+|   `-p`   | benchmark specific program: `3mm`, `bicg`, `deriche` ...                | _not set_  |
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
@@ -154,19 +154,19 @@ To customize plot options, call the `plot.py` directly with selected arguments.
 python plot.py --help
 ```
 
-| ARGUMENT        | DESCRIPTION : options                                                        | DEFAULT    |
-|:----------------|:-----------------------------------------------------------------------------|------------|
-| `-d`, `--data`  | data choice: `time`, `speedup`                                               | `time`     |
-| `-o`, `--out`   | path to output directory                                                     | `plots`    |
-| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                           | `md`       |
-| `--digits`      | number of digits for tabular values: `0`...`15`                              | `6`        |
-| `--ss`          | source directory for calculating speedup                                     | `original` |
-| `--st`          | target directory for calculating speedup (all when not set)                  | _not set_  |
-| `--millis`      | display table of times in milliseconds  (otherwise in seconds)               | _not set_  |
-| `--show`        | show generated plot or table                                                 | _not set_  |
-| `--dir_filter`  | include directories (comma-separated list):<br/>`original`, `fission`, `alt` | _not set_  |
-| `--prog_filter` | include programs (comma-separated list):<br/>`3mm`, `bicg`, `deriche` ...    | _not set_  |
-| `-h`, `--help`  | show help message and exit                                                   | _not set_  |
+| ARGUMENT        | DESCRIPTION : options                                                    | DEFAULT    |
+|:----------------|:-------------------------------------------------------------------------|------------|
+| `-d`, `--data`  | data choice: `time`, `speedup`                                           | `time`     |
+| `-o`, `--out`   | path to output directory                                                 | `plots`    |
+| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                       | `md`       |
+| `--digits`      | number of digits for tabular values: `0`...`15`                          | `6`        |
+| `--ss`          | source directory for calculating speedup                                 | `original` |
+| `--st`          | target directory for calculating speedup (all when not set)              | _not set_  |
+| `--millis`      | display table of times in milliseconds  (otherwise in seconds)           | _not set_  |
+| `--show`        | show generated plot or table                                             | _not set_  |
+| `--dir_filter`  | include directories (comma-separated list): `original`, `fission`, `alt` | _not set_  |
+| `--prog_filter` | include programs (comma-separated list): `3mm`, `bicg`, `deriche` ...    | _not set_  |
+| `-h`, `--help`  | show help message and exit                                               | _not set_  |
 
 ## About benchmark transformations
 
@@ -183,6 +183,6 @@ Programs with `for` loops could be parallelized automatically, and as shown in t
 [ROSE compiler](http://rosecompiler.org/). They are also automatically parallelized using the same tool.
 Benchmark `remap` fails during transformation, and we measure no difference between the original version. 
 Because the tool transforms all code, including the timing code of the benchmark template, as last step we 
-restore the original benchmark template. Detailed steps for re-generating the `alt` benchmarks are 
-[here](/utilities/rose-check/readme.md).
+restore the original benchmark template. Detailed steps for re-generating the alt-benchmarks are 
+[here](/utilities/readme.md).
 
