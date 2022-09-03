@@ -80,6 +80,7 @@ void kernel_deriche(int w, int h, DATA_TYPE alpha,
     DATA_TYPE b1, b2, c1, c2;
 
 #pragma scop
+
    k = (SCALAR_VAL(1.0)-EXP_FUN(-alpha))*(SCALAR_VAL(1.0)-EXP_FUN(-alpha))/(SCALAR_VAL(1.0)+SCALAR_VAL(2.0)*alpha*EXP_FUN(-alpha)-EXP_FUN(SCALAR_VAL(2.0)*alpha));
    a1 = a5 = k;
    a2 = a6 = k*EXP_FUN(-alpha)*(alpha-SCALAR_VAL(1.0));

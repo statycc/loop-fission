@@ -80,6 +80,7 @@ void kernel_gesummv(int n,
   int i, j;
 
 #pragma scop
+
   i = 0;
   while (i < _PB_N)
   {
@@ -95,6 +96,7 @@ void kernel_gesummv(int n,
      y[i] = alpha * tmp[i] + beta * y[i];
      i++;
   }
+
 #pragma endscop
 
 }

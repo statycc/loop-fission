@@ -79,6 +79,7 @@ void kernel_conjgrad(int na, int niter,
   DATA_TYPE rho, d, alpha;
 
 #pragma scop
+
 rho = 0;
 d = 0;
 for (i = 1; i <= _PB_NITER; i++) {
@@ -94,6 +95,7 @@ for (i = 1; i <= _PB_NITER; i++) {
     r[j] = r[j] - alpha * q[j];
   }
 }
+
 #pragma endscop
 
 }

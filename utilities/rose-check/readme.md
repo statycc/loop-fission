@@ -9,11 +9,8 @@ tool to transform loops and [AutoPar](https://github.com/rose-compiler/rose/blob
 to parallelize them. 
 
 Note that loop and parallelization transformations are applied to the entire file[^1]. 
-To reverse the transformations applied to the templating code around benchmark kernel (the specific region of interest), 
-as the last step we extract the transformed kernel and substitute it back in the original benchmark template.
-
-[`rose.sh`](../../rose.sh) (or you can call `make rose`) performs these steps---transformation, parallelization and template restore---
-automatically, with best effort. If it reports errors, you will need to check the output manually.
+To reverse the transformations applied to the templating code around benchmark kernel (the specific region of interest).
+As the last step we need to extract the kernel transformed by ROSE, and substitute it back in the original benchmark template.
 
 The rest of this guide details the ROSE compiler operations. It includes examples to help verify the
 expected behavior in each step.
@@ -57,6 +54,26 @@ There is no expected output for this command.
 
 * [ROSE AutoPar Guide](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar)
 
+---
+
+### Transform all original benchmarks
+
+The following command performs these steps---transformation, parallelization and template restore---
+on all original benchmarks automatically, with best effort. If it reports errors, you will need to check the output manually.
+
+```
+make rose
+```
+
+Expected output (some programs fail)
+
+```
+3mm          transformed: ✓   parallel: ✓   restored: ✓
+bicg         transformed: ✓   parallel: ✓   restored: ✓
+colormap     transformed: ✓   parallel: ✓   restored: ✓
+conjgrad     transformed: ✓   parallel: ✓   restored: 🗙
+...
+```
 
 [^1]: [Rose User Manual](http://rosecompiler.org/uploads/ROSE-UserManual.pdf),
 15.2.2 Partial Compilation: "At present the transformation does not properly support partial compilation.

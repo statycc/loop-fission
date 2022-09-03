@@ -19,6 +19,7 @@ do
         v) max_var=${OPTARG};;
         s) size=${OPTARG};;
         p) prog=${OPTARG};;
+        *) ;;
     esac
 done
 
@@ -131,7 +132,7 @@ do
                 printf '\r'
             fi
 
-            echo "✓ done with ("$DS_SIZE", -"$OPT"): ${filename}"
+            echo -e "\033[1;32m✓\033[0m done with ("$DS_SIZE", -"$OPT"): ${filename}"
             printf '\r'
             break
         else

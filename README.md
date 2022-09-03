@@ -158,3 +158,22 @@ python plot.py --help
 | `--prog_filter` | include programs (comma-separated list):<br/>`3mm`, `bicg`, `deriche` ...    | _not set_  |
 | `-h`, `--help`  | show help message and exit                                                   | _not set_  |
 
+## About benchmark transformations
+
+In this repository, transformations of benchmarks have already been applied in the appropriate directories 
+(`fission` and `alt`). The section on reproducing results focuses solely on how to measure differences between 
+different versions of the benchmark programs. 
+This section will discuss briefly how these different benchmark versions are obtained in the first place.
+
+- The benchmarks in `fission/` have been transformed manually following our loop fission algorithm. These transformations
+  are not reproducible mechanically. The programs have been parallelized by hand. We prefer the manual approach since 
+  automatic parallelization of while loops is not supported natively by OpenMP, nor any tool we are aware of. Programs 
+  with for loops could automatically parallelized. 
+
+- The benchmarks in `alt/` are the results of applying automatic transformation using [ROSE compiler](http://rosecompiler.org/).
+  They are also automatically parallelized using the same tool. Some programs fail during these transformation steps,
+  in which case we measure no difference. Because the tool transforms all code, including the timing code of the
+  benchmark template, as last step we restore the original benchmark template. This can be done mechanically, for
+  the most part, but manual inspection of the results is still required. The detailed steps for re-generating the 
+  `alt` files can be found [here](/utilities/rose-check/readme.md).
+

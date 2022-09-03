@@ -85,6 +85,7 @@ void kernel_mvt(int n,
   int i, j;
 
 #pragma scop
+
   i = 0;
   while (i < _PB_N){
     j = 0;
@@ -104,6 +105,7 @@ void kernel_mvt(int n,
     }
     i++;
   }
+
 #pragma endscop
 
 }
