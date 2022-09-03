@@ -3,19 +3,23 @@
 # ROSE compiler helper to transform and parallelize benchmarks.
 #
 # Usage:
-# ./run.sh -r ROSE_path
+# ./run.sh -r ROSE_path -p prog_name
+#
+# all args are optional
 
 # parse command line args
-while getopts r flag
+while getopts r:p: flag
 do
     case "${flag}" in
         r) rose_build=${OPTARG};;
+        p) prog=${OPTARG};;
         *) ;;
     esac
 done
 
 # Unpack the args and set defaults
 ROSE="${rose_build:-/home/rose}/build"      # path to rose compiler (from source), default: /home/rose
+PROGRAM=${prog}                             # specific program
 
 # setup other variables
 SRC="original"                              # path to benchmark programs
@@ -38,12 +42,6 @@ popd () {
 # ensure output directory exists
 [ -d "$OUT" ] || mkdir "$OUT"
 
-# clear all generated files in the output directory if exist
-for file in ./"$OUT"/*
-do
-    rm -rf "$file"
-done
-
 pushd "$OUT"  # switch to output directory, need to run rose inside it
 
 echo "Using ROSE at: $ROSE"
@@ -52,6 +50,7 @@ echo "Using ROSE at: $ROSE"
 # assumes $SRC and $OUT are siblings
 for file in ../"$SRC"/*.c
 do
+
     ok="\033[1;32m✓\033[0m"
     neg="\033[0;91m🗙\033[0m"
     trans=$neg
@@ -62,6 +61,11 @@ do
     f=$(basename -- "$file")
     p="${f%.*}"
     pf="$p".c
+
+    # only specific program
+    if [ -n "$PROGRAM" ]; then
+        [[ "$PROGRAM" != "$p" ]] && continue
+    fi
 
     # read all lines
     IFS=$'\n' read -d '' -r -a lines < $file
