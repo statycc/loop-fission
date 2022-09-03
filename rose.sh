@@ -52,6 +52,11 @@ echo "Using ROSE at: $ROSE"
 # assumes $SRC and $OUT are siblings
 for file in ../"$SRC"/*.c
 do
+
+    trans="⚠"
+    paral="⚠"
+    resto="⚠"
+
     # extract benchmark name
     f=$(basename -- "$file")
     p="${f%.*}"
@@ -80,29 +85,22 @@ do
        command $cmd > /dev/null 2>&1
        if test -f "rose_${pf}"; then
          mv rose_${pf} ${pf}
-         echo "✓ transformed $p"
+         trans="✓"
        else
          cp  "$file" "$pf"
-         echo "⚠ cannot transform $p"
        fi
     } || {
-       echo "⚠ cannot transform $p"
        cp "$file" "$pf"   # if transform fails we copy original as-is
     }
 
     # AutoPar
-    {
-        cmd="${ROSE}/projects/autoParallelization/autoPar ${ROSE_ARGS} -c ${pf}"
-        command $cmd > /dev/null 2>&1
-        if test -f "rose_${pf}"; then
-         mv rose_${pf} ${pf}
-         echo "✓ parallelized $p"
-       else
-        echo "⚠ cannot parallelize $p"
-       fi
-    } || {
-       echo "⚠ cannot parallelize $p"
-    }
+    cmd="${ROSE}/projects/autoParallelization/autoPar ${ROSE_ARGS} -c ${pf}"
+    command $cmd > /dev/null 2>&1
+    if test -f "rose_${pf}"; then
+       mv rose_${pf} ${pf}
+       paral="✓"
+    fi
+
 
     # read all lines
     IFS=$'\n' read -d '' -r -a kernel_lines < "$pf"
@@ -122,13 +120,13 @@ do
     # substitute kernel inside template if found
     if (( $kb > 0 )); then
       kernel=("${kernel_lines[@]:$kb:$ke}")
-
       printf "%s\n" "${tmpl_beg[@]}" > "$pf"
       printf "%s\n" "${kernel[@]}" >> "$pf"
       printf "%s\n" "${tmpl_end[@]}" >> "$pf"
-    else
-      echo "⚠ cannot find kernel in ${p}, check template manually"
+      resto="✓"
     fi
+
+    echo "$(printf '%-12s' $p) transformed: $trans   parallel: $paral   restored: $resto"
 
 done
 
