@@ -93,7 +93,8 @@ in the alternative case. The error message is:
 ```
 array-copy dimension is 0
 Error in SymbolicValGenerator::GetSymbolicVal(): unhandled type of binary operator BOP_MOD
-lt-loopProcessor: /home/rose/src/src/midend/astUtil/symbolicVal/SymbolicVal.C:344: static SymbolicVal SymbolicValGenerator::GetSymbolicVal(AstInterface&, const AstNodePtr&): Assertion `false' failed.
+lt-loopProcessor: /home/rose/src/src/midend/astUtil/symbolicVal/SymbolicVal.C:344: static SymbolicVal 
+  SymbolicValGenerator::GetSymbolicVal(AstInterface&, const AstNodePtr&): Assertion `false' failed.
 Aborted (core dumped)
 ```
 

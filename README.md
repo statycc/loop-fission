@@ -20,8 +20,7 @@ We also compare our technique to an alternative loop fission technique used in t
 | `fission`  | transformed and parallelized programs, using our method         |
 | `alt`      | transformed and parallelized programs, using alternative method |
 
-More detailed explanation of these directories is given later in this same document, in 
-[about benchmark transformations](#about-benchmark-transformations).
+A more detailed explanation in [about benchmark transformations](#about-benchmark-transformations).
 
 ### Benchmark descriptions
 
@@ -164,18 +163,17 @@ python plot.py --help
 ## About benchmark transformations
 
 In this repository, transformations of benchmarks have already been applied in the appropriate directories 
-(`fission` and `alt`), and our results focus on measuring differences between these different versions of benchmarks. 
-This section will discuss briefly how these different benchmark versions are obtained in the first place.
+(`fission` and `alt`), and our results focus on measuring differences between obtained transformations. 
+This section will discuss briefly how these transformed versions are generated in the first place.
 
 **Fission** benchmarks have been transformed manually following our loop fission algorithm. These transformations
-are not reproducible mechanically. The programs have been parallelized by hand. We prefer the manual approach since 
-automatic parallelization of `while` loops is not supported natively by OpenMP or any tool we are aware of. Programs 
-with `for` loops could automatically parallelized. 
+are not reproducible mechanically. The programs have been parallelized by hand. We prefer the manual approach here 
+since automatic parallelization of `while` loops is not supported natively by any tool we are aware of, and as we
+can see from the results of the automated tool. Programs with `for` loops could be parallelized automatically. 
 
 **Alt** benchmarks are the results of applying automatic transformation using [ROSE compiler](http://rosecompiler.org/).
-They are also automatically parallelized using the same tool. Some programs fail during these transformation steps,
-in which case we measure no difference between original. Because the tool transforms all code, including the timing code 
+They are also automatically parallelized using the same tool. One program, `remap`, fails during transformation,
+and we measure no difference between the original. Because the tool transforms all code, including the timing code 
 of the benchmark template, as last step we restore the original benchmark template. This can be done mechanically, for
-the most part, but manual inspection of the results is still required. The detailed steps for re-generating the 
-`alt` files can be found [here](/utilities/rose-check/readme.md).
+the most part. The detailed steps for re-generating the `alt` benchmarks can be found [here](/utilities/rose-check/readme.md).
 
