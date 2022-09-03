@@ -1,15 +1,24 @@
-# LoopProcessor check 
+# About ROSE Compiler
 
-Running the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C) 
-requires building the [ROSE compiler](https://github.com/rose-compiler/rose) from source.
+We use [ROSE compiler](http://rosecompiler.org/) to automatically transform and parallelize benchmarks, for comparison.
+Performing any of these steps requires building the compiler [from source](https://github.com/rose-compiler/rose).
+Build instructions are in the [wiki](https://github.com/rose-compiler/rose/wiki).
 
-Build instructions are in the [wiki](https://github.com/rose-compiler/rose/wiki). 
+After that we apply the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C)
+tool to transform loops, and [AutoPar](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/projects/autoParallelization/autoPar.C)
+to parallelize them. 
 
-After building, perform this simple sanity check to ensure ROSE compiler's LoopProcessor is producing expected results.
+Note that loop and parallelization transformations are applied to the entire file[^1]. 
+To reverse the transformations applied to the templating code around benchmark kernel (the specific region of interest), 
+as the last step we extract the transformed kernel and substitute it back in the original benchmark template.
+`rose.sh` script, in repository root, performs these steps (transformation, parallelization and template restore).
+
+The rest of this guide details the ROSE compiler operations. It includes examples to help verify the
+expected behavior in each step.
 
 ---
 
-### Transformation
+### Loop Transformation
 
 **Test program**: [dgemvT.C](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tests/roseTests/loopProcessingTests/dgemvT.C)
 
@@ -45,3 +54,9 @@ Build it using `make check`. Then it can be used to automatically parallelize pr
 There is no expected output for this command.
 
 * [ROSE AutoPar Guide](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar)
+
+
+[^1]: [Rose User Manual](http://rosecompiler.org/uploads/ROSE-UserManual.pdf),
+15.2.2 Partial Compilation: "At present the transformation does not properly support partial compilation.
+This is not a fundamental challenge to the current design, it merely reflects the incomplete state of the project.
+See also section 15.4."
