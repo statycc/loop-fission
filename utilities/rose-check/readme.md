@@ -2,9 +2,14 @@
 
 Running the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C) 
 requires building the [ROSE compiler](https://github.com/rose-compiler/rose) from source.
+
 Build instructions are in the [wiki](https://github.com/rose-compiler/rose/wiki). 
 
 After building, perform this simple sanity check to ensure ROSE compiler's LoopProcessor is producing expected results.
+
+---
+
+### Transformation
 
 **Test program**: [dgemvT.C](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tests/roseTests/loopProcessingTests/dgemvT.C)
 
@@ -23,7 +28,20 @@ array-copy dimension is 0
 opt level=0
 ```
 
-### Related
-
 * [LoopProcessor user guide](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/LoopProcessor)
 * [LoopProcessor tests](https://github.com/rose-compiler/rose/tree/b5a170b408bf25c9fdb7170a5de0cb39c6ff0542/tests/roseTests/loopProcessingTests)
+
+---
+
+### Automatic parallelization
+
+The auto-parallelization tool is in `rose/build/projects/autoParallelization`.
+Build it using `make check`. Then it can be used to automatically parallelize programs, e.g.:
+
+```
+../autoPar --edg:no_warnings -I../headers -c /path_to/program.c
+```
+
+There is no expected output for this command.
+
+* [ROSE AutoPar Guide](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar)
