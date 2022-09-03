@@ -84,6 +84,20 @@ remap        transformed: 🗙   parallel: 🗙   restored: ✓
 tblshft      transformed: ✓   parallel: ✓   restored: ✓
 ```
 
+The benchmarks with indicated error in last column are caused by removed `scop/endscop`. This is not an error to process
+the file, rather just for restoring the templating code. It can be resolved by manually inspecting and replacing the templating code.
+
+Example `remap` fails to transform with following error. This is significant and prevents measuring this example
+in the alternative case. The error message is:
+
+```
+array-copy dimension is 0
+Error in SymbolicValGenerator::GetSymbolicVal(): unhandled type of binary operator BOP_MOD
+lt-loopProcessor: /home/rose/src/src/midend/astUtil/symbolicVal/SymbolicVal.C:344: static SymbolicVal SymbolicValGenerator::GetSymbolicVal(AstInterface&, const AstNodePtr&): Assertion `false' failed.
+Aborted (core dumped)
+```
+
+
 [^1]: [Rose User Manual](http://rosecompiler.org/uploads/ROSE-UserManual.pdf),
 15.2.2 Partial Compilation: "At present the transformation does not properly support partial compilation.
 This is not a fundamental challenge to the current design, it merely reflects the incomplete state of the project.

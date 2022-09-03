@@ -136,7 +136,7 @@ do
             printf '\r'
             break
         else
-            echo -ne "⚠ $filename - repeating $i of $MAX_RETRIES - variance too high: ${variance} %\033[0K\r"
+            echo -ne "  ⚠ $filename - repeating $i of $MAX_RETRIES - variance too high: ${variance} %\033[0K\r"
         fi
 
     done

@@ -9,24 +9,31 @@
  * Web address: https://vhosts.eecs.umich.edu/mibench
  */
 /* cp50.c */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+
 /* Include polybench common header. */
 #include <polybench.h>
+
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is N=1024. */
 #include <cp50.h>
+
 /* Array initialization. */
 static
 void init_array(int ls, int ol,
                 DATA_TYPE POLYBENCH_2D(out,LS,OL,ls,ol)) {
     int i, j;
+
     // simulate gdev_prn_copy_scan_lines procedure
     for (i = 0; i < ls; i++)
         for (j = 0; j < ol; j++)
             out[i][j] = (DATA_TYPE) ((i*j+1));
 }
+
+
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
 static
@@ -36,6 +43,7 @@ void print_array(int xy,
             DATA_TYPE POLYBENCH_1D(BPLANE,XY,xy))
 {
     int i, j;
+
     POLYBENCH_DUMP_START;
     POLYBENCH_DUMP_BEGIN("RPLANE");
     for (i = 0; i < xy; i++) {
@@ -43,12 +51,14 @@ void print_array(int xy,
         if (i % 20 == 0) fprintf (stderr, "\n");
     }
     POLYBENCH_DUMP_END("RPLANE");
+
     POLYBENCH_DUMP_BEGIN("GPLANE");
     for (i = 0; i < xy; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, GPLANE[i]);
         if (i % 20 == 0) fprintf (stderr, "\n");
     }
     POLYBENCH_DUMP_END("GPLANE");
+
     POLYBENCH_DUMP_BEGIN("BPLANE");
     for (i = 0; i < xy; i++) {
         fprintf (stderr, DATA_PRINTF_MODIFIER, BPLANE[i]);
@@ -69,6 +79,7 @@ void kernel_cp50(
 {
     int lnum = FIRST_LINE, last = LAST_LINE;
     int i, col;
+
 #pragma scop
 /* Print lines of graphics */
   while(lnum <= last){
@@ -82,7 +93,10 @@ void kernel_cp50(
   }
   
 #pragma endscop
+
 }
+
+
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
@@ -94,34 +108,42 @@ int main(int argc, char** argv)
   int fl = FL;
   int ll = LL;
   int ol = OL;
+
   /* Variable declaration/allocation. */
     POLYBENCH_2D_ARRAY_DECL(out, DATA_TYPE,LS,OL,ls,ol);
     POLYBENCH_1D_ARRAY_DECL(RPLANE,DATA_TYPE,XY,xy);
     POLYBENCH_1D_ARRAY_DECL(GPLANE,DATA_TYPE,XY,xy);
     POLYBENCH_1D_ARRAY_DECL(BPLANE,DATA_TYPE,XY,xy);
+
   /* Initialize array(s). */
   init_array (ls, ol, POLYBENCH_ARRAY(out));
+
   /* Start timer. */
   polybench_start_instruments;
+
   /* Run kernel. */
   kernel_cp50(x, fc, fl, ll,
               POLYBENCH_ARRAY(out),
               POLYBENCH_ARRAY(RPLANE),
               POLYBENCH_ARRAY(GPLANE),
               POLYBENCH_ARRAY(BPLANE));
+
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
+
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
   polybench_prevent_dce(print_array(xy,
               POLYBENCH_ARRAY(RPLANE),
               POLYBENCH_ARRAY(GPLANE),
               POLYBENCH_ARRAY(BPLANE)));
+
   /* Be clean. */
   POLYBENCH_FREE_ARRAY(out);
   POLYBENCH_FREE_ARRAY(RPLANE);
   POLYBENCH_FREE_ARRAY(GPLANE);
   POLYBENCH_FREE_ARRAY(BPLANE);
+
   return 0;
 }
