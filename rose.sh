@@ -6,7 +6,7 @@
 # ./run.sh -r ROSE_path
 
 # parse command line args
-while getopts r:i:o flag
+while getopts r flag
 do
     case "${flag}" in
         r) rose_build=${OPTARG};;
