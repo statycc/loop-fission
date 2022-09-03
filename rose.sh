@@ -52,10 +52,11 @@ echo "Using ROSE at: $ROSE"
 # assumes $SRC and $OUT are siblings
 for file in ../"$SRC"/*.c
 do
-
-    trans="\033[0;31m⚠\033[0m"
-    paral="\033[0;31m⚠\033[0m"
-    resto="\033[0;31m⚠\033[0m"
+    ok="\033[1;32m✓\033[0m"
+    neg="\033[0;91m🗙\033[0m"
+    trans=$neg
+    paral=$neg
+    resto=$neg
 
     # extract benchmark name
     f=$(basename -- "$file")
@@ -85,7 +86,7 @@ do
        command $cmd > /dev/null 2>&1
        if test -f "rose_${pf}"; then
          mv rose_${pf} ${pf}
-         trans="✓"
+         trans=$ok
        else
          cp  "$file" "$pf"
        fi
@@ -98,7 +99,7 @@ do
     command $cmd > /dev/null 2>&1
     if test -f "rose_${pf}"; then
        mv rose_${pf} ${pf}
-       paral="✓"
+       paral=$ok
     fi
 
 
@@ -123,10 +124,10 @@ do
       printf "%s\n" "${tmpl_beg[@]}" > "$pf"
       printf "%s\n" "${kernel[@]}" >> "$pf"
       printf "%s\n" "${tmpl_end[@]}" >> "$pf"
-      resto="✓"
+      resto=$ok
     fi
 
-    echo "$(printf '%-12s' $p) transformed: $trans   parallel: $paral   restored: $resto"
+    echo -e "$(printf '%-12s' $p) transformed: $trans   parallel: $paral   restored: $resto"
 
 done
 
