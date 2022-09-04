@@ -18,6 +18,8 @@ endif
 # By default, we test original fission and alt
 all: clean original fission alt
 
+small: clean sm_eval
+
 # all directories
 DIRS = original fission alt
 
@@ -41,9 +43,10 @@ fission:
 alt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d alt -s $(size) -o $(opt); ))
 
+sm_eval:
+	$(foreach dir, $(DIRS), $(foreach size, MINI MEDIUM LARGE, ./run.sh -c $(CC) -d $(dir) -s $(size) -v 10.0 -o O0; ))
+
 # Benchmark specific programs
-# Specify DIR argument otherwise it defaults to original
-PROGS = 3mm bicg colormap conjgrad cp50 deriche fdtd-2d gemm gesummv mvt remap tblshft
 
 3mm:
 	 $(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p 3mm -s $(size) -o $(opt); )))
@@ -85,10 +88,8 @@ tblshft:
 plots:
 	python3 plot.py -d time -f md --millis
 	python3 plot.py -d time -f tex --millis
-	python3 plot.py -d time -f plot
 	python3 plot.py -d speedup -f md --digits 2
 	python3 plot.py -d speedup -f tex --digits 2
-	python3 plot.py -d speedup -f tex --ss original --st fission
 	python3 plot.py -d speedup -f plot
 
 # Cleaning command

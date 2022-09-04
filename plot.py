@@ -391,12 +391,12 @@ class ResultPresenter:
             fig, axs = plt.subplots(rows, cols, **SPLOT, figsize=(cols * 3, rows * 3))
             axs = axs.flatten() if self.prog_count > 1 else [axs]
 
-            # draw a sub plot for each program
+            # draw a subplot for each program
             for sub_plot, prog_name in zip(axs, self.programs):
 
                 # draw the various bars
                 ll, lb = len(lbls), len(bars)
-                bw, x_off = 0.80 / lb, (lb / 2) - (1 / lb)
+                bw, x_off = 0.80 / lb, max(1.0, (lb / 2)) - (1 / lb)
                 y1, lines = [d[0] for d in data].index(prog_name), []
                 for i, bi in enumerate([o + ci for o in bars]):
                     pos = [a + ((i - x_off) * bw) for a in range(ll)]

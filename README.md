@@ -61,7 +61,7 @@ All programs are written in C language. We include programs with both `for` and 
 | `gesummv`  | Scalar, vector and matrix multiplication       |     |   ✔   | [PolyBench/C][PB] | 
 | `mvt`      | Matrix vector product and transpose            |     |   ✔   | [PolyBench/C][PB] | 
 | `remap`    | 4D matrix memory remapping                     |  ✔  |       | [NAS-UA][NAS]     |
-| `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]     | 
+| `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]     |
 
 [PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
 [NAS]: https://www.nas.nasa.gov/software/npb.html
@@ -99,13 +99,17 @@ plots and tables from those results. Details of these steps follow next.
 
 ### Running the benchmarks
 
-**Run all benchmarks** — compiles and times the execution of all benchmarks (all directories, optimization levels and data sizes).
+**Small evaluation** — compiles and times partial benchmarks — :timer_clock: _10-15 minutes_.
+
+```text
+make small
+```
+
+**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: _?_.
 
 ```text
 make all
 ```
-
-**how long to make all??**
 
 System should include a C compiler that supports OpenMP pragmas (assumes GCC).
 You may specify an alternative compiler using `make all CC=compiler_here`.
@@ -151,8 +155,6 @@ Timing options are same as default:
 - perform 5 executions/program
 - take average of 3 runs (min and max time are excluded)
 - max variance controls the (%) allowed between the 3 remaining runs
-
-We recommend clearing results directory between multiple runs using `make clean` command.
 
 ### Generating plots and tables
 
