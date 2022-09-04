@@ -78,11 +78,6 @@ remap:
 tblshft:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p tblshft -s $(size) -o $(opt); ))
 
-
-# transform all using rose
-rose:
-	./utilities/rose.sh
-
 .PHONY: plots
 plots:
 	python3 plot.py -d time -f md --millis

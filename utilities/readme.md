@@ -64,11 +64,12 @@ There is no expected output for this command.
 
 The following command performs these steps--transformation, parallelization and template restore--on all 
 original benchmarks automatically, with the best effort. If it reports errors, you will need to check the output manually.
-Under the hood it runs [`rose.sh`](rose.sh).
 
 ```
-make rose
+./utilities/rose.sh
 ```
+
+Supported arguments: `-r path_to/rose` and `-p benchmark_name`. 
 
 **Expected output**
 

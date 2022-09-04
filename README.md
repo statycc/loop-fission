@@ -22,9 +22,9 @@ We also compare our technique to an alternative loop fission technique used in t
 
 <details>
 
-  <summary>A more detailed explanation of  benchmark transformations</summary>
+  <summary>A more detailed explanation of benchmark transformations</summary>
 
-   In this repository, transformations of benchmarks have already been applied in the appropriate directories,
+   <br/>In this repository, transformations of benchmarks have already been applied in the appropriate directories,
    <code>fission</code> and <code>alt</code>, and we measure differences between those transformations and 
    <code>original</code>. This section explains briefly how the transformations are generated in the first place.
    
@@ -86,7 +86,7 @@ The files in results and plots are provided for convenience, as an example of th
 and can safely be deleted or overwritten. They were obtained on a Linux 4.19.0-20-amd64 #1 SMP Debian 
 4.19.235-1 (2022-03-17) x86_64 GNU/Linux machine, with 4 Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz processors.
 
-Add plot/table
+**Add plot/table here**
 
 ## Reproducing results
 
@@ -99,11 +99,13 @@ plots and tables from those results. Details of these steps follow next.
 
 ### Running the benchmarks
 
-**Run all benchmarks** — compiles and times the execution of all benchmarks.
+**Run all benchmarks** — compiles and times the execution of all benchmarks (all directories, optimization levels and data sizes).
 
 ```text
 make all
 ```
+
+**how long to make all??**
 
 System should include a C compiler that supports OpenMP pragmas (assumes GCC).
 You may specify an alternative compiler using `make all CC=compiler_here`.
