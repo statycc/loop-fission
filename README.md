@@ -20,7 +20,29 @@ We also compare our technique to an alternative loop fission technique used in t
 | `fission`  | transformed and parallelized programs, using our method         |
 | `alt`      | transformed and parallelized programs, using alternative method |
 
-A more detailed explanation in [about benchmark transformations](#about-benchmark-transformations) section.
+<details>
+
+  <summary>A more detailed explanation of  benchmark transformations</summary>
+
+   In this repository, transformations of benchmarks have already been applied in the appropriate directories,
+   <code>fission</code> and <code>alt</code>, and we measure differences between those transformations and 
+   <code>original</code>. This section explains briefly how the transformations are generated in the first place.
+   
+   <a href='./fission'><strong>Fission</strong></a> benchmarks have been transformed manually following our loop 
+   fission algorithm. These transformations are not reproducible mechanically. The programs have been parallelized 
+   by hand. We use manual approach here because automatic parallelization of <code>while</code> loops is not supported 
+   by any tool we are aware of. Programs with <code>for</code> loops could be parallelized automatically, and as 
+   shown in the next case.
+   
+   <a href='./alt'><strong>Alt</strong></a> benchmarks are the results of applying automatic transformation using
+   <a href="http://rosecompiler.org/">ROSE compiler</a>. They are also automatically parallelized using the same tool.
+   Benchmark <code>remap</code> fails during transformation, and we measure no difference between the original version.
+   Because the tool transforms all code, including the timing code of the benchmark template, as last step we
+   restore the original benchmark template. Detailed steps for re-generating the alt-benchmarks are
+   <a href="/utilities/readme.md">here</a>.
+
+</details>
+
 
 ### Benchmark descriptions
 
@@ -168,21 +190,4 @@ python plot.py --help
 | `--prog_filter` | include programs (comma-separated list): `3mm`, `bicg`, `deriche` ...    | _not set_  |
 | `-h`, `--help`  | show help message and exit                                               | _not set_  |
 
-## About benchmark transformations
-
-In this repository, transformations of benchmarks have already been applied in the appropriate directories,
-`fission` and `alt`, and we measure differences between those transformations and `original`.
-This section explains briefly how the transformations are generated in the first place.
-
-[**Fission**](./fission) benchmarks have been transformed manually following our loop fission algorithm. These
-transformations are not reproducible mechanically. The programs have been parallelized by hand. We use manual
-approach here because automatic parallelization of `while` loops is not supported by any tool we are aware of.
-Programs with `for` loops could be parallelized automatically, and as shown in the next case.
-
-[**Alt**](./alt) benchmarks are the results of applying automatic transformation using
-[ROSE compiler](http://rosecompiler.org/). They are also automatically parallelized using the same tool.
-Benchmark `remap` fails during transformation, and we measure no difference between the original version. 
-Because the tool transforms all code, including the timing code of the benchmark template, as last step we 
-restore the original benchmark template. Detailed steps for re-generating the alt-benchmarks are 
-[here](/utilities/readme.md).
 

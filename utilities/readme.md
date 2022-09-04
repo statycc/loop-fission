@@ -64,7 +64,7 @@ There is no expected output for this command.
 
 The following command performs these steps--transformation, parallelization and template restore--on all 
 original benchmarks automatically, with the best effort. If it reports errors, you will need to check the output manually.
-Under the hood, it runs [`rose.sh`](rose.sh).
+Under the hood it runs [`rose.sh`](rose.sh).
 
 ```
 make rose
@@ -101,6 +101,8 @@ lt-loopProcessor: /home/rose/src/src/midend/astUtil/symbolicVal/SymbolicVal.C:34
   SymbolicValGenerator::GetSymbolicVal(AstInterface&, const AstNodePtr&): Assertion `false' failed.
 Aborted (core dumped)
 ```
+
+There is no known fix at this time. The example is measured as equal to original, due to this transformation failure.
 
 
 [^1]: [Rose User Manual](http://rosecompiler.org/uploads/ROSE-UserManual.pdf),
