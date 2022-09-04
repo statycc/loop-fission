@@ -132,7 +132,7 @@ do
                 printf '\r'
             fi
 
-            echo -e "\033[1;32m✓\033[0m done with ("$DS_SIZE", -"$OPT"): ${filename}"
+            echo -e "\033[1;32m✓\033[0m ($(date '+%H:%M:%S')) done with ("$DS_SIZE", -"$OPT", "$SRC"): ${filename}"
             printf '\r'
             break
         else

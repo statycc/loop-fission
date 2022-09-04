@@ -119,13 +119,13 @@ You may specify an alternative compiler using `make all CC=compiler_here`.
 **Available arguments for timing**
 
 | ARGUMENT | DESCRIPTION: options                                                    | DEFAULT    |
-|:--------:|:------------------------------------------------------------------------|:-----------|
-|   `-c`   | system compiler to use                                                  | `gcc`      |
-|   `-d`   | which directory:  `original`, `fission`, `alt`                          | `original` | 
-|   `-o`   | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`       |
-|   `-v`   | max. variance (%) when timing results: > `0.0`                          | `5.0`      |
-|   `-s`   | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD` |
-|   `-p`   | benchmark specific program: `3mm`, `bicg`, `deriche` ...                | _not set_  |
+|:---------|:------------------------------------------------------------------------|:-----------|
+| `-c`     | system compiler to use                                                  | `gcc`      |
+| `-d`     | which directory:  `original`, `fission`, `alt`                          | `original` | 
+| `-o`     | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`       |
+| `-v`     | max. variance (%) when timing results: > `0.0`                          | `5.0`      |
+| `-s`     | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD` |
+| `-p`     | benchmark specific program: `3mm`, `bicg`, `deriche` ...                | _not set_  |
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
@@ -180,9 +180,9 @@ python plot.py --help
 
 | ARGUMENT        | DESCRIPTION : options                                                    | DEFAULT    |
 |:----------------|:-------------------------------------------------------------------------|------------|
-| `-d`, `--data`  | data choice: `time`, `speedup`                                           | `time`     |
-| `-o`, `--out`   | path to output directory                                                 | `plots`    |
-| `-f`, `--fmt`   | output format: `tex`, `md`, `plot`                                       | `md`       |
+| `--data`        | data choice: `time`, `speedup`                                           | `time`     |
+| `--out`         | path to output directory                                                 | `plots`    |
+| `--fmt`         | output format: `tex`, `md`, `plot`                                       | `md`       |
 | `--digits`      | number of digits for tabular values: `0`...`15`                          | `6`        |
 | `--ss`          | source directory for calculating speedup                                 | `original` |
 | `--st`          | target directory for calculating speedup (all when not set)              | _not set_  |
@@ -190,6 +190,6 @@ python plot.py --help
 | `--show`        | show generated plot or table                                             | _not set_  |
 | `--dir_filter`  | include directories (comma-separated list): `original`, `fission`, `alt` | _not set_  |
 | `--prog_filter` | include programs (comma-separated list): `3mm`, `bicg`, `deriche` ...    | _not set_  |
-| `-h`, `--help`  | show help message and exit                                               | _not set_  |
+| `--help`        | show help message and exit                                               | _not set_  |
 
 
