@@ -18,6 +18,9 @@ endif
 # By default, we test original fission and alt
 all: clean original fission alt
 
+# all directories
+DIRS = original fission alt
+
 # Optimization levels
 OPT_LEVELS = O0 O1 O2 O3
 
@@ -43,40 +46,40 @@ alt:
 PROGS = 3mm bicg colormap conjgrad cp50 deriche fdtd-2d gemm gesummv mvt remap tblshft
 
 3mm:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p 3mm -s $(size) -o $(opt); ))
+	 $(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p 3mm -s $(size) -o $(opt); )))
 
 bicg:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p bicg -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p bicg -s $(size) -o $(opt); )))
 
 colormap:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p colormap -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p colormap -s $(size) -o $(opt); )))
 
 conjgrad:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p conjgrad -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p conjgrad -s $(size) -o $(opt); )))
 
 cp50:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p cp50 -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p cp50 -s $(size) -o $(opt); )))
 
 deriche:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p deriche -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p deriche -s $(size) -o $(opt); )))
 
 fdtd-2d:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p fdtd-2d -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p fdtd-2d -s $(size) -o $(opt); )))
 
 gemm:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p gemm -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gemm -s $(size) -o $(opt); )))
 
 gesummv:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p gesummv -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gesummv -s $(size) -o $(opt); )))
 
 mvt:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p mvt -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p mvt -s $(size) -o $(opt); )))
 
 remap:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p remap -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p remap -s $(size) -o $(opt); )))
 
 tblshft:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p tblshft -s $(size) -o $(opt); ))
+	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p tblshft -s $(size) -o $(opt); )))
 
 .PHONY: plots
 plots:
