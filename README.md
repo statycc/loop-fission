@@ -99,13 +99,13 @@ plots and tables from those results. Details of these steps follow next.
 
 ### Running the benchmarks
 
-**Small evaluation** — compiles and times partial benchmarks — :timer_clock: _10-15 minutes_.
+**Small evaluation** — compiles and times partial benchmarks — :timer_clock: 10-15 min.
 
 ```text
 make small
 ```
 
-**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: _?_.
+**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: 120 min.
 
 ```text
 make all
