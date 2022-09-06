@@ -52,7 +52,7 @@ for file in ../"$SRC"/*.c
 do
 
     ok="\033[1;32m✓\033[0m"
-    neg="\033[0;91m🗙\033[0m"
+    neg="\033[0;91m✕\033[0m"
     trans=$neg
     paral=$neg
     resto=$neg

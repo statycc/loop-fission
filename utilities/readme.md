@@ -74,17 +74,17 @@ Supported arguments: `-r path_to/rose` and `-p benchmark_name`.
 **Expected output**
 
 ```
-3mm          transformed: ✓   parallel: ✓   restored: ✓
+3mm          transformed: ✓   parallel: ✓   restored: ✕
 bicg         transformed: ✓   parallel: ✓   restored: ✓
 colormap     transformed: ✓   parallel: ✓   restored: ✓
-conjgrad     transformed: ✓   parallel: ✓   restored: 🗙
+conjgrad     transformed: ✓   parallel: ✓   restored: ✕
 cp50         transformed: ✓   parallel: ✓   restored: ✓
-deriche      transformed: ✓   parallel: ✓   restored: ✓
-fdtd-2d      transformed: ✓   parallel: ✓   restored: 🗙
-gemm         transformed: ✓   parallel: ✓   restored: 🗙
+deriche      transformed: ✓   parallel: ✓   restored: ✕
+fdtd-2d      transformed: ✓   parallel: ✓   restored: ✕
+gemm         transformed: ✓   parallel: ✓   restored: ✕
 gesummv      transformed: ✓   parallel: ✓   restored: ✓
 mvt          transformed: ✓   parallel: ✓   restored: ✓
-remap        transformed: 🗙   parallel: 🗙   restored: ✓
+remap        transformed: ✕   parallel: ✕   restored: ✓
 tblshft      transformed: ✓   parallel: ✓   restored: ✓
 ```
 
