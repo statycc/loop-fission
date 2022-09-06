@@ -105,7 +105,7 @@ plots and tables from those results. Details of these steps follow next.
 make small
 ```
 
-**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: 120 min.
+**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: 110-120 min.
 
 ```text
 make all
@@ -194,4 +194,8 @@ python plot.py --help
 | `--prog_filter` | include programs (comma-separated list): `3mm`, `bicg`, `deriche` ...    | _not set_  |
 | `--help`        | show help message and exit                                               | _not set_  |
 
+e.g. to generate a text-based speedup table, and display it, run:
 
+```
+python3 plot.py -d speedup -f md --digits 2  --show
+```
