@@ -78,6 +78,8 @@ All programs are written in C language. We include programs with both `for` and 
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
 
+<!--
+
 The folders `results` and `plots` are discussed below.
 
 **Example provided**
@@ -86,7 +88,7 @@ The files in results and plots are provided for convenience, as an example of th
 and can safely be deleted or overwritten. They were obtained on a Linux 4.19.0-20-amd64 #1 SMP Debian 
 4.19.235-1 (2022-03-17) x86_64 GNU/Linux machine, with 4 Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz processors.
 
-**Add plot/table here**
+**Add plot/table here** -->
 
 ## Reproducing results
 
