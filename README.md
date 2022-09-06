@@ -139,7 +139,7 @@ make [benchmark_name]
 | `-o`     | optimization level: `O0`, `O1`, `O2`, `O3`, ...                         | `O0`       |
 | `-v`     | max. variance (%) when timing results: > `0.0`                          | `5.0`      |
 | `-s`     | data size: `MINI`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`, `STANDARD` | `STANDARD` |
-| `-p`     | benchmark specific program: `3mm`, `bicg`, `deriche` ...                | _not set_  |
+| `-p`     | only specific benchmark: `3mm`, `bicg`, `deriche` ...                   | _not set_  |
 
 If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
@@ -203,7 +203,7 @@ python plot.py --help
 | `--millis`      | display table of times in milliseconds  (otherwise in seconds)           | _not set_  |
 | `--show`        | show generated plot or table                                             | _not set_  |
 | `--dir_filter`  | include directories (comma-separated list): `original`, `fission`, `alt` | _not set_  |
-| `--prog_filter` | include programs (comma-separated list): `3mm`, `bicg`, `deriche` ...    | _not set_  |
+| `--prog_filter` | include benchmarks (comma-separated list): `3mm`, `bicg`, `deriche` ...  | _not set_  |
 | `--help`        | show help message and exit                                               | _not set_  |
 
 e.g. to generate a text-based speedup table, and display it, run:
