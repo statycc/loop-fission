@@ -103,7 +103,8 @@ plots and tables from those results. Details of these steps follow next.
 ### Running the benchmarks
 
 :eight_spoked_asterisk: System should include a C compiler that supports OpenMP pragmas (defaults to GCC).
-You may specify an alternative compiler by appending to the make commands `CC=compiler_name`.
+
+You may specify an alternative compiler by appending to the make commands `CC=[compiler_name]`.
 
 **Small evaluation** — compiles and times partial benchmarks — :timer_clock: 10-15 min.
 
@@ -111,7 +112,7 @@ You may specify an alternative compiler by appending to the make commands `CC=co
 make small
 ```
 
-**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: 110-120 min.
+**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: ~ 2 hours.
 
 ```text
 make all
