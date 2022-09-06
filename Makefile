@@ -44,7 +44,9 @@ alt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d alt -s $(size) -o $(opt); ))
 
 sm_eval:
-	$(foreach dir, $(DIRS), $(foreach size, MINI MEDIUM LARGE, ./run.sh -c $(CC) -d $(dir) -s $(size) -v 10.0 -o O0; ))
+	$(foreach dir, $(DIRS), $(foreach size, SMALL MEDIUM LARGE, $(foreach opt, O0 O1 O2 O3, \
+	$(foreach prog, bicg colormap conjgrad deriche fdtd-2d gesummv mvt remap tblshft, \
+		./run.sh -c $(CC) -d $(dir) -s $(size) -p $(prog) -o $(opt); ))))
 
 # Benchmark specific programs
 

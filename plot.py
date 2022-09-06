@@ -236,6 +236,12 @@ class ResultPresenter:
         self.pfilter = pfilter
         self.show = show
 
+    @property
+    def filter_names(self):
+        """chain benchmark names when filter is applier"""
+        tmp = "_".join(self.programs) if self.pfilter else ""
+        return tmp if len(tmp) < 1 else f'_{tmp}'
+
     def time_str(self, t, scale=True):
         if not t:
             return '-'
@@ -349,7 +355,7 @@ class ResultPresenter:
             label = f'clock time ({"ms" if self.millis else "s"})'
             self.plot(table, fn, self.sources, label, True)
         else:
-            fn = "time_" + ("-".join(self.sources).lower())
+            fn = "time_" + ("-".join(self.sources).lower()) + self.filter_names
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def speedup(self, fmt, baseline, target):
@@ -379,10 +385,11 @@ class ResultPresenter:
 
         table = self.generate_table(sp, value_func, compact=True)
         if fmt == "plot":
-            fn = lambda x: f'speedup_{baseline}-{x}'
+            fn = lambda x: f'speedup_{baseline}-{x}{self.filter_names}'
             self.plot(table, fn, sp, "speedup", False)
         else:
-            fn = "speedup_" + ("-".join([baseline, target or 'all']))
+            fn = "speedup_" + ("-".join([baseline, target or 'all'])) \
+                 + self.filter_names
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def plot(self, data, fn, prog_dir, ylabel, log):
@@ -445,7 +452,8 @@ class ResultPresenter:
             f_path = path.join(self.out_dir, fig_name)
             plt.savefig(f_path)
             print(f'Saved plot to to: {f_path}')
-            if self.show: plt.show()
+            if self.show:
+                plt.show()
 
 
 if __name__ == '__main__':

@@ -85,25 +85,25 @@ int i, j, k;
 #pragma omp parallel private(i, j, k)
 {
 
-/* E := A*B */
-#pragma omp for nowait
-for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NJ; j++)
-    {
-        E[i][j] = SCALAR_VAL(0.0);
-        for (k = 0; k < _PB_NK; ++k)
-            E[i][j] += A[i][k] * B[k][j];
-    }
+    /* E := A*B */
+    #pragma omp for nowait
+    for (i = 0; i < _PB_NI; i++)
+        for (j = 0; j < _PB_NJ; j++)
+        {
+            E[i][j] = SCALAR_VAL(0.0);
+            for (k = 0; k < _PB_NK; ++k)
+                E[i][j] += A[i][k] * B[k][j];
+        }
 
-/* F := C*D */
-#pragma omp for
-for (i = 0; i < _PB_NJ; i++)
-    for (j = 0; j < _PB_NL; j++)
-    {
-        F[i][j] = SCALAR_VAL(0.0);
-        for (k = 0; k < _PB_NM; ++k)
-            F[i][j] += C[i][k] * D[k][j];
-    }
+    /* F := C*D */
+    #pragma omp for
+    for (i = 0; i < _PB_NJ; i++)
+        for (j = 0; j < _PB_NL; j++)
+        {
+            F[i][j] = SCALAR_VAL(0.0);
+            for (k = 0; k < _PB_NM; ++k)
+                F[i][j] += C[i][k] * D[k][j];
+        }
 }
 
 /* G := E*F */

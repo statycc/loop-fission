@@ -106,7 +106,7 @@ plots and tables from those results. Details of these steps follow next.
 
 You may specify an alternative compiler by appending to the make commands `CC=[compiler_name]`.
 
-**Small evaluation** — compiles and times partial benchmarks — :timer_clock: 10-15 min.
+**Small evaluation** — compiles and times partial benchmarks — :timer_clock: 7-10 min.
 
 ```text
 make small
@@ -118,7 +118,7 @@ make small
 make all
 ```
 
-**Run specific benchmark** — compiles and times specified benchmark for all sizes — :timer_clock: 1-30 min.
+**Run specific benchmark** — compiles and times specified benchmark for all sizes — :timer_clock: 1 - 40 min.
 
 ```text
 make [benchmark_name]

@@ -12,9 +12,11 @@ Performing any of these steps requires building the compiler [from source](https
 Build instructions are in the [ROSE wiki](https://github.com/rose-compiler/rose/wiki).
 
 After that we apply
-the [LoopProcessor](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C)
+the [LoopProcessor](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/LoopProcessor)
+([source](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/tutorial/LoopProcessor.C))
 tool to transform loops,
-and [AutoPar](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/projects/autoParallelization/autoPar.C)
+and [AutoPar](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar) 
+([source](https://github.com/rose-compiler/rose/blob/dab37577feb8eb129c8fc15f6972222c03171c9f/projects/autoParallelization/autoPar.C))
 tool to parallelize them.
 
 Note that loop and parallelization transformations are applied to the entire file[^1]. This breaks the
