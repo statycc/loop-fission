@@ -89,7 +89,6 @@ for file in ./"$CDIR"/*
 do
     rm -rf "$file"
 done
-rm -rf "$OUTFILE"
 
 # compile and time each example
 for file in ./"$SRC"/*.c
@@ -122,7 +121,24 @@ do
 
         # if variance is withing allowed range, or max retries exhausted
         if(( $(bc <<< "$variance < $MAX_VARIANCE") )) || [ $i -gt $MAX_RETRIES ]; then
-            echo "$result" >> "$OUTFILE"
+
+            res_n_time="${result}"$'\t'"$(date '+%s')"
+            if test -f "$OUTFILE"; then
+              # remove previous result for this benchmark, if found
+              IFS=$'\n' read -d '' -r -a lines < "$OUTFILE"
+              for (( lineno=${#lines[@]}-1 ; lineno>=0 ; lineno-- )) ; do
+                 if [[ "${lines[$lineno]}" = "$filename"* ]]; then
+                    unset 'lines[lineno]'
+                 fi
+              done
+              # append and write out
+              lines+=("${res_n_time}")
+              printf "%s\n" "${lines[@]}" > "$OUTFILE"
+            else
+              printf "%s\n" "${res_n_time}" > "$OUTFILE"
+            fi
+
+            # clean up terminal output on last line
             if [ $i -gt 0 ]; then
                 printf '\r'
                         cols="$(tput cols)"

@@ -149,14 +149,15 @@ Data labels, in order:
 - `program`: name of evaluated program
 - `variance (%)`: variance of recorded execution times
 - `time (s)`: average runtime (clock time), in seconds
+- `UTC timestamp`: time at completion, in seconds since epoch 
 
-Labels are always the same. They are not included in timing results file.
+Data labels are always the same. They are not included in timing results file.
 
 Timing options are same as default:
 
 - perform 5 executions/program
 - take average of 3 runs (min and max time are excluded)
-- max variance controls the (%) allowed between the 3 remaining runs
+- variance controls the %-difference allowed between the 3 median runs
 
 ### Generating plots and tables
 
@@ -185,6 +186,7 @@ python plot.py --help
 | ARGUMENT        | DESCRIPTION : options                                                    | DEFAULT    |
 |:----------------|:-------------------------------------------------------------------------|------------|
 | `--data`        | data choice: `time`, `speedup`                                           | `time`     |
+| `--input`       | path to results (input) directory                                        | `results`  |
 | `--out`         | path to output directory                                                 | `plots`    |
 | `--fmt`         | output format: `tex`, `md`, `plot`                                       | `md`       |
 | `--digits`      | number of digits for tabular values: `0`...`15`                          | `6`        |

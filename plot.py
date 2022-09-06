@@ -73,6 +73,12 @@ def setup_args():
         help="output directory"
     )
     parser.add_argument(
+        "-i", "--input",
+        action='store',
+        default=RESULTS_DIR,
+        help="input directory"
+    )
+    parser.add_argument(
         "-f", "--fmt",
         action="store",
         default="md",
@@ -131,11 +137,11 @@ def parse_results(result_dir, dir_filter):
         stem = Path(fn).stem
         return next(filter(lambda x: x.startswith(stem), models_), None)
 
-    def format_time(fn, variance, time):
-        return fn.replace('_time', ''), float(variance), float(time)
+    def format_time(fn, variance, time, ts=0):
+        return fn.replace('_time', ''), float(variance), float(time), float(ts)
 
     def parse_times(raw_times):
-        return [format_time(*rt.split(None, 2)) for rt in raw_times]
+        return [format_time(*rt.split(None, 3)) for rt in raw_times]
 
     def parse_model(raw_model):
         return {tup[0]: tup[1:] for tup in [
@@ -151,7 +157,7 @@ def parse_results(result_dir, dir_filter):
     filenames = next(walk(result_dir), (None, None, []))[2]
     models = [f for f in filenames if f.endswith('model.txt')]
 
-    # pair the results with their model; the finally remove nulls
+    # pair the results with their model; then finally remove nulls
     return [p for p in
             [parse_(*pair) for pair in
              [(fn, find_model(fn, models)) for fn in
@@ -191,14 +197,15 @@ class Timing:
 
     def get_time(self, program):
         if program in self.programs:
-            return self.times[self.programs.index(program)][-1]
+            # 0: prog name, 1: variance, 2: run time
+            return self.times[self.programs.index(program)][2]
 
 
 class ResultPresenter:
     """Represents a collection of results, and offers some formatting
     options """
 
-    def __init__(self, results: List[Timing], out_dir,
+    def __init__(self, results: List[Timing], in_dir, out_dir,
                  time_millis, digits, pfilter, show):
         self.__results = results
 
@@ -225,6 +232,7 @@ class ResultPresenter:
         self.digits = digits
         self.ensure_out_dir(out_dir)
         self.out_dir = out_dir
+        self.in_dir = in_dir
         self.pfilter = pfilter
         self.show = show
 
@@ -345,7 +353,7 @@ class ResultPresenter:
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def speedup(self, fmt, baseline, target):
-        src_len, r = len(self.sources), RESULTS_DIR
+        src_len, r = len(self.sources), self.in_dir
         src_error = f'speedup requires timing at least two groups of ' \
                     f'programs, found {src_len} matching plot criteria'
         bl_error = f'timing results not found for {baseline} in {r} '
@@ -381,7 +389,7 @@ class ResultPresenter:
         from matplotlib import pyplot as plt
         from matplotlib.lines import Line2D
 
-        rows, cols = min(-(-self.prog_count//3), 5), min(self.prog_count, 3)
+        rows, cols = min(-(-self.prog_count // 3), 5), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
         ymin, ymax = 0, self.max_value(data)
@@ -432,7 +440,7 @@ class ResultPresenter:
 
             fig.tight_layout()
             fig.subplots_adjust(wspace=.4 if log else .1
-                if self.prog_count == 1 else .3, hspace=.3)
+            if self.prog_count == 1 else .3, hspace=.3)
             fig_name = f'{fn(target_name) or "plot"}.pdf'
             f_path = path.join(self.out_dir, fig_name)
             plt.savefig(f_path)
@@ -450,7 +458,8 @@ if __name__ == '__main__':
         if args.prog_filter else None
 
     rp = ResultPresenter(
-        results=parse_results(RESULTS_DIR, dir_fil),
+        results=parse_results(args.input, dir_fil),
+        in_dir=args.input,
         out_dir=args.out,
         time_millis=args.millis,
         digits=args.digits,
