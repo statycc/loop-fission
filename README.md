@@ -50,7 +50,7 @@ All programs are written in C language. We include programs with both `for` and 
 
 | Benchmark  | Description                                    | for | while | Origin            |
 |:-----------|:-----------------------------------------------|:---:|:-----:|:------------------|
-| `3mm`      | 3D matrix multiplication                       |     |   ✔   | [PolyBench/C][PB] | 
+| `3mm`      | 3D matrix multiplication                       |  ✔  |       | [PolyBench/C][PB] | 
 | `bicg`     | BiCG sub kernel of BiCGStab linear solver      |     |   ✔   | [PolyBench/C][PB] | 
 | `colormap` | TIFF image conversion of photometric palette   |     |   ✔   | [MiBench][MB]     | 
 | `conjgrad` | Conjugate gradient routine                     |  ✔  |       | [NAS-CG][NAS]     |
