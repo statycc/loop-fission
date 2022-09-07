@@ -1,6 +1,7 @@
 # Loop Fission Benchmarks
 
-This repository is for benchmarking the loop fission algorithm presented in _"."_.
+This repository is for benchmarking the loop fission algorithm presented in 
+_"Distributing and Parallelizing Non-canonical Loops"_.
 
 This is a curated benchmark suite. The included benchmarks have been selected specifically 
 for offering opportunity to perform loop fission transformation. For each benchmark, we measure 
