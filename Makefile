@@ -44,47 +44,47 @@ alt:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d alt -s $(size) -o $(opt); ))
 
 sm_eval:
-	$(foreach dir, $(DIRS), $(foreach size, SMALL MEDIUM LARGE, $(foreach opt, O0 O1 O2 O3, \
+	$(foreach size, SMALL MEDIUM LARGE, $(foreach dir, $(DIRS), $(foreach opt, O0 O1 O2 O3, \
 	$(foreach prog, bicg colormap conjgrad deriche fdtd-2d gesummv mvt remap tblshft, \
 		./run.sh -c $(CC) -d $(dir) -s $(size) -p $(prog) -o $(opt); ))))
 
 # Benchmark specific programs
 
 3mm:
-	 $(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p 3mm -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p 3mm -s $(size) -o $(opt); )))
 
 bicg:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p bicg -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p bicg -s $(size) -o $(opt); )))
 
 colormap:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p colormap -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p colormap -s $(size) -o $(opt); )))
 
 conjgrad:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p conjgrad -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p conjgrad -s $(size) -o $(opt); )))
 
 cp50:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p cp50 -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p cp50 -s $(size) -o $(opt); )))
 
 deriche:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p deriche -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p deriche -s $(size) -o $(opt); )))
 
 fdtd-2d:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p fdtd-2d -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p fdtd-2d -s $(size) -o $(opt); )))
 
 gemm:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gemm -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gemm -s $(size) -o $(opt); )))
 
 gesummv:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gesummv -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gesummv -s $(size) -o $(opt); )))
 
 mvt:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p mvt -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p mvt -s $(size) -o $(opt); )))
 
 remap:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p remap -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p remap -s $(size) -o $(opt); )))
 
 tblshft:
-	$(foreach dir, $(DIRS), $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p tblshft -s $(size) -o $(opt); )))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p tblshft -s $(size) -o $(opt); )))
 
 .PHONY: plots
 plots:

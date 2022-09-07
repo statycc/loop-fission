@@ -98,7 +98,7 @@ void kernel_tblshft(int f8sz, int f14sz, int tsz,
 #pragma scop
 
     j = 0;
-    #pragma omp parallel for reduction(+:j)
+    #pragma omp parallel for private(i) reduction(+:j)
     for (i = 0; i < f14sz; i++) {
         while (((double) i / F14SZM1) * ((double) i / F14SZM1) > TLF[j] * TLF[j + 1])
             j++;
@@ -106,7 +106,7 @@ void kernel_tblshft(int f8sz, int f14sz, int tsz,
     }
 
     j = 0;
-    #pragma omp parallel for reduction(+:j)
+    #pragma omp parallel for private(i) reduction(+:j)
     for (i = 0; i < f8sz; i++) {
         while (((double) i / F8SZM1) * ((double) i / F8SZM1) > TLF[j] * TLF[j + 1])
             j++;

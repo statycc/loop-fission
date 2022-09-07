@@ -83,7 +83,7 @@ void kernel_cp50(
 #pragma scop
 
     /* Print lines of graphics */
-#pragma omp parallel private(lnum,i)
+#pragma omp parallel private(lnum,i,col)
 {
     #pragma omp single nowait
     {

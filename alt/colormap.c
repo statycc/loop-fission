@@ -85,9 +85,9 @@ void kernel_colormap(int n,
 
   i = 0;
   while(i < n){
-    R[i] = ((double )(R[i] * 65535L / 255));
-    G[i] = ((double )(G[i] * 65535L / 255));
-    B[i] = ((double )(B[i] * 65535L / 255));
+    R[i] = ((DATA_TYPE)(R[i] * 65535L / 255));
+    G[i] = ((DATA_TYPE)(G[i] * 65535L / 255));
+    B[i] = ((DATA_TYPE)(B[i] * 65535L / 255));
     i++;
   }
   

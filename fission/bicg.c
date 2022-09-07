@@ -80,19 +80,16 @@ void kernel_bicg(int m, int n,
   int i, j;
 
 #pragma scop
+
 #pragma omp parallel private(i, j)
 {
-    #pragma omp single
-    {
-        i = 0;
-        while(i < _PB_M){
-         s[i] = 0;
-         i++;
-        }
-    }
-
     #pragma omp single nowait
     {
+        i = 0;
+            while(i < _PB_M){
+            s[i] = 0;
+            i++;
+        }
         i = 0;
         while (i < _PB_N)
         {
@@ -106,7 +103,7 @@ void kernel_bicg(int m, int n,
         }
     }
 
-    #pragma omp single nowait
+    #pragma omp single
     {
         i = 0;
         while (i < _PB_N)

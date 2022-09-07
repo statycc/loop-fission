@@ -87,7 +87,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 #pragma omp parallel for private (i,j)
   for (i = 0; i <= -1 + ni; i += 1) {
     
-#pragma omp parallel for private (j)
+ #pragma omp parallel for private (j)
     for (j = 0; j <= -1 + nj; j += 1) {
       E[i][j] = 0.0;
     }
@@ -96,7 +96,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
     for (j = 0; j <= -1 + nj; j += 1) {
       E_buf0 = E[i][j];
       
-#pragma omp parallel for private (k) reduction (+:E_buf0)
+ #pragma omp parallel for private (k) reduction (+:E_buf0)
       for (k = 0; k <= -1 + nk; k += 1) {
         E_buf0 += A[i][k] * B[k][j];
       }
@@ -107,7 +107,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 #pragma omp parallel for private (i,j)
   for (i = 0; i <= -1 + nj; i += 1) {
     
-#pragma omp parallel for private (j)
+ #pragma omp parallel for private (j)
     for (j = 0; j <= -1 + nl; j += 1) {
       F[i][j] = 0.0;
     }
@@ -116,7 +116,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
     for (j = 0; j <= -1 + nl; j += 1) {
       F_buf1 = F[i][j];
       
-#pragma omp parallel for private (k) reduction (+:F_buf1)
+ #pragma omp parallel for private (k) reduction (+:F_buf1)
       for (k = 0; k <= -1 + nm; k += 1) {
         F_buf1 += C[i][k] * D[k][j];
       }
@@ -127,7 +127,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 #pragma omp parallel for private (i,j)
   for (i = 0; i <= -1 + ni; i += 1) {
     
-#pragma omp parallel for private (j)
+ #pragma omp parallel for private (j)
     for (j = 0; j <= -1 + nl; j += 1) {
       G[i][j] = 0.0;
     }
@@ -136,7 +136,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
     for (j = 0; j <= -1 + nl; j += 1) {
       G_buf2 = G[i][j];
       
-#pragma omp parallel for private (k) reduction (+:G_buf2)
+ #pragma omp parallel for private (k) reduction (+:G_buf2)
       for (k = 0; k <= -1 + nj; k += 1) {
         G_buf2 += E[i][k] * F[k][j];
       }

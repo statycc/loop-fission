@@ -86,7 +86,7 @@ int i, j, k;
 {
 
     /* E := A*B */
-    #pragma omp for nowait
+    #pragma omp for collapse(2) nowait
     for (i = 0; i < _PB_NI; i++)
         for (j = 0; j < _PB_NJ; j++)
         {
@@ -96,7 +96,7 @@ int i, j, k;
         }
 
     /* F := C*D */
-    #pragma omp for
+    #pragma omp for collapse(2)
     for (i = 0; i < _PB_NJ; i++)
         for (j = 0; j < _PB_NL; j++)
         {
@@ -107,7 +107,7 @@ int i, j, k;
 }
 
 /* G := E*F */
-#pragma omp parallel for private(i, j, k)
+#pragma omp parallel for private(i, j, k) collapse(2)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++)
     {
