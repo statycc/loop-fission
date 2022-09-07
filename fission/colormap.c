@@ -98,7 +98,7 @@ void kernel_colormap(int n,
     {
         i = 0;
         while (i < _PB_N) {
-            G[i] = (DATA_TYPE) (((i) * 65535L) / 255);
+            G[i] = (DATA_TYPE) (((G[i]) * 65535L) / 255);
             i++;
         }
     }
@@ -107,7 +107,7 @@ void kernel_colormap(int n,
     {
         i = 0;
         while (i < _PB_N) {
-            B[i] = (DATA_TYPE) (((i) * 65535L) / 255);
+            B[i] = (DATA_TYPE) (((B[i]) * 65535L) / 255);
             i++;
         }
     }
