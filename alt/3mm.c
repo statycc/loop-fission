@@ -45,7 +45,6 @@ for (j = 0; j < nl; j++)
 D[i][j] = (DATA_TYPE) ((i*(j+2)+2) % nk) / (5*nk);
 }
 
-
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
 static
@@ -78,41 +77,73 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
         DATA_TYPE POLYBENCH_2D(D,NM,NL,nm,nl),
         DATA_TYPE POLYBENCH_2D(G,NI,NL,ni,nl))
 {
-int i, j, k;
-
-#pragma scop
-
-/* E := A*B */
-for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NJ; j++)
-    {
-        E[i][j] = SCALAR_VAL(0.0);
-        for (k = 0; k < _PB_NK; ++k)
-            E[i][j] += A[i][k] * B[k][j];
+  int i;
+  int j;
+  int k;
+  double E_buf0;
+  double F_buf1;
+  double G_buf2;
+  
+#pragma omp parallel for private (i,j)
+  for (i = 0; i <= -1 + ni; i += 1) {
+    
+ #pragma omp parallel for private (j)
+    for (j = 0; j <= -1 + nj; j += 1) {
+      E[i][j] = 0.0;
     }
-
-/* F := C*D */
-for (i = 0; i < _PB_NJ; i++)
-    for (j = 0; j < _PB_NL; j++)
-    {
-        F[i][j] = SCALAR_VAL(0.0);
-        for (k = 0; k < _PB_NM; ++k)
-            F[i][j] += C[i][k] * D[k][j];
+  }
+  for (i = 0; i <= -1 + ni; i += 1) {
+    for (j = 0; j <= -1 + nj; j += 1) {
+      E_buf0 = E[i][j];
+      
+ #pragma omp parallel for private (k) reduction (+:E_buf0)
+      for (k = 0; k <= -1 + nk; k += 1) {
+        E_buf0 += A[i][k] * B[k][j];
+      }
+      E[i][j] = E_buf0;
     }
-
-/* G := E*F */
-for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NL; j++)
-    {
-        G[i][j] = SCALAR_VAL(0.0);
-        for (k = 0; k < _PB_NJ; ++k)
-            G[i][j] += E[i][k] * F[k][j];
+  }
+  
+#pragma omp parallel for private (i,j)
+  for (i = 0; i <= -1 + nj; i += 1) {
+    
+ #pragma omp parallel for private (j)
+    for (j = 0; j <= -1 + nl; j += 1) {
+      F[i][j] = 0.0;
     }
-
-#pragma endscop
-
+  }
+  for (i = 0; i <= -1 + nj; i += 1) {
+    for (j = 0; j <= -1 + nl; j += 1) {
+      F_buf1 = F[i][j];
+      
+ #pragma omp parallel for private (k) reduction (+:F_buf1)
+      for (k = 0; k <= -1 + nm; k += 1) {
+        F_buf1 += C[i][k] * D[k][j];
+      }
+      F[i][j] = F_buf1;
+    }
+  }
+  
+#pragma omp parallel for private (i,j)
+  for (i = 0; i <= -1 + ni; i += 1) {
+    
+ #pragma omp parallel for private (j)
+    for (j = 0; j <= -1 + nl; j += 1) {
+      G[i][j] = 0.0;
+    }
+  }
+  for (i = 0; i <= -1 + ni; i += 1) {
+    for (j = 0; j <= -1 + nl; j += 1) {
+      G_buf2 = G[i][j];
+      
+ #pragma omp parallel for private (k) reduction (+:G_buf2)
+      for (k = 0; k <= -1 + nj; k += 1) {
+        G_buf2 += E[i][k] * F[k][j];
+      }
+      G[i][j] = G_buf2;
+    }
+  }
 }
-
 
 int main(int argc, char** argv)
 {

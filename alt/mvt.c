@@ -85,23 +85,21 @@ void kernel_mvt(int n,
   int i, j;
 
 #pragma scop
-
   i = 0;
-  while (i < _PB_N){
+  while(i < n){
     j = 0;
-    while (j < _PB_N){
+    while(j < n){
       x1[i] = x1[i] + A[i][j] * y_1[j];
       j++;
     }
     i++;
   }
-
   i = 0;
-  while (i < _PB_N){
+  while(i < n){
     j = 0;
-    while (j < _PB_N){
-       x2[i] = x2[i] + A[j][i] * y_2[j];
-       j++;
+    while(j < n){
+      x2[i] = x2[i] + A[j][i] * y_2[j];
+      j++;
     }
     i++;
   }

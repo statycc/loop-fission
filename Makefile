@@ -15,9 +15,13 @@ ifndef $DIR
 DIR:=original
 endif
 
-# By default, we test only original
-# Vs fission_manual
-all: original fission_manual
+# By default, we test original fission and alt
+all: clean original fission alt
+
+small: clean sm_eval
+
+# all directories
+DIRS = original fission alt
 
 # Optimization levels
 OPT_LEVELS = O0 O1 O2 O3
@@ -31,62 +35,64 @@ SIZES = MINI SMALL MEDIUM LARGE EXTRALARGE
 original:
 	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original -s $(size) -o $(opt); ))
 
-.PHONY: original_autopar
-original_autopar:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d original_autopar -s $(size) -o $(opt); ))
+.PHONY: fission
+fission:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission -s $(size) -o $(opt); ))
 
-.PHONY: fission_manual
-fission_manual:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_manual -s $(size) -o $(opt); ))
+.PHONY: alt
+alt:
+	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d alt -s $(size) -o $(opt); ))
 
-.PHONY: fission_autopar
-fission_autopar:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d fission_autopar -s $(size) -o $(opt); ))
-
-case_studies:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d case_study-a -s $(size) -o $(opt); ))
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d case_study-b -s $(size) -o $(opt); ))
-
+sm_eval:
+	$(foreach size, SMALL MEDIUM LARGE, $(foreach dir, $(DIRS), $(foreach opt, O0 O1 O2 O3, \
+	$(foreach prog, bicg colormap conjgrad deriche fdtd-2d gesummv mvt remap tblshft, \
+		./run.sh -c $(CC) -d $(dir) -s $(size) -p $(prog) -o $(opt); ))))
 
 # Benchmark specific programs
-# Specify DIR argument otherwise it defaults to original
 
 3mm:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p 3mm -s $(size) -o $(opt); ))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p 3mm -s $(size) -o $(opt); )))
 
 bicg:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p bicg -s $(size) -o $(opt); ))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p bicg -s $(size) -o $(opt); )))
+
+colormap:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p colormap -s $(size) -o $(opt); )))
+
+conjgrad:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p conjgrad -s $(size) -o $(opt); )))
+
+cp50:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p cp50 -s $(size) -o $(opt); )))
 
 deriche:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p deriche -s $(size) -o $(opt); ))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p deriche -s $(size) -o $(opt); )))
 
 fdtd-2d:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p fdtd-2d -s $(size) -o $(opt); ))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p fdtd-2d -s $(size) -o $(opt); )))
 
-getsummv:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p getsummv -s $(size) -o $(opt); ))
+gemm:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gemm -s $(size) -o $(opt); )))
+
+gesummv:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p gesummv -s $(size) -o $(opt); )))
 
 mvt:
-	 $(foreach size, $(SIZES), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(DIR) -p mvt -s $(size) -o $(opt); ))
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p mvt -s $(size) -o $(opt); )))
+
+remap:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p remap -s $(size) -o $(opt); )))
+
+tblshft:
+	$(foreach size, $(SIZES), $(foreach dir, $(DIRS), $(foreach opt, $(OPT_LEVELS), ./run.sh -c $(CC) -d $(dir) -p tblshft -s $(size) -o $(opt); )))
 
 .PHONY: plots
 plots:
 	python3 plot.py -d time -f md --millis
 	python3 plot.py -d time -f tex --millis
-	python3 plot.py -d time -f plot
 	python3 plot.py -d speedup -f md --digits 2
 	python3 plot.py -d speedup -f tex --digits 2
 	python3 plot.py -d speedup -f plot
-	python3 plot.py -d speedup -f tex --ss original_autopar --st fission_manual
-	python3 plot.py -d speedup -f tex --ss fission_autopar --st fission_manual
-	python3 plot.py -d speedup -f plot --ss original_autopar --st fission_manual
-	python3 plot.py -d speedup -f plot --ss fission_autopar --st fission_manual
-	python3 plot.py --show -d speedup --ss case_study-a -f plot --prog_filter="3mm_while" --prog_filter="3mm_while" --dir_filter="case_study-a,case_study-b"
-
-# Rule to measure all the folders
-# This uses order-only-prerequisites to make sure that 
-# the targets are executed one after the other.
-everything: | clean original original_autopar fission_manual fission_autopar case_studies plots
 
 # Cleaning command
 clean:
@@ -94,4 +100,6 @@ clean:
 	rm -rf results/
 	rm -rf plots/
 	rm -rf _*_autopar/
-	rm -rf ____tempfile.data.polybench 
+	rm -rf ____tempfile.data.polybench
+
+

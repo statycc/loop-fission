@@ -95,44 +95,38 @@ void kernel_fdtd_2d(int tmax,
 		    DATA_TYPE POLYBENCH_2D(hz,NX,NY,nx,ny),
 		    DATA_TYPE POLYBENCH_1D(_fict_,TMAX,tmax))
 {
-  int t, i, j;
-
-#pragma scop
-
-#pragma omp parallel private(t, i, j)
-{
-    #pragma omp for nowait
-    for(t = 0; t < _PB_TMAX; t++)
-    {
-      for (j = 0; j < _PB_NY; j++)
-	    ey[0][j] = _fict_[t];
-
-      for (i = 1; i < _PB_NX; i++)
-	    for (j = 0; j < _PB_NY; j++)
-	        ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
+  int t;
+  int i;
+  int j;
+  double _fict__buf0;
+  for (t = 0; t <= -1 + tmax; t += 1) {
+    _fict__buf0 = _fict_[t];
+    
+#pragma omp parallel for private (j) firstprivate (_fict__buf0)
+    for (j = 0; j <= -1 + ny; j += 1) {
+      ey[0][j] = _fict__buf0;
     }
-
-    #pragma omp for
-    for(t = 0; t < _PB_TMAX; t++)
-    {
-      for (i = 0; i < _PB_NX; i++)
-        for (j = 1; j < _PB_NY; j++)
-	        ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
+    for (i = 1; i <= -1 + nx; i += 1) {
+      
+#pragma omp parallel for private (j)
+      for (j = 0; j <= -1 + ny; j += 1) {
+        ey[i][j] = ey[i][j] - 0.5 * (hz[i][j] - hz[i - 1][j]);
+      }
     }
+    
+#pragma omp parallel for private (i,j)
+    for (i = 0; i <= -1 + nx; i += 1) {
+      for (j = 1; j <= -1 + ny; j += 1) {
+        ex[i][j] = ex[i][j] - 0.5 * (hz[i][j] - hz[i][j - 1]);
+      }
+    }
+    for (i = 0; i <= nx + -2; i += 1) {
+      for (j = 0; j <= ny + -2; j += 1) {
+        hz[i][j] = hz[i][j] - 0.7 * (ex[i][j + 1] - ex[i][j] + ey[i + 1][j] - ey[i][j]);
+      }
+    }
+  }
 }
-
-#pragma omp parallel for private(t, i, j)
-for(t = 0; t < _PB_TMAX; t++)
-{
-  for (i = 0; i < _PB_NX - 1; i++)
-    for (j = 0; j < _PB_NY - 1; j++)
-        hz[i][j] = hz[i][j] - SCALAR_VAL(0.7)*  (ex[i][j+1] - ex[i][j] +
-                   ey[i+1][j] - ey[i][j]);
-}
-
-#pragma endscop
-}
-
 
 int main(int argc, char** argv)
 {

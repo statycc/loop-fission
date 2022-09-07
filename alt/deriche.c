@@ -82,76 +82,88 @@ DATA_TYPE b1, b2, c1, c2;
 
 #pragma scop
 
-k = (SCALAR_VAL(1.0)-EXP_FUN(-alpha))*(SCALAR_VAL(1.0)-EXP_FUN(-alpha))/(SCALAR_VAL(1.0)+SCALAR_VAL(2.0)*alpha*EXP_FUN(-alpha)-EXP_FUN(SCALAR_VAL(2.0)*alpha));
-a1 = a5 = k;
-a2 = a6 = k*EXP_FUN(-alpha)*(alpha-SCALAR_VAL(1.0));
-a3 = a7 = k*EXP_FUN(-alpha)*(alpha+SCALAR_VAL(1.0));
-a4 = a8 = -k*EXP_FUN(SCALAR_VAL(-2.0)*alpha);
-b1 =  POW_FUN(SCALAR_VAL(2.0),-alpha);
-b2 = -EXP_FUN(SCALAR_VAL(-2.0)*alpha);
-c1 = c2 = 1;
-
-for (i=0; i<_PB_W; i++) {
-    ym1 = SCALAR_VAL(0.0);
-    ym2 = SCALAR_VAL(0.0);
-    xm1 = SCALAR_VAL(0.0);
-    for (j=0; j<_PB_H; j++) {
-        y1[i][j] = a1*imgIn[i][j] + a2*xm1 + b1*ym1 + b2*ym2;
-        xm1 = imgIn[i][j];
-        ym2 = ym1;
-        ym1 = y1[i][j];
+  k = (1.0f - expf(-alpha)) * (1.0f - expf(-alpha)) / (1.0f + 2.0f * alpha * expf(-alpha) - expf(2.0f * alpha));
+  a1 = a5 = k;
+  a2 = a6 = k * expf(-alpha) * (alpha - 1.0f);
+  a3 = a7 = k * expf(-alpha) * (alpha + 1.0f);
+  a4 = a8 = -k * expf(- 2.0f * alpha);
+  b1 = powf(2.0f,-alpha);
+  b2 = -expf(- 2.0f * alpha);
+  c1 = c2 = 1;
+  
+#pragma omp parallel for private (xm1,ym1,ym2,i,j)
+  for (i = 0; i <= -1 + w; i += 1) {
+    ym1 = 0.0f;
+    ym2 = 0.0f;
+    xm1 = 0.0f;
+    for (j = 0; j <= -1 + h; j += 1) {
+      y1[i][j] = a1 * imgIn[i][j] + a2 * xm1 + b1 * ym1 + b2 * ym2;
+      xm1 = imgIn[i][j];
+      ym2 = ym1;
+      ym1 = y1[i][j];
     }
-}
-
-for (i=0; i<_PB_W; i++) {
-    yp1 = SCALAR_VAL(0.0);
-    yp2 = SCALAR_VAL(0.0);
-    xp1 = SCALAR_VAL(0.0);
-    xp2 = SCALAR_VAL(0.0);
-    for (j=_PB_H-1; j>=0; j--) {
-        y2[i][j] = a3*xp1 + a4*xp2 + b1*yp1 + b2*yp2;
-        xp2 = xp1;
-        xp1 = imgIn[i][j];
-        yp2 = yp1;
-        yp1 = y2[i][j];
+  }
+  
+#pragma omp parallel for private (xp1,xp2,yp1,yp2,i,j)
+  for (i = 0; i <= -1 + w; i += 1) {
+    yp1 = 0.0f;
+    yp2 = 0.0f;
+    xp1 = 0.0f;
+    xp2 = 0.0f;
+    for (j = - 1 + h; j >= 0; j += -1) {
+      y2[i][j] = a3 * xp1 + a4 * xp2 + b1 * yp1 + b2 * yp2;
+      xp2 = xp1;
+      xp1 = imgIn[i][j];
+      yp2 = yp1;
+      yp1 = y2[i][j];
     }
-}
-
-for (i=0; i<_PB_W; i++)
-    for (j=0; j<_PB_H; j++) {
-        imgOut[i][j] = c1 * (y1[i][j] + y2[i][j]);
+  }
+  
+#pragma omp parallel for private (i,j)
+  for (i = 0; i <= -1 + w; i += 1) {
+    
+#pragma omp parallel for private (j) firstprivate (c1)
+    for (j = 0; j <= -1 + h; j += 1) {
+      imgOut[i][j] = c1 * (y1[i][j] + y2[i][j]);
     }
-
-for (j=0; j<_PB_H; j++) {
-tm1 = SCALAR_VAL(0.0);
-ym1 = SCALAR_VAL(0.0);
-ym2 = SCALAR_VAL(0.0);
-for (i=0; i<_PB_W; i++) {
-y1[i][j] = a5*imgOut[i][j] + a6*tm1 + b1*ym1 + b2*ym2;
-tm1 = imgOut[i][j];
-ym2 = ym1;
-ym1 = y1 [i][j];
-}
-}
-
-
-for (j=0; j<_PB_H; j++) {
-    tp1 = SCALAR_VAL(0.0);
-    tp2 = SCALAR_VAL(0.0);
-    yp1 = SCALAR_VAL(0.0);
-    yp2 = SCALAR_VAL(0.0);
-    for (i=_PB_W-1; i>=0; i--) {
-        y2[i][j] = a7*tp1 + a8*tp2 + b1*yp1 + b2*yp2;
-        tp2 = tp1;
-        tp1 = imgOut[i][j];
-        yp2 = yp1;
-        yp1 = y2[i][j];
+  }
+  
+#pragma omp parallel for private (tm1,ym1,ym2,i,j)
+  for (j = 0; j <= -1 + h; j += 1) {
+    tm1 = 0.0f;
+    ym1 = 0.0f;
+    ym2 = 0.0f;
+    for (i = 0; i <= -1 + w; i += 1) {
+      y1[i][j] = a5 * imgOut[i][j] + a6 * tm1 + b1 * ym1 + b2 * ym2;
+      tm1 = imgOut[i][j];
+      ym2 = ym1;
+      ym1 = y1[i][j];
     }
-}
-
-for (i=0; i<_PB_W; i++)
-    for (j=0; j<_PB_H; j++)
-        imgOut[i][j] = c2*(y1[i][j] + y2[i][j]);
+  }
+  
+#pragma omp parallel for private (tp1,tp2,yp1,yp2,i,j)
+  for (j = 0; j <= -1 + h; j += 1) {
+    tp1 = 0.0f;
+    tp2 = 0.0f;
+    yp1 = 0.0f;
+    yp2 = 0.0f;
+    for (i = - 1 + w; i >= 0; i += -1) {
+      y2[i][j] = a7 * tp1 + a8 * tp2 + b1 * yp1 + b2 * yp2;
+      tp2 = tp1;
+      tp1 = imgOut[i][j];
+      yp2 = yp1;
+      yp1 = y2[i][j];
+    }
+  }
+  
+#pragma omp parallel for private (i,j) firstprivate (w,h)
+  for (i = 0; i <= -1 + w; i += 1) {
+    
+#pragma omp parallel for private (j) firstprivate (c2)
+    for (j = 0; j <= -1 + h; j += 1) {
+      imgOut[i][j] = c2 * (y1[i][j] + y2[i][j]);
+    }
+  }
 
 #pragma endscop
 }

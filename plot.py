@@ -24,8 +24,6 @@ from pathlib import Path
 from re import match
 from typing import List
 
-from matplotlib import pyplot as plt
-from matplotlib.lines import Line2D
 from pytablewriter import MarkdownTableWriter, LatexTableWriter
 
 warnings.filterwarnings("ignore")
@@ -38,10 +36,9 @@ SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
 COMPACT_SZ = ["XS", "S", "M", "L", "XL", "STD"]
 
 # directory sorting in tables left -> right
-SOURCES = ['original', "original_autopar", "fission_autopar",
-           "fission_manual", "case_study-a", "case_study-b"]
-COMPACT_SRC = ['og', "o.a", "f.a", "f.m", "a", "b"]
-DIR_FILTER = ",".join(SOURCES[0:4])
+SOURCES = ['original', "fission", "alt"]
+COMPACT_SRC = ['org', "fis", "alt"]
+DIR_FILTER = ",".join(SOURCES)
 
 # Configs for fixed plot/charts properties
 BAR_COLORS = ["#005D80", '#009052', '#FEDB4D', '#E6793D', '#ff1744']
@@ -74,6 +71,12 @@ def setup_args():
         action='store',
         default='plots',
         help="output directory"
+    )
+    parser.add_argument(
+        "-i", "--input",
+        action='store',
+        default=RESULTS_DIR,
+        help="input directory"
     )
     parser.add_argument(
         "-f", "--fmt",
@@ -113,7 +116,7 @@ def setup_args():
         "--dir_filter",
         action='store',
         help="Comma separated list of directories to consider "
-        f'[default: {DIR_FILTER}]'
+             f'[default: {DIR_FILTER}]'
     )
     parser.add_argument(
         "--prog_filter",
@@ -134,11 +137,11 @@ def parse_results(result_dir, dir_filter):
         stem = Path(fn).stem
         return next(filter(lambda x: x.startswith(stem), models_), None)
 
-    def format_time(fn, variance, time):
-        return fn.replace('_time', ''), float(variance), float(time)
+    def format_time(fn, variance, time, ts=0):
+        return fn.replace('_time', ''), float(variance), float(time), float(ts)
 
     def parse_times(raw_times):
-        return [format_time(*rt.split(None, 2)) for rt in raw_times]
+        return [format_time(*rt.split(None, 3)) for rt in raw_times]
 
     def parse_model(raw_model):
         return {tup[0]: tup[1:] for tup in [
@@ -154,7 +157,7 @@ def parse_results(result_dir, dir_filter):
     filenames = next(walk(result_dir), (None, None, []))[2]
     models = [f for f in filenames if f.endswith('model.txt')]
 
-    # pair the results with their model; the finally remove nulls
+    # pair the results with their model; then finally remove nulls
     return [p for p in
             [parse_(*pair) for pair in
              [(fn, find_model(fn, models)) for fn in
@@ -194,14 +197,15 @@ class Timing:
 
     def get_time(self, program):
         if program in self.programs:
-            return self.times[self.programs.index(program)][-1]
+            # 0: prog name, 1: variance, 2: run time
+            return self.times[self.programs.index(program)][2]
 
 
 class ResultPresenter:
     """Represents a collection of results, and offers some formatting
     options """
 
-    def __init__(self, results: List[Timing], out_dir,
+    def __init__(self, results: List[Timing], in_dir, out_dir,
                  time_millis, digits, pfilter, show):
         self.__results = results
 
@@ -228,8 +232,15 @@ class ResultPresenter:
         self.digits = digits
         self.ensure_out_dir(out_dir)
         self.out_dir = out_dir
+        self.in_dir = in_dir
         self.pfilter = pfilter
         self.show = show
+
+    @property
+    def filter_names(self):
+        """chain benchmark names when filter is applier"""
+        tmp = "_".join(self.programs) if self.pfilter else ""
+        return tmp if len(tmp) < 1 else f'_{tmp}'
 
     def time_str(self, t, scale=True):
         if not t:
@@ -344,14 +355,15 @@ class ResultPresenter:
             label = f'clock time ({"ms" if self.millis else "s"})'
             self.plot(table, fn, self.sources, label, True)
         else:
-            fn = "time_" + ("-".join(self.sources).lower())
+            fn = "time_" + ("-".join(self.sources).lower()) + self.filter_names
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def speedup(self, fmt, baseline, target):
-        src_len, r = len(self.sources), RESULTS_DIR
+        src_len, r = len(self.sources), self.in_dir
         src_error = f'speedup requires timing at least two groups of ' \
-            f'programs, found {src_len} matching plot criteria'
+                    f'programs, found {src_len} matching plot criteria'
         bl_error = f'timing results not found for {baseline} in {r} '
+        pl_error = f'no results match plot criteria'
 
         if src_len < 2:
             return print(src_error)
@@ -362,6 +374,8 @@ class ResultPresenter:
         s1 = self.sources[bi]
         sp = [n for i, n in enumerate(self.sources) if
               (i != bi and (not target or target == n))]
+        if len(self.programs) == 0:
+            return print(pl_error)
 
         def value_func(p, d, o, s2):
             ts = self.query(o, d, s1).get_time(p)  # sequential
@@ -371,31 +385,33 @@ class ResultPresenter:
 
         table = self.generate_table(sp, value_func, compact=True)
         if fmt == "plot":
-            fn = lambda x: f'speedup_{baseline}-{x}'
+            fn = lambda x: f'speedup_{baseline}-{x}{self.filter_names}'
             self.plot(table, fn, sp, "speedup", False)
         else:
-            fn = "speedup_" + ("-".join([baseline, target or 'all']))
+            fn = "speedup_" + ("-".join([baseline, target or 'all'])) \
+                 + self.filter_names
             self.write_table(table, fmt, fn, self.out_dir, self.show)
 
     def plot(self, data, fn, prog_dir, ylabel, log):
-        rows, cols = min(self.prog_count, 2), min(self.prog_count, 3)
+        from matplotlib import pyplot as plt
+        from matplotlib.lines import Line2D
+
+        rows, cols = min(-(-self.prog_count // 3), 5), min(self.prog_count, 3)
         lbls = [COMPACT_SZ[SIZES.index(sz)] for sz in self.data_sizes]
         bars = [data[0].index(o) for o in self.opt_levels]
-        plt.rc('font', **{'size': 8 if self.prog_count == 1 else 8})
-        plt.rc('legend', fontsize=6 if self.prog_count == 1 else 6)
         ymin, ymax = 0, self.max_value(data)
 
         # draw a figure for each program directory
         for ci, target_name in enumerate(prog_dir):
-            fig, axs = plt.subplots(**SPLOT, nrows=rows, ncols=cols)
+            fig, axs = plt.subplots(rows, cols, **SPLOT, figsize=(cols * 3, rows * 3))
             axs = axs.flatten() if self.prog_count > 1 else [axs]
 
-            # draw a sub plot for each program
+            # draw a subplot for each program
             for sub_plot, prog_name in zip(axs, self.programs):
 
                 # draw the various bars
                 ll, lb = len(lbls), len(bars)
-                bw, x_off = 0.80 / lb, (lb / 2) - (1 / lb)
+                bw, x_off = 0.80 / lb, max(1.0, (lb / 2)) - (1 / lb)
                 y1, lines = [d[0] for d in data].index(prog_name), []
                 for i, bi in enumerate([o + ci for o in bars]):
                     pos = [a + ((i - x_off) * bw) for a in range(ll)]
@@ -430,12 +446,14 @@ class ResultPresenter:
                 fig.delaxes(axs[idx])
 
             fig.tight_layout()
-            fig.subplots_adjust(wspace=.4 if log else .25, hspace=.3)
+            fig.subplots_adjust(wspace=.4 if log else .1
+            if self.prog_count == 1 else .3, hspace=.3)
             fig_name = f'{fn(target_name) or "plot"}.pdf'
             f_path = path.join(self.out_dir, fig_name)
             plt.savefig(f_path)
             print(f'Saved plot to to: {f_path}')
-            if self.show: plt.show()
+            if self.show:
+                plt.show()
 
 
 if __name__ == '__main__':
@@ -448,7 +466,8 @@ if __name__ == '__main__':
         if args.prog_filter else None
 
     rp = ResultPresenter(
-        results=parse_results(RESULTS_DIR, dir_fil),
+        results=parse_results(args.input, dir_fil),
+        in_dir=args.input,
         out_dir=args.out,
         time_millis=args.millis,
         digits=args.digits,
