@@ -5,3 +5,4 @@ env
 results
 plots
 ____tempfile.data.polybench
+!*/ref_result/*.txt

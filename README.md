@@ -80,21 +80,11 @@ All programs are written in C language. We include programs with both `for` and 
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
 
-<!--
-
-The folders `results` and `plots` are discussed below.
-
-**Example provided**
-
-The files in results and plots are provided for convenience, as an example of the results we have obtained, 
-and can safely be deleted or overwritten. They were obtained on a Linux 4.19.0-20-amd64 #1 SMP Debian 
-4.19.235-1 (2022-03-17) x86_64 GNU/Linux machine, with 4 Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz processors.
-
-**Add plot/table here** -->
+* `ref_result` referential result; the capture on which we base results of the paper.
 
 ## Reproducing results
 
-**System requirements:** Linux/OSX host, C compiler with OpenMP support, 
+**System requirements:** Linux/OSX host, C compiler with OpenMP support, Make, and
 Python 3+ for plotting. The system should have multiple cores for parallelism,
 but 4 cores is sufficient for this experiment.
 
@@ -105,21 +95,21 @@ plots and tables from those results. Details of these steps follow next.
 
 :eight_spoked_asterisk: System should include a C compiler that supports OpenMP pragmas (defaults to GCC).
 
-You may specify an alternative compiler by appending to the make commands `CC=[compiler_name]`.
+To specify an alternative compiler, append to the make commands `CC=[compiler_name]`.
 
-**Small evaluation** — compiles and times partial benchmarks — :timer_clock: 7-10 min.
+**Small evaluation** — time partial benchmarks — :timer_clock: 7-10 min.
 
 ```text
 make small
 ```
 
-**Run all benchmarks** — compiles and times the execution of all benchmarks — :timer_clock: ~ 2 hours.
+**Run all benchmarks** — time execution of all benchmarks — :timer_clock: ~ 3-4 h.
 
 ```text
 make all
 ```
 
-**Run specific benchmark** — compiles and times specified benchmark for all sizes — :timer_clock: 1 - 40 min.
+**Run specific benchmark** — :timer_clock: 1-60 min, varies by benchmark.
 
 ```text
 make [benchmark_name]
@@ -175,7 +165,7 @@ After capturing results, use the plotting script to generate tables or graphs. T
 1. Install dependencies
 
     ```text
-    python -m pip install -q -r requirements.txt
+    python3 -m pip install -q -r requirements.txt
     ```
 
 2. Generate tables or plots
@@ -189,7 +179,7 @@ To customize plot options, call the `plot.py` directly with selected arguments.
 **Available arguments for plotting**
 
 ```text
-python plot.py --help
+python3 plot.py --help
 ```
 
 | ARGUMENT        | DESCRIPTION : options                                                    | DEFAULT    |
