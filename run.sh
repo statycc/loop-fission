@@ -62,7 +62,7 @@ fi
 
 # ensure dirs exist
 [ -d "$CDIR" ] || mkdir "$CDIR"
-[ -d "$RES_DIR" ] || mkdir "$RES_DIR"
+[ -d "$RES_DIR" ] || mkdir -p "$RES_DIR"
 
 # capture runtime details
 echo "# RUNTIME" >>  "$MODEL"
