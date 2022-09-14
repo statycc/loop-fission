@@ -1,8 +1,4 @@
 compiled*/
 env
-*.txt
-*.pdf
-results
-plots
+eval/*
 ____tempfile.data.polybench
-!*/ref_result/*.txt

@@ -80,12 +80,12 @@ All programs are written in C language. We include programs with both `for` and 
 
 * `run.sh` is a wrapper for the timing script; it enables benchmarking directories.
 
-* `ref_result` referential result; the capture on which we base results of the paper.
+* `ref_eval` referential result; the evaluation on which we base results of the paper.
 
 ## Reproducing results
 
 **System requirements:** Linux/OSX host, C compiler with OpenMP support, Make, and
-Python 3+ for plotting. The system should have multiple cores for parallelism,
+Python 3.8+ for plotting. The system should have multiple cores for parallelism,
 but 4 cores is sufficient for this experiment.
 
 Benchmarking proceeds in two phases: first capture the timing results, then generate
@@ -136,7 +136,7 @@ If necessary, change permissions: `chmod u+r+x ./run.sh`.
 
 ### Locating and interpreting results
 
-The results can be found in `results/` directory, categorized by source directory name, 
+The results can be found in `eval/results` directory, categorized by source directory name, 
 optimization level and data size. Two files will be generated for each category, for each run:
 
 1. `[args]_model.txt` - machine + processor snapshot, meta data
@@ -160,7 +160,8 @@ Timing options are same as default:
 
 ### Generating plots and tables
 
-After capturing results, use the plotting script to generate tables or graphs. This step requires Python version 3.+
+After capturing results, use the plotting script to generate tables or graphs. 
+This step requires Python version 3.8 or higher.
 
 1. Install dependencies
 
@@ -182,20 +183,20 @@ To customize plot options, call the `plot.py` directly with selected arguments.
 python3 plot.py --help
 ```
 
-| ARGUMENT        | DESCRIPTION : options                                                    | DEFAULT    |
-|:----------------|:-------------------------------------------------------------------------|------------|
-| `--data`        | data choice: `time`, `speedup`                                           | `time`     |
-| `--input`       | path to results (input) directory                                        | `results`  |
-| `--out`         | path to output directory                                                 | `plots`    |
-| `--fmt`         | output format: `tex`, `md`, `plot`                                       | `md`       |
-| `--digits`      | number of digits for tabular values: `0`...`15`                          | `6`        |
-| `--ss`          | source directory for calculating speedup                                 | `original` |
-| `--st`          | target directory for calculating speedup (all when not set)              | _not set_  |
-| `--millis`      | display table of times in milliseconds  (otherwise in seconds)           | _not set_  |
-| `--show`        | show generated plot or table                                             | _not set_  |
-| `--dir_filter`  | include directories (comma-separated list): `original`, `fission`, `alt` | _not set_  |
-| `--prog_filter` | include benchmarks (comma-separated list): `3mm`, `bicg`, `deriche` ...  | _not set_  |
-| `--help`        | show help message and exit                                               | _not set_  |
+| ARGUMENT        | DESCRIPTION : options                                                    | DEFAULT        |
+|:----------------|:-------------------------------------------------------------------------|----------------|
+| `--data`        | data choice: `time`, `speedup`                                           | `time`         |
+| `--input`       | path to results (input) directory                                        | `eval/results` |
+| `--out`         | path to output directory                                                 | `eval/plots`   |
+| `--fmt`         | output format: `tex`, `md`, `plot`                                       | `md`           |
+| `--digits`      | number of digits for tabular values: `0`...`15`                          | `6`            |
+| `--ss`          | source directory for calculating speedup                                 | `original`     |
+| `--st`          | target directory for calculating speedup (all when not set)              | _not set_      |
+| `--millis`      | display table of times in milliseconds  (otherwise in seconds)           | _not set_      |
+| `--show`        | show generated plot or table                                             | _not set_      |
+| `--dir_filter`  | include directories (comma-separated list): `original`, `fission`, `alt` | _not set_      |
+| `--prog_filter` | include benchmarks (comma-separated list): `3mm`, `bicg`, `deriche` ...  | _not set_      |
+| `--help`        | show help message and exit                                               | _not set_      |
 
 e.g. to generate a text-based speedup table, and display it, run:
 
