@@ -40,7 +40,7 @@ DT=$(date '+%m%d%H%M%S');                   # current timestamp
 
 # output directories
 CDIR="compiled"                             # for holding compiled programs
-RES_DIR="results"                           # where to save results
+RES_DIR="eval/results"                           # where to save results
 
 # output filenames
 PATTERN="$SRC"_"$OPT"_"$DS_SIZE"

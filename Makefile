@@ -97,9 +97,8 @@ plots:
 # Cleaning command
 clean:
 	rm -rf compiled*/
-	rm -rf results/
-	rm -rf plots/
-	rm -rf _*_autopar/
+	rm -rf eval/results/
+	rm -rf eval/plots/
 	rm -rf ____tempfile.data.polybench
 
 

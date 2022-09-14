@@ -29,7 +29,7 @@ from pytablewriter import MarkdownTableWriter, LatexTableWriter
 warnings.filterwarnings("ignore")
 
 # where to look for timing results
-RESULTS_DIR = './results'
+RESULTS_DIR = './eval/results'
 
 # custom sort order for data sizes smallest -> largest
 SIZES = ["MINI", "SMALL", "MEDIUM", "LARGE", "EXTRALARGE", 'STANDARD']
@@ -69,7 +69,7 @@ def setup_args():
     parser.add_argument(
         "-o", "--out",
         action='store',
-        default='plots',
+        default='eval/plots',
         help="output directory"
     )
     parser.add_argument(
