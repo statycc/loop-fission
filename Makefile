@@ -88,17 +88,15 @@ tblshft:
 
 .PHONY: plots
 plots:
-	python3 plot.py -d time -f md --millis
-	python3 plot.py -d time -f tex --millis
-	python3 plot.py -d speedup -f md --digits 2
-	python3 plot.py -d speedup -f tex --digits 2
-	python3 plot.py -d speedup -f plot
+	@python3 plot.py -d time -f md --millis
+	@python3 plot.py -d time -f tex --millis
+	@python3 plot.py -d speedup -f md --digits 2
+	@python3 plot.py -d speedup -f tex --digits 2
+	@python3 plot.py -d speedup -f plot
 
 # Cleaning command
 clean:
-	rm -rf compiled*/
-	rm -rf eval/results/
-	rm -rf eval/plots/
-	rm -rf ____tempfile.data.polybench
-
-
+	@rm -rf compiled*/
+	@rm -rf eval/results/
+	@rm -rf eval/plots/
+	@rm -rf ____tempfile.data.polybench
