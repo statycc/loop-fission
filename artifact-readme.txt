@@ -53,7 +53,7 @@ GETTING STARTED
    MacOS:    shasum -a 256 loop-fission.tar.gz
 
    The checksum should match:
-   3451ce9038d79290d232ad216e54d412ac6105c22202d5f2034b534735152e85  loop-fission.tar.gz
+   605c801b41a9938e35d6b8592200916baece2c56c2f54dbe85f0f1bb36072077
    
 2. Load the artifact image:
 
