@@ -53,7 +53,7 @@ GETTING STARTED
    MacOS:    shasum -a 256 loop-fission.tar.gz
 
    The checksum should match:
-   3451ce9038d79290d232ad216e54d412ac6105c22202d5f2034b534735152e85
+   TODO: UPDATE!
    
 2. Load the artifact image:
 
@@ -187,7 +187,7 @@ expected duration is about 10 minutes.
    Table 3, for matching data sizes and benchmarks.
 
 ------------------------------------------------------------------------
-FULL EVALUATION (3-4 HOURS)
+FULL EVALUATION (2 HOURS)
 ------------------------------------------------------------------------
 
 The full evaluation is performed similarly. Evaluation proceeds in two
@@ -196,7 +196,9 @@ tables from those results.
 
 Full evaluation is performed on all data sizes (SMALL to EXTRALARGE), 
 all optimization levels (-O0 to -O3), for all benchmarks. The expected 
-duration is about 3-4 hours.
+duration is about 2 hours on a 4-core linux/amd64 host. If you are
+running a different host or architecture, this timing estimate may be
+inaccurate based on our experiments.
 
 1. Measure running times:
 
@@ -204,10 +206,9 @@ duration is about 3-4 hours.
    make all
    ```
    
-   This command will first time original directory (~2h), then those in
-   fission directory (~1h), and last alt directory (~1h). Hosts with
-   more than 4 cores may finish the last two steps in shorter time.
-   Wait for this timing phase to run to completion.
+   This command will first time original directory, then those in
+   fission directory, and lastly alt directory. Wait for this timing
+   phase to run to completion.
 
 2. Plot results:
 
@@ -218,7 +219,7 @@ duration is about 3-4 hours.
 3. To generate Figure 6:
 
    ```
-   python3 plot.py -d speedup -f plot --prog_filter bicg,gesummv,mvt --dir_filter original,fission --show
+   python3 plot.py -d speedup -f plot --prog_filter bicg,gesummv,mvt --dir_filter original,fission
    ```
 
 4. To generate Table 3:
@@ -227,9 +228,9 @@ duration is about 3-4 hours.
    python3 plot.py -d speedup -f md --digits 2  --show
    ```
 
-The results are expected to differ slightly due to containerization, and
-may also differ between various OS hosts, but the general claims of
-paper, as they are stated earlier, should still hold.
+The results are expected to differ slightly due to containerization and
+machine details, but the general claims of paper, as they are stated
+earlier, should still hold.
 
 The plotting options are highly customizable. To generate additional
 plots, review available plotting arguments: `python3 plot.py --help`.
