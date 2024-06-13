@@ -72,7 +72,7 @@ All programs are written in C language. We include programs with both `for` and 
 | `remap`    | 4D matrix memory remapping                     |  ✔  |       | [NAS-UA][NAS]     |
 | `tblshift` | TIFF PixarLog compression main table bit shift |  ✔  |   ✔   | [MiBench][MB]     |
 
-[PB]: http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/
+[PB]: https://sourceforge.net/projects/polybench/files/
 [NAS]: https://www.nas.nasa.gov/software/npb.html
 [MB]: https://vhosts.eecs.umich.edu/mibench
 
