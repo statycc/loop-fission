@@ -8,31 +8,34 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
-    
+
 jobs:
-#  container_test:
-#    name: Docker build test
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - name: Checkout repo
-#        uses: actions/checkout@v4
-#        with:
-#          ref: 'artifact'
+  container_test:
+    name: Docker build test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: 'artifact'
+      - name: Sanity check
+        run: ls -l && docker --version
 #      - name: Set up QEMU
 #        uses: docker/setup-qemu-action@v3
 #      - name: Set up Docker Buildx
 #        uses: docker/setup-buildx-action@v3
 #      - name: Build
 #        uses: docker/build-push-action@v6
+
   exec_test:
     name: Runtime test
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout repo
+      - name: ⏹️ Cancel previous runs
+        uses: pierreraffa/cancel-previous-runs-action@1.11
+      - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: 'main'
-      - run: |
-          sudo apt update -y 
-          sudo apt install -y build-essential git bc software-properties-common
-          make small
+      - name: ⚙️ Environment setup
+        run: sudo apt update -y && sudo apt install -y build-essential git bc software-properties-common
+      - name: ✴️ Run small test
+        run: make small
