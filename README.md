@@ -12,11 +12,11 @@ We also compare our technique to an alternative loop fission technique implement
 [ROSE](http://rosecompiler.org/) compiler's
 [LoopProcessor](https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/LoopProcessor) tool.
 
-**Getting started**
+## Getting started
 
 * For an instructed walk-through and reproduction of paper experiments, 
-  we recommend accessing the [artifact published on zenodo](https://zenodo.org/record/7080145)
-  and following the readme instructions.
+  access the [artifact published on zenodo](https://zenodo.org/record/7080145)
+  and follow the readme instructions.
 * For running experiments on native hardware or extending this source code, clone this repository.
 
 ## Files and organization
