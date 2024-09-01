@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        ref: 'artifact'
+        with:
+          ref: 'artifact'
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -27,6 +28,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        ref: 'main'
+        with:
+          ref: 'main'
       - run: apt update -y && apt install -y build-essential git bc software-properties-common
       - run: make small
