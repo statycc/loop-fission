@@ -1,0 +1,32 @@
+name: Usability test
+
+on:
+  schedule:
+    # <min> <hr> <day> <mth> <weekday>
+    - cron:  '0 0 1 * *'
+  workflow_dispatch:
+    branches: [ main ]
+
+jobs:
+  container_test:
+    name: Docker build test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        ref: 'artifact'
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+  exec_test:
+    name: Runtime test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        ref: 'main'
+      - run: apt update -y && apt install -y build-essential git bc software-properties-common
+      - run: make small
