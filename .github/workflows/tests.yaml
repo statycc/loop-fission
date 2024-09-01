@@ -21,7 +21,7 @@ jobs:
         with:
           ref: 'artifact'
       - name: 🌲 Environment check
-        run: ls -l && docker --version
+        run: ls -l
       - name: ⚫ Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: 🐳 Set up Docker Buildx
@@ -29,7 +29,8 @@ jobs:
       - name: 🛠️ Build
         uses: docker/build-push-action@v6
         with:
-          file: Dockerfile
+          context: .
+          file: {context}/Dockerfile
           load: true
 
   exec_test:
