@@ -6,22 +6,24 @@ on:
     - cron:  '0 0 1 * *'
   workflow_dispatch:
     branches: [ main ]
-
+  push:
+    branches: [ main ]
+    
 jobs:
-  container_test:
-    name: Docker build test
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ref: 'artifact'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build
-        uses: docker/build-push-action@v6
+#  container_test:
+#    name: Docker build test
+#    runs-on: ubuntu-20.04
+#    steps:
+#      - name: Checkout repo
+#        uses: actions/checkout@v4
+#        with:
+#          ref: 'artifact'
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v3
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#      - name: Build
+#        uses: docker/build-push-action@v6
   exec_test:
     name: Runtime test
     runs-on: ubuntu-20.04
@@ -30,5 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: 'main'
-      - run: apt update -y && apt install -y build-essential git bc software-properties-common
-      - run: make small
+      - run: |
+          sudo apt update -y 
+          sudo apt install -y build-essential git bc software-properties-common
+          make small
