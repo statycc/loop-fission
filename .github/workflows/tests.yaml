@@ -5,7 +5,7 @@ on:
     # <min> <hr> <day> <mth> <weekday>
     - cron:  '0 0 1 * *'
   workflow_dispatch:
-    branches: [ build ]
+    branches: [ main ]
 
 jobs:
   container_test:
