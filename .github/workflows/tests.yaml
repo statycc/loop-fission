@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: {context}/Dockerfile
+          file: ./Dockerfile
           load: true
 
   exec_test:
