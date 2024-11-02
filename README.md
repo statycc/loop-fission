@@ -1,5 +1,8 @@
 # Loop Fission Benchmarks
 
+![Usability](https://img.shields.io/github/actions/workflow/status/statycc/loop-fission/tests.yaml?label=usability%20test&logoColor=white&logo=docker&style=flat-square)
+![Latest run](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fstatycc%2Floop-fission%2Factions%2Fruns%2F11622858345%3Fq%3Astatus%3Dcompleted%2520per_page%3D1&query=%24.run_started_at&style=flat-square&label=latest%20run&color=1565C0)
+
 This repository contains the source code for benchmarking the loop fission algorithm presented in 
 [_"Distributing and Parallelizing Non-canonical Loops"_](https://hal.archives-ouvertes.fr/hal-03669387).
 
