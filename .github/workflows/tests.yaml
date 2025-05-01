@@ -12,7 +12,7 @@ on:
 jobs:
   container_test:
     name: Docker build test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: ⏹️ Cancel previous runs
         uses: pierreraffa/cancel-previous-runs-action@1.11
@@ -35,7 +35,7 @@ jobs:
 
   exec_test:
     name: Runtime test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: ⏹️ Cancel previous runs
         uses: pierreraffa/cancel-previous-runs-action@1.11
